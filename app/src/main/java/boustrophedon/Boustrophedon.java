@@ -4,16 +4,10 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import boustrophedon.model.IBorder;
-import boustrophedon.model.ICell;
 import boustrophedon.model.IPoint;
 import boustrophedon.model.IPolygon;
 import boustrophedon.provider.Border;
@@ -35,6 +29,8 @@ public class Boustrophedon {
                 .min(Comparator.comparingDouble(IPoint::getY))
                 .orElseThrow(NoSuchElementException::new);
 
+        end = polygon.getPoints().get(0);
+
         IPoint currentPoint = largestBorder.getFirstVertice();
 
         // Initial
@@ -48,6 +44,7 @@ public class Boustrophedon {
             // Walk to the side
             currentPoint = calcPointToSide(polygon, currentPoint, largestBorder, end);
             line.add(currentPoint);
+
         } while (currentPoint.calcDistance(end) > LENGTH_OF_PATH);
         // End of path
         line.add(end);
@@ -60,11 +57,11 @@ public class Boustrophedon {
                 polygon.getPoints().get(polygon.getNumberOfPoints() -1),
                 polygon.getPoints().get(0)
         );
-        double largestDistance = largestBorder.getLenght(), aux = 0;
+        double largestDistance = largestBorder.getLength(), aux = 0;
 
         for (int i = 0; i < polygon.getPoints().size() -1; i++) {
             IBorder border = new Border(polygon.getPoints().get(i), polygon.getPoints().get(i +1));
-            aux = border.getLenght();
+            aux = border.getLength();
             if (aux > largestDistance) {
                 largestDistance = aux;
                 largestBorder = border;
@@ -75,25 +72,29 @@ public class Boustrophedon {
     }
 
     private IPoint calcPointToSide(IPolygon polygon, IPoint currentPoint, IBorder refBorder, IPoint end) {
-        IPoint anticlockwisePoint = currentPoint.walk(LENGTH_OF_PATH, refBorder.getAngle() + Math.PI / 2);
-        IPoint clockwisePoint = currentPoint.walk(LENGTH_OF_PATH, refBorder.getAngle() - Math.PI / 2);
+        for (int i = 0; i < polygon.getPoints().size(); i++) {
+            IBorder border = i != polygon.getNumberOfPoints() - 1
+                    ? new Border(polygon.getPoints().get(i), polygon.getPoints().get(i + 1))
+                    : new Border(
+                    polygon.getPoints().get(polygon.getNumberOfPoints() - 1),
+                    polygon.getPoints().get(0)
+            );
 
-        IPoint stepPoint =  (end.calcDistance(anticlockwisePoint) < end.calcDistance(clockwisePoint))
-                ? anticlockwisePoint : clockwisePoint;
+            if (!border.equals(refBorder) && border.isOnBorder(currentPoint)) {
+                IPoint anticlockwisePoint = currentPoint.walk(LENGTH_OF_PATH, border.getAngle());
+                IPoint clockwisePoint = currentPoint.walk(LENGTH_OF_PATH, border.getAngle() + Math.PI);
 
-        // get current border
-        // point in the border with
+                return (end.calcDistance(anticlockwisePoint) < end.calcDistance(clockwisePoint))
+                        ? anticlockwisePoint : clockwisePoint;
+            }
+        }
 
-        return stepPoint;
+        return currentPoint;
     }
 
     private IPoint getNextPoint(IPolygon polygon, IPoint currentPoint, IBorder refBorder) {
-        double[] currentCoef = refBorder.getCoeficients();
-        // TODO: calculate paralell coeficients
-        double[] paralellCoef = new double[]{
-                currentCoef[0],
-                currentCoef[1] //- LENGTH_OF_PATH*Math.sin(refBorder.getAngle())
-        };
+        double intersectionX = 0, intersectionY = 0;
+        double[] parallelCoefficients = refBorder.parallelLineCoefficients(currentPoint);
 
         for (int i = 0; i < polygon.getPoints().size(); i++) {
             IBorder border = i != polygon.getNumberOfPoints() - 1
@@ -102,12 +103,18 @@ public class Boustrophedon {
                         polygon.getPoints().get(polygon.getNumberOfPoints() -1),
                         polygon.getPoints().get(0)
                     );
-            if (border.getAngle() != refBorder.getAngle()) {
-                double[] borderCoef = border.getCoeficients();
-                double intersectionX = (borderCoef[0] - paralellCoef[0]) == 0 ?
-                        currentPoint.getX() :
-                        (paralellCoef[1] - borderCoef[1]) / (borderCoef[0] - paralellCoef[0]);
-                double intersectionY = borderCoef[0] * intersectionX + borderCoef[1];
+            if (border.getAngle() != refBorder.getAngle() && !border.isOnBorder(currentPoint)) {
+                if (border.isParallelToY()) {
+                    intersectionX = border.getFirstVertice().getX();
+                    intersectionY = parallelCoefficients[0] * intersectionX + parallelCoefficients[1];
+                } else {
+                    double[] borderCoefficients = border.getCoefficients();
+                    intersectionX = (borderCoefficients[0] - parallelCoefficients[0]) == 0 ?
+                            currentPoint.getX() :
+                            (parallelCoefficients[1] - borderCoefficients[1]) /
+                                    (borderCoefficients[0] - parallelCoefficients[0]);
+                    intersectionY = borderCoefficients[0] * intersectionX + borderCoefficients[1];
+                }
 
                 IPoint intersection = new Point(intersectionX, intersectionY);
                 if (border.isOnBorder(intersection) && !intersection.equals(currentPoint) ) {

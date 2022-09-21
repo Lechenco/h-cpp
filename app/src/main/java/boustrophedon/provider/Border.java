@@ -23,7 +23,7 @@ public class Border implements IBorder {
     }
 
     @Override
-    public double getLenght() {
+    public double getLength() {
         return  Math.sqrt(
                     Math.pow(firstVertice.getX() - secondVertice.getX(), 2) +
                     Math.pow(firstVertice.getY() - secondVertice.getY(), 2)
@@ -35,7 +35,21 @@ public class Border implements IBorder {
         return Math.atan2(secondVertice.getY() - firstVertice.getY(), secondVertice.getX() - firstVertice.getX());
     }
 
-    public double[] getCoeficients() {
+    @Override
+    public boolean isParallelToY() {
+        return firstVertice.getX() == secondVertice.getX();
+    }
+
+    @Override
+    public double[] parallelLineCoefficients(IPoint point) {
+        double[] currentCoefficients = this.getCoefficients();
+        return new double[]{
+                currentCoefficients[0],
+                point.getY() - currentCoefficients[0] * point.getX()
+        };
+    }
+
+    public double[] getCoefficients() {
         double deltaX = secondVertice.getX() - firstVertice.getX();
         double deltaY = secondVertice.getY() - firstVertice.getY();
         double a = deltaX != 0 ? deltaY / deltaX : 0;
@@ -47,8 +61,8 @@ public class Border implements IBorder {
 
     @Override
     public boolean isOnBorder(IPoint point) {
-        double[] coef = getCoeficients();
-        if (point.getX()*coef[0] + coef[1] == point.getY()) {
+        double[] coef = getCoefficients();
+        if ( this.isParallelToY() || point.getX()*coef[0] + coef[1] == point.getY()) {
             if (
                     (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
                         firstVertice.getY() <= point.getY() && point.getY() <= secondVertice.getY()) ||
@@ -63,5 +77,14 @@ public class Border implements IBorder {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if (!(other instanceof Border)) return false;
+
+        Border p = (Border) other;
+
+        return p.getFirstVertice().equals(this.getFirstVertice()) && p.getSecondVertice().equals(this.getSecondVertice());
     }
 }

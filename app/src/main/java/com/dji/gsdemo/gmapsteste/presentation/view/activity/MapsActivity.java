@@ -64,7 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         LatLng cornelio = new LatLng(-23.1813, -50.648);
-        mMap.addMarker(new MarkerOptions().position(cornelio).title("Cornélio Procópio"));
+//        mMap.addMarker(new MarkerOptions().position(cornelio).title("Cornélio Procópio"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(cornelio));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
@@ -77,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Polygon square = new Polygon(
                 new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
                 new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
-                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
+//                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
                 new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
         );
 
@@ -99,5 +99,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 //        polylineOptions.add(cornelio);
         mMap.addPolyline(polylineOptions);
+
+//        for (LatLng p : polylineOptions.getPoints()) {
+//            mMap.addMarker(new MarkerOptions().position(p));
+//        }
     }
 }

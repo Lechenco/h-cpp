@@ -3,8 +3,10 @@ package boustrophedon.model;
 public interface IBorder {
     IPoint getFirstVertice();
     IPoint getSecondVertice();
-    double getLenght();
+    double getLength();
     double getAngle();
-    double[] getCoeficients();
+    double[] getCoefficients();
     boolean isOnBorder(IPoint point);
+    boolean isParallelToY();
+    double[] parallelLineCoefficients(IPoint point);
 }
