@@ -81,7 +81,7 @@ public class Border implements IBorder {
     @Override
     public boolean isOnBorder(IPoint point) {
         double[] coef = getCoefficients();
-        if ( this.isParallelToY() || point.getX()*coef[0] + coef[1] - point.getY() < 0.01) {
+        if ( this.isParallelToY() || Math.abs(point.getX()*coef[0] + coef[1] - point.getY()) < 0.01) {
             if (
                     (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
                         firstVertice.getY() <= point.getY() && point.getY() <= secondVertice.getY()) ||

@@ -121,11 +121,14 @@ public class Boustrophedon {
                         polygon.getPoints().get(0)
                     );
             if (Math.abs(refBorder.angleDiff(border.getPositiveAngle())) > ANGLE_PRECISION && !border.isOnBorder(currentPoint)) {
+                double[] borderCoefficients = border.getCoefficients();
                 if (border.isParallelToY()) {
                     intersectionX = border.getFirstVertice().getX();
                     intersectionY = parallelCoefficients[0] * intersectionX + parallelCoefficients[1];
+                } else if (refBorder.isParallelToY()) {
+                    intersectionX = currentPoint.getX();
+                    intersectionY = borderCoefficients[0] * intersectionX + borderCoefficients[1];
                 } else {
-                    double[] borderCoefficients = border.getCoefficients();
                     intersectionX = (borderCoefficients[0] - parallelCoefficients[0]) == 0 ?
                             currentPoint.getX() :
                             (parallelCoefficients[1] - borderCoefficients[1]) /

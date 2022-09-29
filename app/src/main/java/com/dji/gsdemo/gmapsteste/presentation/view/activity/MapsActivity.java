@@ -74,19 +74,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         double angle = Math.PI / 4;
         //Call Boustrophedon Function
-//        Polygon square = new Polygon(
-//                new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
-//                new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
-////                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
-//                new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
-//        );
-
         Polygon square = new Polygon(
-                new Point(cornelio.latitude - 2 * squareSize, cornelio.longitude),
-//                new Point(cornelio.latitude, cornelio.longitude + 2 * squareSize),
-                new Point(cornelio.latitude + 2 * squareSize, cornelio.longitude),
-                new Point(cornelio.latitude, cornelio.longitude - 2 * squareSize)
+                new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
+                new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
+                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
+                new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
         );
+
+//        Polygon square = new Polygon(
+//                new Point(cornelio.latitude - 2 * squareSize, cornelio.longitude),
+//                new Point(cornelio.latitude, cornelio.longitude + 2 * squareSize),
+//                new Point(cornelio.latitude + 2 * squareSize, cornelio.longitude),
+//                new Point(cornelio.latitude, cornelio.longitude - 2 * squareSize)
+//        );
 
         Polyline path = new Boustrophedon().generatePath(square);
 
