@@ -36,6 +36,12 @@ public class Border implements IBorder {
     }
 
     @Override
+    public double getPositiveAngle() {
+        double angle = this.getAngle();
+        return angle < 0 ? angle + Math.PI : angle;
+    }
+
+    @Override
     public boolean isParallelToY() {
         return firstVertice.getX() == secondVertice.getX();
     }
@@ -47,6 +53,19 @@ public class Border implements IBorder {
                 currentCoefficients[0],
                 point.getY() - currentCoefficients[0] * point.getX()
         };
+    }
+
+    @Override
+    public double angleDiff(double angle) {
+        return angle - this.getPositiveAngle();
+    }
+
+    @Override
+    public double distanceToPoint(IPoint point) {
+        double[] coefficients = this.getCoefficients();
+        double a = coefficients[0], b = -1, c = coefficients[1];
+
+        return (Math.abs(a * point.getX() + b * point.getY() + c)) / (Math.sqrt(a * a + b * b));
     }
 
     public double[] getCoefficients() {
@@ -62,7 +81,7 @@ public class Border implements IBorder {
     @Override
     public boolean isOnBorder(IPoint point) {
         double[] coef = getCoefficients();
-        if ( this.isParallelToY() || point.getX()*coef[0] + coef[1] == point.getY()) {
+        if ( this.isParallelToY() || point.getX()*coef[0] + coef[1] - point.getY() < 0.01) {
             if (
                     (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
                         firstVertice.getY() <= point.getY() && point.getY() <= secondVertice.getY()) ||

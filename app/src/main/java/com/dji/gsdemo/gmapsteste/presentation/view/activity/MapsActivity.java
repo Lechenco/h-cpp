@@ -74,18 +74,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         double angle = Math.PI / 4;
         //Call Boustrophedon Function
+//        Polygon square = new Polygon(
+//                new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
+//                new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
+////                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
+//                new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
+//        );
+
         Polygon square = new Polygon(
-                new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
-                new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
-//                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
-                new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
+                new Point(cornelio.latitude - 2 * squareSize, cornelio.longitude),
+//                new Point(cornelio.latitude, cornelio.longitude + 2 * squareSize),
+                new Point(cornelio.latitude + 2 * squareSize, cornelio.longitude),
+                new Point(cornelio.latitude, cornelio.longitude - 2 * squareSize)
         );
 
-//        Polyline path = new Polyline(
-//                new Point(cornelio.latitude - squareSize /2, cornelio.longitude + squareSize/2),
-//                new Point(cornelio.latitude + squareSize/2, cornelio.longitude + squareSize/2),
-//                new Point(cornelio.latitude + squareSize/2, cornelio.longitude - squareSize/2)
-//        );
         Polyline path = new Boustrophedon().generatePath(square);
 
         PolygonOptions polyOptions = new PolygonOptions().add(
@@ -97,11 +99,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 path.toLatLngArray()
         ).color(Color.RED);
 
-//        polylineOptions.add(cornelio);
         mMap.addPolyline(polylineOptions);
 
-//        for (LatLng p : polylineOptions.getPoints()) {
-//            mMap.addMarker(new MarkerOptions().position(p));
-//        }
+        for (LatLng p : polylineOptions.getPoints()) {
+            mMap.addMarker(new MarkerOptions().position(p));
+        }
     }
 }

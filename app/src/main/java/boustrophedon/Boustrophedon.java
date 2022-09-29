@@ -16,6 +16,7 @@ import boustrophedon.provider.Polyline;
 
 public class Boustrophedon {
     double LENGTH_OF_PATH = 0.001;
+    double ANGLE_PRECISION = Math.PI / 180;
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -24,32 +25,47 @@ public class Boustrophedon {
 
         IBorder largestBorder = calcLargestBorderAxis(polygon);
 
-        // TODO calculate most distance point from other side
-        IPoint end = polygon.getPoints().stream()
-                .min(Comparator.comparingDouble(IPoint::getY))
-                .orElseThrow(NoSuchElementException::new);
-
-        end = polygon.getPoints().get(0);
+        IPoint end = getFinalPoint(polygon, largestBorder.getFirstVertice(), largestBorder);
 
         IPoint currentPoint = largestBorder.getFirstVertice();
 
         // Initial
         line.add(currentPoint);
 
-        do {
-            // Walk to the next border
-            currentPoint = getNextPoint(polygon, currentPoint, largestBorder);
-            line.add(currentPoint);
+        // Walk to the next border
+        currentPoint = getNextPoint(polygon, currentPoint, largestBorder);
+        line.add(currentPoint);
 
+        int i = 0, iterations = (int) Math.floor(largestBorder.distanceToPoint(end) / LENGTH_OF_PATH);
+        while (i < iterations) {
             // Walk to the side
             currentPoint = calcPointToSide(polygon, currentPoint, largestBorder, end);
             line.add(currentPoint);
 
-        } while (currentPoint.calcDistance(end) > LENGTH_OF_PATH);
+            // Walk to the next border
+            currentPoint = getNextPoint(polygon, currentPoint, largestBorder);
+            line.add(currentPoint);
+
+            i++;
+        }
         // End of path
         line.add(end);
 
         return line;
+    }
+
+    private IPoint getFinalPoint(IPolygon polygon, IPoint initialPoint, IBorder borderRef) {
+        IPoint finalPoint = null;
+        double maxDistance = 0;
+
+        for (IPoint point : polygon.getPoints()) {
+            if (initialPoint.calcDistance(point) > maxDistance && !borderRef.isOnBorder(point)) {
+                maxDistance = initialPoint.calcDistance(point);
+                finalPoint = point;
+            }
+        }
+
+        return finalPoint;
     }
 
     private IBorder calcLargestBorderAxis(IPolygon polygon) {
@@ -81,8 +97,9 @@ public class Boustrophedon {
             );
 
             if (!border.equals(refBorder) && border.isOnBorder(currentPoint)) {
-                IPoint anticlockwisePoint = currentPoint.walk(LENGTH_OF_PATH, border.getAngle());
-                IPoint clockwisePoint = currentPoint.walk(LENGTH_OF_PATH, border.getAngle() + Math.PI);
+                double angleBetweenBorders = refBorder.angleDiff(border.getPositiveAngle());
+                IPoint anticlockwisePoint = currentPoint.walk(LENGTH_OF_PATH / Math.sin(angleBetweenBorders), border.getAngle());
+                IPoint clockwisePoint = currentPoint.walk(LENGTH_OF_PATH / Math.sin(angleBetweenBorders), border.getAngle() + Math.PI);
 
                 return (end.calcDistance(anticlockwisePoint) < end.calcDistance(clockwisePoint))
                         ? anticlockwisePoint : clockwisePoint;
@@ -103,7 +120,7 @@ public class Boustrophedon {
                         polygon.getPoints().get(polygon.getNumberOfPoints() -1),
                         polygon.getPoints().get(0)
                     );
-            if (border.getAngle() != refBorder.getAngle() && !border.isOnBorder(currentPoint)) {
+            if (Math.abs(refBorder.angleDiff(border.getPositiveAngle())) > ANGLE_PRECISION && !border.isOnBorder(currentPoint)) {
                 if (border.isParallelToY()) {
                     intersectionX = border.getFirstVertice().getX();
                     intersectionY = parallelCoefficients[0] * intersectionX + parallelCoefficients[1];

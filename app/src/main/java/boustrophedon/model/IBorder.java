@@ -5,8 +5,11 @@ public interface IBorder {
     IPoint getSecondVertice();
     double getLength();
     double getAngle();
+    double getPositiveAngle();
     double[] getCoefficients();
     boolean isOnBorder(IPoint point);
     boolean isParallelToY();
     double[] parallelLineCoefficients(IPoint point);
+    double angleDiff(double angle);
+    double distanceToPoint(IPoint point);
 }
