@@ -74,21 +74,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         double angle = Math.PI / 4;
         //Call Boustrophedon Function
-        Polygon square = new Polygon(
-                new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
-                new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
-                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
-                new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
-        );
-
 //        Polygon square = new Polygon(
-//                new Point(cornelio.latitude - 2 * squareSize, cornelio.longitude),
-//                new Point(cornelio.latitude, cornelio.longitude + 2 * squareSize),
-//                new Point(cornelio.latitude + 2 * squareSize, cornelio.longitude),
-//                new Point(cornelio.latitude, cornelio.longitude - 2 * squareSize)
+//                new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
+//                new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
+//                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
+//                new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
 //        );
 
-        Polyline path = new Boustrophedon().generatePath(square);
+        Polygon square = new Polygon(
+                new Point(cornelio.latitude - 2 * squareSize, cornelio.longitude),
+                new Point(cornelio.latitude, cornelio.longitude + 2 * squareSize),
+//                new Point(cornelio.latitude + 2 * squareSize, cornelio.longitude),
+                new Point(cornelio.latitude, cornelio.longitude - 2 * squareSize)
+        );
+
+        Polyline path = (Polyline) new Boustrophedon(square).generatePath();
 
         PolygonOptions polyOptions = new PolygonOptions().add(
                 square.toLatLngArray()
@@ -101,8 +101,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.addPolyline(polylineOptions);
 
-        for (LatLng p : polylineOptions.getPoints()) {
-            mMap.addMarker(new MarkerOptions().position(p));
-        }
+//        for (LatLng p : polylineOptions.getPoints()) {
+//            mMap.addMarker(new MarkerOptions().position(p));
+//        }
     }
 }

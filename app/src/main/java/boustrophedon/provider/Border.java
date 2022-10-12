@@ -2,10 +2,11 @@ package boustrophedon.provider;
 
 import boustrophedon.model.IBorder;
 import boustrophedon.model.IPoint;
+import boustrophedon.utils.GA;
 
 public class Border implements IBorder {
-    private IPoint firstVertice;
-    private IPoint secondVertice;
+    private final IPoint firstVertice;
+    private final IPoint secondVertice;
 
     public Border(IPoint firstVertice, IPoint secondVertice) {
         this.firstVertice = firstVertice;
@@ -24,15 +25,12 @@ public class Border implements IBorder {
 
     @Override
     public double getLength() {
-        return  Math.sqrt(
-                    Math.pow(firstVertice.getX() - secondVertice.getX(), 2) +
-                    Math.pow(firstVertice.getY() - secondVertice.getY(), 2)
-        );
+        return  GA.calcDistance(firstVertice, secondVertice);
     }
 
     @Override
     public double getAngle() {
-        return Math.atan2(secondVertice.getY() - firstVertice.getY(), secondVertice.getX() - firstVertice.getX());
+        return GA.calcAngle(firstVertice, secondVertice);
     }
 
     @Override
@@ -49,10 +47,7 @@ public class Border implements IBorder {
     @Override
     public double[] parallelLineCoefficients(IPoint point) {
         double[] currentCoefficients = this.getCoefficients();
-        return new double[]{
-                currentCoefficients[0],
-                point.getY() - currentCoefficients[0] * point.getX()
-        };
+        return GA.calcParallelLineCoefficients(currentCoefficients[0], point);
     }
 
     @Override
@@ -62,38 +57,25 @@ public class Border implements IBorder {
 
     @Override
     public double distanceToPoint(IPoint point) {
-        double[] coefficients = this.getCoefficients();
-        double a = coefficients[0], b = -1, c = coefficients[1];
-
-        return (Math.abs(a * point.getX() + b * point.getY() + c)) / (Math.sqrt(a * a + b * b));
+        return GA.calcDistance(this, point);
     }
 
     public double[] getCoefficients() {
-        double deltaX = secondVertice.getX() - firstVertice.getX();
-        double deltaY = secondVertice.getY() - firstVertice.getY();
-        double a = deltaX != 0 ? deltaY / deltaX : 0;
-        double b = - 1 * a * firstVertice.getX() + firstVertice.getY();
-
-
-        return new double[]{a, b};
+        return GA.getCoefficients(firstVertice, secondVertice);
     }
 
     @Override
     public boolean isOnBorder(IPoint point) {
-        double[] coef = getCoefficients();
-        if ( this.isParallelToY() || Math.abs(point.getX()*coef[0] + coef[1] - point.getY()) < 0.01) {
-            if (
+        double[] coefficients = getCoefficients();
+        if ( this.isParallelToY() || Math.abs(point.getX()*coefficients[0] + coefficients[1] - point.getY()) < 0.01) {
+            return (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
+                    firstVertice.getY() <= point.getY() && point.getY() <= secondVertice.getY()) ||
                     (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
-                        firstVertice.getY() <= point.getY() && point.getY() <= secondVertice.getY()) ||
-                    (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
-                        secondVertice.getY() <= point.getY() && point.getY() <= firstVertice.getY()) ||
+                            secondVertice.getY() <= point.getY() && point.getY() <= firstVertice.getY()) ||
                     (firstVertice.getX() >= point.getX() && point.getX() >= secondVertice.getX() &&
                             firstVertice.getY() >= point.getY() && point.getY() >= secondVertice.getY()) ||
                     (firstVertice.getX() >= point.getX() && point.getX() >= secondVertice.getX() &&
-                            secondVertice.getY() >= point.getY() && point.getY() >= firstVertice.getY())
-            ) {
-                return true;
-            }
+                            secondVertice.getY() >= point.getY() && point.getY() >= firstVertice.getY());
         }
         return false;
     }
@@ -104,6 +86,7 @@ public class Border implements IBorder {
 
         Border p = (Border) other;
 
-        return p.getFirstVertice().equals(this.getFirstVertice()) && p.getSecondVertice().equals(this.getSecondVertice());
+        return p.getFirstVertice().equals(this.getFirstVertice()) &&
+                p.getSecondVertice().equals(this.getSecondVertice());
     }
 }

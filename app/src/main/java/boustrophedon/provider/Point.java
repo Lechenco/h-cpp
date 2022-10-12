@@ -1,12 +1,15 @@
 package boustrophedon.provider;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import boustrophedon.model.IPoint;
+import boustrophedon.utils.GA;
 
 public class Point implements IPoint {
-    double x = 0;
-    double y = 0;
+    double x;
+    double y;
 
     public Point(double x, double y) {
         this.x = x;
@@ -42,12 +45,10 @@ public class Point implements IPoint {
 
     @Override
     public double calcDistance(IPoint point) {
-        return  Math.sqrt(
-                Math.pow(this.getX() - point.getX(), 2) +
-                        Math.pow(this.getY() - point.getY(), 2)
-        );
+        return GA.calcDistance(this, point);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Point{" +
