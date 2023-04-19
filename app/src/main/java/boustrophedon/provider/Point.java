@@ -1,5 +1,7 @@
 package boustrophedon.provider;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -48,13 +50,11 @@ public class Point implements IPoint {
         return GA.calcDistance(this, point);
     }
 
+    @SuppressLint("DefaultLocale")
     @NonNull
     @Override
     public String toString() {
-        return "Point{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+        return String.format("Point{ x=%f, y=%f }", x, y);
     }
 
     @Override
