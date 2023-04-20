@@ -1,5 +1,7 @@
 package boustrophedon.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -10,4 +12,5 @@ public interface IPolyline {
     void add(IPoint point);
     void add(IPoint... points);
     void add(Collection<IPoint> points);
+    LatLng[] toLatLngArray();
 }
