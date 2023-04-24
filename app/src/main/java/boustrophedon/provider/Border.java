@@ -61,7 +61,11 @@ public class Border implements IBorder {
     }
 
     public double[] getCoefficients() {
-        return GA.getCoefficients(firstVertice, secondVertice);
+        try {
+            return GA.getCoefficients(firstVertice, secondVertice);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

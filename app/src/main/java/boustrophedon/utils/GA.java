@@ -30,18 +30,20 @@ public class GA {
         );
     }
 
-    public static double[] getCoefficients(IPoint p1, IPoint p2) {
+    public static double[] getCoefficients(IPoint p1, IPoint p2) throws Exception {
         return getCoefficients(p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 
-    public static double[] getCoefficients(double x1, double y1, double x2, double y2) {
+    public static double[] getCoefficients(double x1, double y1, double x2, double y2) throws Exception {
         double a = calcAngularCoefficient(x2 - x1, y2 - y1);
         double b = calcLinearCoefficient(a, x1, y1);
         return new double[]{a, b};
     }
 
-    public static double calcAngularCoefficient(double deltaX, double deltaY) {
-        return deltaX != 0 ? deltaY / deltaX : 0;
+    public static double calcAngularCoefficient(double deltaX, double deltaY) throws Exception {
+        if (deltaX == 0) throw new Exception("deltaX can't be equals to zero");
+
+        return deltaY / deltaX;
     }
 
     public static double calcLinearCoefficient(double a, double x, double y) {
