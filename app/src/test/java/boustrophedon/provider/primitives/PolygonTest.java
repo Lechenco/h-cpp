@@ -1,4 +1,4 @@
-package boustrophedon.provider;
+package boustrophedon.provider.primitives;
 
 import static org.junit.Assert.*;
 
@@ -12,8 +12,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import boustrophedon.model.IPoint;
-import boustrophedon.model.IPolygon;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.provider.primitives.Point;
+import boustrophedon.provider.primitives.Polygon;
 
 public class PolygonTest {
    @Test

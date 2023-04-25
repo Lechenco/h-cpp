@@ -7,12 +7,12 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 
 import boustrophedon.model.IBorder;
-import boustrophedon.model.IPoint;
-import boustrophedon.model.IPolygon;
-import boustrophedon.model.IPolyline;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.provider.Border;
-import boustrophedon.provider.Point;
-import boustrophedon.provider.Polyline;
+import boustrophedon.provider.primitives.Point;
+import boustrophedon.provider.primitives.Polyline;
 import boustrophedon.utils.GA;
 
 public class Boustrophedon {

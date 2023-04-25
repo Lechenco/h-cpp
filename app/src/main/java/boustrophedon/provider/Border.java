@@ -1,7 +1,7 @@
 package boustrophedon.provider;
 
 import boustrophedon.model.IBorder;
-import boustrophedon.model.IPoint;
+import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.utils.GA;
 
 public class Border implements IBorder {

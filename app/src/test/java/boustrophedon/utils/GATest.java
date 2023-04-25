@@ -1,10 +1,12 @@
 package boustrophedon.utils;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import boustrophedon.provider.Point;
+import boustrophedon.provider.primitives.Point;
 
 public class GATest {
     private static final double DOUBLE_DELTA = 0.00001;
@@ -84,5 +86,85 @@ public class GATest {
 
         assertEquals(1, GA.calcAngularCoefficient(1, 1), DOUBLE_DELTA);
         assertEquals(-1, GA.calcAngularCoefficient(-1, 1), DOUBLE_DELTA);
+    }
+    @Test
+    public void testCalcLinearCoefficient() {
+        assertEquals(0, GA.calcLinearCoefficient(0, 0, 0), DOUBLE_DELTA);
+        assertEquals(0, GA.calcLinearCoefficient(0, 1, 0), DOUBLE_DELTA);
+        assertEquals(-1, GA.calcLinearCoefficient(1, 1, 0), DOUBLE_DELTA);
+        assertEquals(1, GA.calcLinearCoefficient(1, 0, 1), DOUBLE_DELTA);
+    }
+    @Test
+    public void testGetCoefficients() throws Exception {
+        double[] coefficients = null;
+        assertThrows("deltaX can't be equals to zero", Exception.class, () -> GA.getCoefficients(0, 0, 0, 0));
+
+        coefficients = GA.getCoefficients(0,0,1,1);
+        assertEquals(1, coefficients[0], DOUBLE_DELTA);
+        assertEquals(0, coefficients[1], DOUBLE_DELTA);
+    }
+    @Test
+    public void testGetCoefficientsWithPoints() throws Exception {
+        double[] coefficients = null;
+        assertThrows("deltaX can't be equals to zero", Exception.class, () -> GA.getCoefficients(new Point(0,0),new Point(0,0)));
+
+        coefficients = GA.getCoefficients(new Point(0,0),new Point(1,1));
+        assertEquals(1, coefficients[0], DOUBLE_DELTA);
+        assertEquals(0, coefficients[1], DOUBLE_DELTA);
+    }
+    @Test
+    public void testCalcParallelLineCoefficients() {
+        double[] coefficients = null;
+
+        coefficients = GA.calcParallelLineCoefficients(0, 0,0);
+        assertEquals(0, coefficients[0], DOUBLE_DELTA);
+        assertEquals(0, coefficients[1], DOUBLE_DELTA);
+
+        coefficients = GA.calcParallelLineCoefficients(1, 0,5);
+        assertEquals(1, coefficients[0], DOUBLE_DELTA);
+        assertEquals(5, coefficients[1], DOUBLE_DELTA);
+
+        coefficients = GA.calcParallelLineCoefficients(0, 0,5);
+        assertEquals(0, coefficients[0], DOUBLE_DELTA);
+        assertEquals(5, coefficients[1], DOUBLE_DELTA);
+    }
+    @Test
+    public void testCalcParallelLineCoefficientsWithPoint() {
+        double[] coefficients = null;
+
+        coefficients = GA.calcParallelLineCoefficients(0, new Point(0,0));
+        assertEquals(0, coefficients[0], DOUBLE_DELTA);
+        assertEquals(0, coefficients[1], DOUBLE_DELTA);
+
+        coefficients = GA.calcParallelLineCoefficients(1, new Point(0,5));
+        assertEquals(1, coefficients[0], DOUBLE_DELTA);
+        assertEquals(5, coefficients[1], DOUBLE_DELTA);
+
+        coefficients = GA.calcParallelLineCoefficients(0, new Point(0,5));
+        assertEquals(0, coefficients[0], DOUBLE_DELTA);
+        assertEquals(5, coefficients[1], DOUBLE_DELTA);
+    }
+    @Test
+    public void testCalcAngle() {
+        assertEquals(0, GA.calcAngle(0, 0), DOUBLE_DELTA);
+        assertEquals(Math.PI / 4, GA.calcAngle(1, 1), DOUBLE_DELTA);
+        assertEquals(Math.PI / 2, GA.calcAngle(0, 1), DOUBLE_DELTA);
+        assertEquals(0, GA.calcAngle(1, 0), DOUBLE_DELTA);
+        assertEquals(3 * Math.PI / 4, GA.calcAngle(-1, 1), DOUBLE_DELTA);
+        assertEquals(-Math.PI / 4, GA.calcAngle(1, -1), DOUBLE_DELTA);
+        assertEquals(-Math.PI / 2, GA.calcAngle(0, -1), DOUBLE_DELTA);
+        assertEquals(Math.PI, GA.calcAngle(-1, 0), DOUBLE_DELTA);
+    }
+    @Test
+    public void testCalcAngleWithCoordinates() {
+        assertEquals(0, GA.calcAngle(0, 0, 0, 0), DOUBLE_DELTA);
+        assertEquals(Math.PI / 4, GA.calcAngle(0, 0, 1, 1), DOUBLE_DELTA);
+        assertEquals(Math.PI / 2, GA.calcAngle(0, 0, 0, 1), DOUBLE_DELTA);
+    }
+    @Test
+    public void testCalcAngleWithPoints() {
+        assertEquals(0, GA.calcAngle(new Point(0, 0), new Point(0, 0)), DOUBLE_DELTA);
+        assertEquals(Math.PI / 4, GA.calcAngle(new Point(0, 0), new Point(1, 1)), DOUBLE_DELTA);
+        assertEquals(Math.PI / 2, GA.calcAngle(new Point(0, 0), new Point(0, 1)), DOUBLE_DELTA);
     }
 }

@@ -1,4 +1,4 @@
-package boustrophedon.provider;
+package boustrophedon.provider.primitives;
 
 import com.github.javafaker.Faker;
 import com.google.android.gms.maps.model.LatLng;
@@ -9,8 +9,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import boustrophedon.model.IPoint;
-import boustrophedon.model.IPolyline;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolyline;
+import boustrophedon.provider.primitives.Point;
+import boustrophedon.provider.primitives.Polyline;
 
 public class PolylineTest {
     @Test

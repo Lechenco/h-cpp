@@ -1,4 +1,4 @@
-package boustrophedon.provider;
+package boustrophedon.provider.primitives;
 
 
 import com.github.javafaker.Faker;
@@ -7,7 +7,8 @@ import com.google.android.gms.maps.model.LatLng;
 import org.junit.Assert;
 import org.junit.Test;
 
-import boustrophedon.model.IPoint;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.provider.primitives.Point;
 
 public class PointTest {
     private static final double DOUBLE_DELTA = 0.00001;

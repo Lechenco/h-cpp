@@ -2,6 +2,9 @@ package boustrophedon.model;
 
 import java.util.ArrayList;
 
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
+
 public interface ICell {
     IPolygon getPolygon();
     ArrayList<IPoint> getPoints();

@@ -1,7 +1,5 @@
 package com.dji.gsdemo.gmapsteste.presentation.view.activity;
 
-import static java.security.AccessController.getContext;
-
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
@@ -14,21 +12,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.dji.gsdemo.gmapsteste.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.ArrayList;
-
 import boustrophedon.Boustrophedon;
-import boustrophedon.model.IPoint;
-import boustrophedon.provider.Point;
-import boustrophedon.provider.Polygon;
-import boustrophedon.provider.Polyline;
+import boustrophedon.provider.primitives.Point;
+import boustrophedon.provider.primitives.Polygon;
+import boustrophedon.provider.primitives.Polyline;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 

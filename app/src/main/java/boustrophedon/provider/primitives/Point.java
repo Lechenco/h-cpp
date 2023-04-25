@@ -1,4 +1,4 @@
-package boustrophedon.provider;
+package boustrophedon.provider.primitives;
 
 import android.annotation.SuppressLint;
 
@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import boustrophedon.model.IPoint;
+import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.utils.GA;
 
 public class Point implements IPoint {

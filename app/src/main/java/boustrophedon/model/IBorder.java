@@ -1,5 +1,7 @@
 package boustrophedon.model;
 
+import boustrophedon.domain.primitives.model.IPoint;
+
 public interface IBorder {
     IPoint getFirstVertice();
     IPoint getSecondVertice();

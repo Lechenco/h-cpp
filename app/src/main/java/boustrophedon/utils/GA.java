@@ -1,7 +1,7 @@
 package boustrophedon.utils;
 
 import boustrophedon.model.IBorder;
-import boustrophedon.model.IPoint;
+import boustrophedon.domain.primitives.model.IPoint;
 
 public class GA {
     public static double calcYPoint(double[] coefficients, double x) {
