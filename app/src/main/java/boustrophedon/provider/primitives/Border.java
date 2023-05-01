@@ -1,10 +1,13 @@
-package boustrophedon.provider;
+package boustrophedon.provider.primitives;
 
-import boustrophedon.model.IBorder;
+import androidx.annotation.NonNull;
+
+import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.utils.GA;
 
 public class Border implements IBorder {
+    private final double PRECISION = 0.000001;
     private final IPoint firstVertice;
     private final IPoint secondVertice;
 
@@ -41,26 +44,26 @@ public class Border implements IBorder {
 
     @Override
     public boolean isParallelToY() {
-        return firstVertice.getX() == secondVertice.getX();
+        return Math.abs(firstVertice.getX() - secondVertice.getX()) <= PRECISION;
     }
 
     @Override
-    public double[] parallelLineCoefficients(IPoint point) {
+    public double[] getParallelLineCoefficients(IPoint point) {
         double[] currentCoefficients = this.getCoefficients();
         return GA.calcParallelLineCoefficients(currentCoefficients[0], point);
     }
 
     @Override
-    public double angleDiff(double angle) {
+    public double getAngleDiff(double angle) {
         return angle - this.getPositiveAngle();
     }
 
     @Override
-    public double distanceToPoint(IPoint point) {
+    public double getDistanceToPoint(IPoint point) {
         return GA.calcDistance(this, point);
     }
 
-    public double[] getCoefficients() {
+    public double[] getCoefficients() throws RuntimeException {
         try {
             return GA.getCoefficients(firstVertice, secondVertice);
         } catch (Exception e) {
@@ -70,18 +73,21 @@ public class Border implements IBorder {
 
     @Override
     public boolean isOnBorder(IPoint point) {
-        double[] coefficients = getCoefficients();
-        if ( this.isParallelToY() || Math.abs(point.getX()*coefficients[0] + coefficients[1] - point.getY()) < 0.01) {
-            return (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
-                    firstVertice.getY() <= point.getY() && point.getY() <= secondVertice.getY()) ||
-                    (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
-                            secondVertice.getY() <= point.getY() && point.getY() <= firstVertice.getY()) ||
-                    (firstVertice.getX() >= point.getX() && point.getX() >= secondVertice.getX() &&
-                            firstVertice.getY() >= point.getY() && point.getY() >= secondVertice.getY()) ||
-                    (firstVertice.getX() >= point.getX() && point.getX() >= secondVertice.getX() &&
-                            secondVertice.getY() >= point.getY() && point.getY() >= firstVertice.getY());
+        if ( this.isParallelToY() || Math.abs(this.getDistanceToPoint(point)) < PRECISION) {
+            return this.isPointInsideLimitations(point);
         }
         return false;
+    }
+
+    private boolean isPointInsideLimitations(@NonNull IPoint point) {
+        return (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
+                firstVertice.getY() <= point.getY() && point.getY() <= secondVertice.getY()) ||
+                (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
+                        secondVertice.getY() <= point.getY() && point.getY() <= firstVertice.getY()) ||
+                (firstVertice.getX() >= point.getX() && point.getX() >= secondVertice.getX() &&
+                        firstVertice.getY() >= point.getY() && point.getY() >= secondVertice.getY()) ||
+                (firstVertice.getX() >= point.getX() && point.getX() >= secondVertice.getX() &&
+                        secondVertice.getY() >= point.getY() && point.getY() >= firstVertice.getY());
     }
 
     @Override

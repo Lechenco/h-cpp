@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
+import boustrophedon.provider.primitives.Border;
 import boustrophedon.provider.primitives.Point;
 
 public class GATest {
@@ -75,9 +76,23 @@ public class GATest {
         assertEquals(1, GA.calcDistance(new Point(1, 0), new Point(0,0)), DOUBLE_DELTA);
         assertEquals(Math.sqrt(2), GA.calcDistance(new Point(1, 1), new Point(0,0)), DOUBLE_DELTA);
     }
+    @Test
+    public void testCalcDistanceWithBorderAndPoint() {
+        Border border = new Border(new Point(0, 0), new Point(5, 5));
+        assertEquals(0, GA.calcDistance(border, new Point(0,0)), DOUBLE_DELTA);
+        assertEquals(0, GA.calcDistance(border, new Point(1,1)), DOUBLE_DELTA);
+        assertEquals(Math.sqrt(0.5), GA.calcDistance(border, new Point(2,1)), DOUBLE_DELTA);
+        assertEquals(Math.sqrt(0.5), GA.calcDistance(border, new Point(0,1)), DOUBLE_DELTA);
+        assertEquals(0, GA.calcDistance(border, new Point(-1,-1)), DOUBLE_DELTA);
+
+        Border border1 = new Border(new Point(0, 0), new Point(0, 5));
+        assertEquals(0, GA.calcDistance(border1, new Point(0,0)), DOUBLE_DELTA);
+        assertEquals(1, GA.calcDistance(border1, new Point(1,0)), DOUBLE_DELTA);
+        assertEquals(0, GA.calcDistance(border1, new Point(0,1)), DOUBLE_DELTA);
+    }
 
     @Test
-    public void testGetAngularCofficient() throws Exception {
+    public void testGetAngularCoefficient() throws Exception {
         assertThrows("deltaX can't be equals to zero", Exception.class, () -> GA.calcAngularCoefficient(0, 0));
         assertThrows("deltaX can't be equals to zero", Exception.class,() -> GA.calcAngularCoefficient(0, 5));
 

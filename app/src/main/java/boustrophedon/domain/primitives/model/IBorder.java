@@ -1,6 +1,4 @@
-package boustrophedon.model;
-
-import boustrophedon.domain.primitives.model.IPoint;
+package boustrophedon.domain.primitives.model;
 
 public interface IBorder {
     IPoint getFirstVertice();
@@ -11,7 +9,7 @@ public interface IBorder {
     double[] getCoefficients();
     boolean isOnBorder(IPoint point);
     boolean isParallelToY();
-    double[] parallelLineCoefficients(IPoint point);
-    double angleDiff(double angle);
-    double distanceToPoint(IPoint point);
+    double[] getParallelLineCoefficients(IPoint point);
+    double getAngleDiff(double angle);
+    double getDistanceToPoint(IPoint point);
 }
