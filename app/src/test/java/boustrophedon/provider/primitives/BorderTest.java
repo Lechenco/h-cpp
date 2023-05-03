@@ -114,6 +114,46 @@ public class BorderTest {
     }
 
     @Test
+    public void testGetAngleFirstHalfMethod() {
+        Faker faker = new Faker();
+        IPoint p1 = new Point(
+                faker.number().randomDouble(7, 0, 90),
+                faker.number().randomDouble(7, 0, 90)
+        );
+        IPoint p2 = new Point(
+                faker.number().randomDouble(7, 0, 90),
+                faker.number().randomDouble(7, 0, 90)
+        );
+        double mockAngle = 3 * Math.PI / 2;
+        try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
+            mockedStatic.when(() -> GA.calcAngle(p1, p2)).thenReturn(mockAngle);
+
+            Border border = new Border(p1, p2);
+            assertEquals( Math.PI / 2, border.getAngleFirstHalf(), DOUBLE_DELTA);
+        }
+    }
+
+    @Test
+    public void testGetAngleFirstHalfMethod180() {
+        Faker faker = new Faker();
+        IPoint p1 = new Point(
+                faker.number().randomDouble(7, 0, 90),
+                faker.number().randomDouble(7, 0, 90)
+        );
+        IPoint p2 = new Point(
+                faker.number().randomDouble(7, 0, 90),
+                faker.number().randomDouble(7, 0, 90)
+        );
+        double mockAngle = Math.PI;
+        try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
+            mockedStatic.when(() -> GA.calcAngle(p1, p2)).thenReturn(mockAngle);
+
+            Border border = new Border(p1, p2);
+            assertEquals( 0, border.getAngleFirstHalf(), DOUBLE_DELTA);
+        }
+    }
+
+    @Test
     public void testIsParallelToYMethodFalse() {
         Faker faker = new Faker();
 

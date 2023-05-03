@@ -41,6 +41,12 @@ public class Border implements IBorder {
         double angle = this.getAngle();
         return angle < 0 ? angle + Math.PI : angle;
     }
+    @Override
+    public double getAngleFirstHalf() {
+        double angle = this.getPositiveAngle();
+        return angle >= Math.PI ? angle - Math.PI : angle;
+    }
+
 
     @Override
     public boolean isParallelToY() {

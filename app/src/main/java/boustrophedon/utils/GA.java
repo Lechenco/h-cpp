@@ -78,4 +78,13 @@ public class GA {
     public static double calcAngle(double deltaX, double deltaY) {
         return Math.atan2(deltaY, deltaX);
     }
+
+    public static double getPositiveAngle(double angle) {
+        return angle < 0 ? angle + Math.PI : angle;
+    }
+
+    public static double getFirstHalfAngle(double angle) {
+        double anglePositive = getPositiveAngle(angle);
+        return anglePositive >= Math.PI ? anglePositive - Math.PI : anglePositive;
+    }
 }
