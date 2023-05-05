@@ -10,7 +10,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 import boustrophedon.domain.primitives.model.IBorder;
-import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.provider.primitives.Border;
 import boustrophedon.provider.primitives.Point;
