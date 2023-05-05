@@ -26,6 +26,8 @@ public class WalkerHelper {
     }
 
     static public IPoint calcIntersectionWithWallParallelToY(IPoint currentPoint, IBorder wall, IBorder refBorder) {
+        if (refBorder.isParallelToY())
+            return calcIntersectionWithRefParallelToY(currentPoint, wall);
         double intersectionX, intersectionY;
         double[] refBorderCoefficients = refBorder.getParallelLineCoefficients(currentPoint);
         intersectionX = wall.getFirstVertice().getX();
@@ -35,6 +37,9 @@ public class WalkerHelper {
     }
 
     static public IPoint calcIntersectionWithRefParallelToY(IPoint currentPoint, IBorder wall) {
+        if (wall.isParallelToY())
+            return new Point(wall.getFirstVertice().getX(), currentPoint.getY());
+
         double intersectionX, intersectionY;
         double[] wallCoefficients = wall.getCoefficients();
 
@@ -49,7 +54,7 @@ public class WalkerHelper {
         double[] refBorderCoefficients = refBorder.getParallelLineCoefficients(currentPoint);
         double[] wallCoefficients = wall.getCoefficients();
 
-        intersectionX = (wallCoefficients[0] - refBorderCoefficients[0]) == 0 ?
+        intersectionX = Math.abs(wall.getAngleFirstHalf() - refBorder.getAngleFirstHalf()) < WalkerConfig.ANGLE_PRECISION ?
                 currentPoint.getX() :
                 (refBorderCoefficients[1] - wallCoefficients[1]) /
                         (wallCoefficients[0] - refBorderCoefficients[0]);

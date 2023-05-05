@@ -182,4 +182,21 @@ public class GATest {
         assertEquals(Math.PI / 4, GA.calcAngle(new Point(0, 0), new Point(1, 1)), DOUBLE_DELTA);
         assertEquals(Math.PI / 2, GA.calcAngle(new Point(0, 0), new Point(0, 1)), DOUBLE_DELTA);
     }
+
+    @Test
+    public void testCGetPositiveAngle() {
+        assertEquals(0, GA.getPositiveAngle(0), DOUBLE_DELTA);
+        assertEquals(Math.PI, GA.getPositiveAngle(Math.PI), DOUBLE_DELTA);
+        assertEquals(Math.PI / 2, GA.getPositiveAngle(-Math.PI / 2), DOUBLE_DELTA);
+        assertEquals(3* Math.PI / 4, GA.getPositiveAngle(-Math.PI / 4), DOUBLE_DELTA);
+        assertEquals(0, GA.getPositiveAngle(-Math.PI), DOUBLE_DELTA);
+    }
+    @Test
+    public void testCGetFirstHalfAngle() {
+        assertEquals(0, GA.getFirstHalfAngle(0), DOUBLE_DELTA);
+        assertEquals(0, GA.getFirstHalfAngle(Math.PI), DOUBLE_DELTA);
+        assertEquals(Math.PI / 2, GA.getFirstHalfAngle(-Math.PI / 2), DOUBLE_DELTA);
+        assertEquals(3* Math.PI / 4, GA.getFirstHalfAngle(-Math.PI / 4), DOUBLE_DELTA);
+        assertEquals(0, GA.getFirstHalfAngle(-Math.PI), DOUBLE_DELTA);
+    }
 }
