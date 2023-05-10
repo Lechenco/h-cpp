@@ -33,6 +33,9 @@ public class Walker implements IWalker {
         if (this.walls == null)
             setUpWalls();
 
+        if (!WalkerHelper.isPointInsidePolygonBorders(currentPoint, this.polygonBorders))
+            return  null;
+
         for(IBorder wall : this.walls) {
             IPoint intersection = WalkerHelper.calcIntersectionToWall(currentPoint, wall, this.config.getDirection());
 

@@ -20,12 +20,12 @@ public class WalkerHelperTest {
     double NINETY_DEGREES = Math.PI / 2;
     double FORTY_FIVE_DEGREES = Math.PI / 4;
     Faker faker;
-    Polygon triangleRetangle;
+    Polygon triangleRectangle;
 
     @Before
     public void setUp() {
         this.faker = new Faker();
-        triangleRetangle = new Polygon(new Point(0, 0), new Point(5, 5), new Point(0, 5));
+        triangleRectangle = new Polygon(new Point(0, 0), new Point(5, 5), new Point(5, 0));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class WalkerHelperTest {
 
     @Test
     public void testFindWalls() {
-        ArrayList<IBorder> borders = WalkerHelper.getPolygonBorders(triangleRetangle);
+        ArrayList<IBorder> borders = WalkerHelper.getPolygonBorders(triangleRectangle);
 
         ArrayList<IBorder> walls = WalkerHelper.findWalls(borders, 0);
 
@@ -54,7 +54,7 @@ public class WalkerHelperTest {
 
     @Test
     public void testFindWalls90() {
-        ArrayList<IBorder> borders = WalkerHelper.getPolygonBorders(triangleRetangle);
+        ArrayList<IBorder> borders = WalkerHelper.getPolygonBorders(triangleRectangle);
 
         ArrayList<IBorder> walls = WalkerHelper.findWalls(borders, Math.PI / 2);
 
@@ -65,7 +65,7 @@ public class WalkerHelperTest {
 
     @Test
     public void testFindWalls180() {
-        ArrayList<IBorder> borders = WalkerHelper.getPolygonBorders(triangleRetangle);
+        ArrayList<IBorder> borders = WalkerHelper.getPolygonBorders(triangleRectangle);
 
         ArrayList<IBorder> walls = WalkerHelper.findWalls(borders, Math.PI);
 
@@ -194,5 +194,16 @@ public class WalkerHelperTest {
         assertEquals(5, WalkerHelper.calcIntersectionToWall(new Point(0, 0), wall, FORTY_FIVE_DEGREES).getY(),DOUBLE_DELTA );
         assertEquals(7, WalkerHelper.calcIntersectionToWall(new Point(1, 3), wall, FORTY_FIVE_DEGREES).getY(), DOUBLE_DELTA);
         assertEquals(1, WalkerHelper.calcIntersectionToWall(new Point(7, 3), wall, FORTY_FIVE_DEGREES).getY(), DOUBLE_DELTA);
+    }
+    @Test
+    public void testIsPointInsidePolygon() {
+        // vertice
+        assertTrue(WalkerHelper.isPointInsidePolygon(new Point(0,0), triangleRectangle));
+        // on Border
+        assertTrue(WalkerHelper.isPointInsidePolygon(new Point(3,0), triangleRectangle));
+        // inside
+        assertTrue(WalkerHelper.isPointInsidePolygon(new Point(2,1), triangleRectangle));
+        // outside
+        assertFalse(WalkerHelper.isPointInsidePolygon(new Point(-1,0), triangleRectangle));
     }
 }

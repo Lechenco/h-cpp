@@ -89,4 +89,24 @@ public class WalkerHelper {
         }
         return polygonBorders;
     }
+
+    static public boolean isPointInsidePolygon(IPoint point, IPolygon polygon) {
+        ArrayList<IBorder> polygonBorders = getPolygonBorders(polygon);
+
+        return  isPointInsidePolygonBorders(point, polygonBorders);
+    }
+    static public boolean isPointInsidePolygonBorders(IPoint point, ArrayList<IBorder> polygonBorders) {
+        int countIntersection = 0;
+
+        for(IBorder border : polygonBorders) {
+            if (border.isOnBorder(point)) return true;
+
+            IPoint intersection = calcIntersectionToWall(point, border, 0);
+
+            if (border.isOnBorder(intersection) && intersection.getX() > point.getX())
+                countIntersection++;
+        }
+
+        return countIntersection == 1;
+    }
 }

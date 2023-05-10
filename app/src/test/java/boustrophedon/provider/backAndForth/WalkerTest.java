@@ -5,18 +5,18 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import boustrophedon.domain.backAndForth.error.AngleOffLimitsException;
 import boustrophedon.domain.backAndForth.model.WalkerConfig;
-import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 
 public class WalkerTest {
     WalkerConfig config;
-    Polygon triangleRetangle;
+    Polygon triangleRectangle;
     @Before
     public void setUp() {
         config = new WalkerConfig();
-        triangleRetangle = new Polygon(new Point(0, 0), new Point(5, 5), new Point(0, 5));
+        triangleRectangle = new Polygon(new Point(0, 0), new Point(5, 5), new Point(5, 0));
     }
     @Test
     public void testConstructor() {
@@ -43,12 +43,33 @@ public class WalkerTest {
         assertEquals(config, walker.getConfig());
     }
     @Test
-    public void testWalkToTheOtherSideMethodWithTriangleRectangle() {
+    public void testWalkToTheOtherSideMethodWithTriangleRectangle0Degrees() {
         Walker walker = new Walker();
-        Point currentPoint = new Point(0, 0);
 
-        IPoint point = walker.walkToTheOtherSide(triangleRetangle, currentPoint);
+        assertEquals(new Point(5, 0), walker.walkToTheOtherSide(triangleRectangle, new Point(0, 0)));
+        assertEquals(new Point(1, 1), walker.walkToTheOtherSide(triangleRectangle, new Point(5, 1)));
+        assertNull(walker.walkToTheOtherSide(triangleRectangle, new Point(5, 5)));
+        // point outside triangle
+        assertNull(walker.walkToTheOtherSide(triangleRectangle, new Point(5, -1)));
+    }
+    @Test
+    public void testWalkToTheOtherSideMethodWithTriangleRectangle45Degrees() throws AngleOffLimitsException {
+        Walker walker = new Walker(new WalkerConfig(0.00009, Math.PI / 4));
 
-        assertEquals(new Point(0, 5), point);
+        assertEquals(new Point(5, 5), walker.walkToTheOtherSide(triangleRectangle, new Point(0, 0)));
+        assertEquals(new Point(4, 0), walker.walkToTheOtherSide(triangleRectangle, new Point(5, 1)));
+        assertNull(walker.walkToTheOtherSide(triangleRectangle, new Point(5, 0)));
+        // point outside triangle
+        assertNull(walker.walkToTheOtherSide(triangleRectangle, new Point(5, -1)));
+    }
+    @Test
+    public void testWalkToTheOtherSideMethodWithTriangleRectangle90Degrees() throws AngleOffLimitsException {
+        Walker walker = new Walker(new WalkerConfig(0.00009, Math.PI / 2));
+
+        assertNull(walker.walkToTheOtherSide(triangleRectangle, new Point(0, 0)));
+        assertEquals(new Point(5, 5), walker.walkToTheOtherSide(triangleRectangle, new Point(5, 1)));
+        assertEquals(new Point(2, 0), walker.walkToTheOtherSide(triangleRectangle, new Point(2, 2)));
+        // point outside triangle
+        assertNull(walker.walkToTheOtherSide(triangleRectangle, new Point(4, -1)));
     }
 }
