@@ -1,4 +1,4 @@
-package boustrophedon.provider;
+package boustrophedon.provider.primitives;
 
 import android.os.Build;
 
@@ -8,13 +8,10 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import boustrophedon.model.IBorder;
-import boustrophedon.model.IPoint;
-import boustrophedon.model.IPolygon;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
 
 public class Polygon implements IPolygon {
 

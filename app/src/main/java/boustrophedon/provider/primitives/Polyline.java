@@ -1,4 +1,4 @@
-package boustrophedon.provider;
+package boustrophedon.provider.primitives;
 
 import android.os.Build;
 
@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import boustrophedon.model.IPoint;
-import boustrophedon.model.IPolyline;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolyline;
 
 public class Polyline implements IPolyline {
 

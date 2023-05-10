@@ -6,13 +6,13 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 
-import boustrophedon.model.IBorder;
-import boustrophedon.model.IPoint;
-import boustrophedon.model.IPolygon;
-import boustrophedon.model.IPolyline;
-import boustrophedon.provider.Border;
-import boustrophedon.provider.Point;
-import boustrophedon.provider.Polyline;
+import boustrophedon.domain.primitives.model.IBorder;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.domain.primitives.model.IPolyline;
+import boustrophedon.provider.primitives.Border;
+import boustrophedon.provider.primitives.Point;
+import boustrophedon.provider.primitives.Polyline;
 import boustrophedon.utils.GA;
 
 public class Boustrophedon {
@@ -58,7 +58,7 @@ public class Boustrophedon {
     }
 
     private int calcNumberOfIterations() {
-        return (int) Math.floor(this.refBorder.distanceToPoint(this.endpoint) / LENGTH_OF_PATH);
+        return (int) Math.floor(this.refBorder.getDistanceToPoint(this.endpoint) / LENGTH_OF_PATH);
     }
 
     private IPoint walkToTheOtherSide(IPolyline polyline, IPoint currentPoint) {
@@ -120,7 +120,7 @@ public class Boustrophedon {
     private IPoint calcPointToFront(IPoint currentPoint) {
         for (IBorder border : this.polygonBorders) {
             if (!border.equals(refBorder) && border.isOnBorder(currentPoint)) {
-                double angleBetweenBorders = refBorder.angleDiff(border.getPositiveAngle());
+                double angleBetweenBorders = refBorder.getAngleDiff(border.getPositiveAngle());
                 double distanceToWalk = LENGTH_OF_PATH / Math.sin(angleBetweenBorders);
                 IPoint anticlockwisePoint = currentPoint.walk(distanceToWalk, border.getAngle());
                 IPoint clockwisePoint = currentPoint.walk(distanceToWalk, border.getAngle() + Math.PI);
@@ -148,7 +148,7 @@ public class Boustrophedon {
 
     private IPoint calcNextPointParallelToRef(IBorder border, IPoint currentPoint) {
         double intersectionX, intersectionY;
-        double[] parallelCoefficients = this.refBorder.parallelLineCoefficients(currentPoint);
+        double[] parallelCoefficients = this.refBorder.getParallelLineCoefficients(currentPoint);
         double[] borderCoefficients = border.getCoefficients();
 
         if (border.isParallelToY()) {
@@ -169,6 +169,6 @@ public class Boustrophedon {
     }
 
     private boolean isTheSameAngleOfRefBorder(IBorder border) {
-        return Math.abs(this.refBorder.angleDiff(border.getPositiveAngle())) <= ANGLE_PRECISION;
+        return Math.abs(this.refBorder.getAngleDiff(border.getPositiveAngle())) <= ANGLE_PRECISION;
     }
 }

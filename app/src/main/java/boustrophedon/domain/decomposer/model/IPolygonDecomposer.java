@@ -1,8 +1,11 @@
-package boustrophedon.model;
-import android.icu.text.Edits;
+package boustrophedon.domain.decomposer.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.model.ICell;
 
 public interface IPolygonDecomposer {
     void decompose(IPolygon polygon);

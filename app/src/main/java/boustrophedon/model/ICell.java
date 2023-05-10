@@ -1,15 +1,11 @@
 package boustrophedon.model;
 
-import com.google.android.gms.maps.model.Polygon;
-
 import java.util.ArrayList;
 
-public interface ICell {
-    IPolygon polygon = null;
-    ArrayList<IPoint> points = null;
-    ArrayList<ICell> neighbors = null;
-    boolean visited = false;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
 
+public interface ICell {
     IPolygon getPolygon();
     ArrayList<IPoint> getPoints();
     ArrayList<ICell> getNeighbors();

@@ -1,12 +1,10 @@
 package boustrophedon.provider;
 
-import com.google.android.gms.maps.model.Polygon;
-
 import java.util.ArrayList;
 
 import boustrophedon.model.ICell;
-import boustrophedon.model.IPoint;
-import boustrophedon.model.IPolygon;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
 
 public class Cell implements ICell {
     IPolygon polygon = null;

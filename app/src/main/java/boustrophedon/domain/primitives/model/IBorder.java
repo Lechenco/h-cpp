@@ -1,4 +1,4 @@
-package boustrophedon.model;
+package boustrophedon.domain.primitives.model;
 
 public interface IBorder {
     IPoint getFirstVertice();
@@ -8,8 +8,11 @@ public interface IBorder {
     double getPositiveAngle();
     double[] getCoefficients();
     boolean isOnBorder(IPoint point);
+
+    double getAngleFirstHalf();
+
     boolean isParallelToY();
-    double[] parallelLineCoefficients(IPoint point);
-    double angleDiff(double angle);
-    double distanceToPoint(IPoint point);
+    double[] getParallelLineCoefficients(IPoint point);
+    double getAngleDiff(double angle);
+    double getDistanceToPoint(IPoint point);
 }
