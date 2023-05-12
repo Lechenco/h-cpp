@@ -1,12 +1,12 @@
-package boustrophedon.provider.backAndForth;
+package boustrophedon.provider.walkers;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import boustrophedon.domain.backAndForth.error.AngleOffLimitsException;
-import boustrophedon.domain.backAndForth.model.WalkerConfig;
+import boustrophedon.domain.walkers.error.AngleOffLimitsException;
+import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 

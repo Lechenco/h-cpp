@@ -1,10 +1,10 @@
-package boustrophedon.domain.backAndForth.model;
+package boustrophedon.domain.walkers.model;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import boustrophedon.domain.backAndForth.error.AngleOffLimitsException;
+import boustrophedon.domain.walkers.error.AngleOffLimitsException;
 
 public class WalkerConfigTest {
     @Test

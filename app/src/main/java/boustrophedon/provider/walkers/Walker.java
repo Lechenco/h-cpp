@@ -1,9 +1,9 @@
-package boustrophedon.provider.backAndForth;
+package boustrophedon.provider.walkers;
 
 import java.util.ArrayList;
 
-import boustrophedon.domain.backAndForth.model.IWalker;
-import boustrophedon.domain.backAndForth.model.WalkerConfig;
+import boustrophedon.domain.walkers.model.IWalker;
+import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
@@ -16,7 +16,7 @@ public class Walker implements IWalker {
     private IPolygon polygon;
     private ArrayList<IBorder> polygonBorders;
     private ArrayList<IBorder> walls;
-
+    private IBorder currentWall;
 
     public Walker() {
         this.setConfig(new WalkerConfig());
@@ -28,18 +28,18 @@ public class Walker implements IWalker {
         path = new Polyline();
     }
 
-    @Override
-    public IPoint walkToTheOtherSide(IPoint currentPoint) {
+    protected IPoint walkToTheOtherSide(IPoint currentPoint) {
         if (this.walls == null)
             setUpWalls();
 
         if (!WalkerHelper.isPointInsidePolygonBorders(currentPoint, this.polygonBorders))
-            return  null;
+            return null;
 
-        for(IBorder wall : this.walls) {
+        for (IBorder wall : this.walls) {
             IPoint intersection = WalkerHelper.calcIntersectionToWall(currentPoint, wall, this.config.getDirection());
 
-            if (wall.isOnBorder(intersection) && !intersection.equals(currentPoint) ) {
+            if (wall.isOnBorder(intersection) && !intersection.equals(currentPoint)) {
+                this.currentWall = wall;
                 return intersection;
             }
         }
@@ -47,8 +47,7 @@ public class Walker implements IWalker {
         return null;
     }
 
-    @Override
-    public IPoint walkToTheOtherSide(IPolygon polygon, IPoint currentPoint) {
+    protected IPoint walkToTheOtherSide(IPolygon polygon, IPoint currentPoint) {
         this.polygon = polygon;
         this.polygonBorders = null;
         this.walls = null;
@@ -57,14 +56,17 @@ public class Walker implements IWalker {
         return this.walkToTheOtherSide(currentPoint);
     }
 
-    @Override
-    public IPoint walkToFront(IPoint currentPoint) {
+    protected IPoint walkToFront(IPoint currentPoint) {
         return this.walkToFront(this.polygon, currentPoint);
     }
 
-    @Override
-    public IPoint walkToFront(IPolygon polygon, IPoint currentPoint) {
-        return null;
+    protected IPoint walkToFront(IPolygon polygon, IPoint currentPoint) {
+        double angleBetweenBorders = this.config.getDirection() - this.currentWall.getPositiveAngle();
+        double distanceToWalk = config.getDistanceBetweenPaths()/ Math.sin(angleBetweenBorders);
+        IPoint anticlockwisePoint = currentPoint.walk(distanceToWalk, this.currentWall.getAngle());
+        IPoint clockwisePoint = currentPoint.walk(distanceToWalk, this.currentWall.getAngle() + Math.PI);
+
+        return clockwisePoint;
     }
 
     @Override

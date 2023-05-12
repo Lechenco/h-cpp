@@ -1,4 +1,4 @@
-package boustrophedon.provider.backAndForth;
+package boustrophedon.provider.walkers;
 
 import static org.junit.Assert.*;
 
@@ -49,7 +49,7 @@ public class WalkerHelperTest {
 
         assertEquals(2, walls.size());
         assertEquals(borders.get(0), walls.get(0));
-        assertEquals(borders.get(2), walls.get(1));
+        assertEquals(borders.get(1), walls.get(1));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class WalkerHelperTest {
 
         assertEquals(2, walls.size());
         assertEquals(borders.get(0), walls.get(0));
-        assertEquals(borders.get(1), walls.get(1));
+        assertEquals(borders.get(2), walls.get(1));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class WalkerHelperTest {
 
         assertEquals(2, walls.size());
         assertEquals(borders.get(0), walls.get(0));
-        assertEquals(borders.get(2), walls.get(1));
+        assertEquals(borders.get(1), walls.get(1));
     }
 
     @Test

@@ -1,8 +1,8 @@
-package boustrophedon.provider.backAndForth;
+package boustrophedon.provider.walkers;
 
 import java.util.ArrayList;
 
-import boustrophedon.domain.backAndForth.model.WalkerConfig;
+import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
@@ -11,7 +11,7 @@ import boustrophedon.provider.primitives.Point;
 import boustrophedon.utils.GA;
 
 public class WalkerHelper {
-    static public IPoint calcIntersectionToWall(IPoint currentPoint, IBorder wall, double angle) {
+    static protected IPoint calcIntersectionToWall(IPoint currentPoint, IBorder wall, double angle) {
         if (wall.isOnBorder(currentPoint)) return currentPoint;
 
         IBorder refBorder = new Border(new Point(0, 0), new Point(Math.cos(angle), Math.sin(angle)));
@@ -25,7 +25,7 @@ public class WalkerHelper {
         }
     }
 
-    static public IPoint calcIntersectionWithWallParallelToY(IPoint currentPoint, IBorder wall, IBorder refBorder) {
+    static protected IPoint calcIntersectionWithWallParallelToY(IPoint currentPoint, IBorder wall, IBorder refBorder) {
         if (refBorder.isParallelToY())
             return calcIntersectionWithRefParallelToY(currentPoint, wall);
         double intersectionX, intersectionY;
@@ -36,7 +36,7 @@ public class WalkerHelper {
         return new Point(intersectionX, intersectionY);
     }
 
-    static public IPoint calcIntersectionWithRefParallelToY(IPoint currentPoint, IBorder wall) {
+    static protected IPoint calcIntersectionWithRefParallelToY(IPoint currentPoint, IBorder wall) {
         if (wall.isParallelToY())
             return new Point(wall.getFirstVertice().getX(), currentPoint.getY());
 
@@ -49,7 +49,7 @@ public class WalkerHelper {
         return new Point(intersectionX, intersectionY);
     }
 
-    static public IPoint calcIntersection(IPoint currentPoint, IBorder refBorder, IBorder wall) {
+    static protected IPoint calcIntersection(IPoint currentPoint, IBorder refBorder, IBorder wall) {
         double intersectionX, intersectionY;
         double[] refBorderCoefficients = refBorder.getParallelLineCoefficients(currentPoint);
         double[] wallCoefficients = wall.getCoefficients();
@@ -63,7 +63,7 @@ public class WalkerHelper {
         return new Point(intersectionX, intersectionY);
     }
 
-    static public ArrayList<IBorder> findWalls(ArrayList<IBorder> borders, double angle) {
+    static protected ArrayList<IBorder> findWalls(ArrayList<IBorder> borders, double angle) {
         ArrayList<IBorder> walls = new ArrayList<>();
 
         double angleSanitized = GA.getFirstHalfAngle(angle);
@@ -75,7 +75,7 @@ public class WalkerHelper {
         return walls;
     }
 
-    static public ArrayList<IBorder> getPolygonBorders(IPolygon polygon) {
+    static protected ArrayList<IBorder> getPolygonBorders(IPolygon polygon) {
         ArrayList<IBorder> polygonBorders = new ArrayList<>();
 
         for (int i = 0; i < polygon.getPoints().size(); i++) {
@@ -90,12 +90,12 @@ public class WalkerHelper {
         return polygonBorders;
     }
 
-    static public boolean isPointInsidePolygon(IPoint point, IPolygon polygon) {
+    static protected boolean isPointInsidePolygon(IPoint point, IPolygon polygon) {
         ArrayList<IBorder> polygonBorders = getPolygonBorders(polygon);
 
         return  isPointInsidePolygonBorders(point, polygonBorders);
     }
-    static public boolean isPointInsidePolygonBorders(IPoint point, ArrayList<IBorder> polygonBorders) {
+    static protected boolean isPointInsidePolygonBorders(IPoint point, ArrayList<IBorder> polygonBorders) {
         int countIntersection = 0;
 
         for(IBorder border : polygonBorders) {

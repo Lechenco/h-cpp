@@ -1,6 +1,6 @@
-package boustrophedon.domain.backAndForth.model;
+package boustrophedon.domain.walkers.model;
 
-import boustrophedon.domain.backAndForth.error.AngleOffLimitsException;
+import boustrophedon.domain.walkers.error.AngleOffLimitsException;
 
 public class WalkerConfig {
     public static double ANGLE_PRECISION = Math.PI / 180;

@@ -1,4 +1,4 @@
-package boustrophedon.domain.backAndForth.error;
+package boustrophedon.domain.walkers.error;
 
 public class AngleOffLimitsException extends Exception{
     public AngleOffLimitsException() {
