@@ -81,4 +81,13 @@ public class PolygonTest {
         Assert.assertEquals(points.get(0).getX(), latLngs[0].latitude, 0);
         Assert.assertEquals(points.get(0).getY(), latLngs[0].longitude, 0);
     }
+    @Test
+    public void testGetOutsiderPointInDirection() {
+        IPolygon triangleRectangle = new Polygon(new Point(0, 0), new Point(5, 5), new Point(5, 0));
+        Assert.assertEquals(new Point(0, 0),
+                triangleRectangle.getOutsiderPointInDirection(new Point(0, 0), Math.PI /2));
+        Assert.assertEquals(new Point(5, 5),
+                triangleRectangle.getOutsiderPointInDirection(new Point(0, 0), Math.PI /4));
+    }
+
 }

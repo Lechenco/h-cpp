@@ -16,8 +16,9 @@ public class Walker implements IWalker {
     private IPolygon polygon;
     private ArrayList<IBorder> polygonBorders;
     private ArrayList<IBorder> walls;
-    private IBorder currentWall;
-
+    protected IBorder currentWall;
+    protected IPoint goal;
+    protected double directionStartToGoal;
     public Walker() {
         this.setConfig(new WalkerConfig());
         path = new Polyline();
@@ -56,17 +57,43 @@ public class Walker implements IWalker {
         return this.walkToTheOtherSide(currentPoint);
     }
 
-    protected IPoint walkToFront(IPoint currentPoint) {
-        return this.walkToFront(this.polygon, currentPoint);
+    protected IPoint walkAside(IPoint currentPoint) {
+        double angleBetweenBorders = Math.abs(this.config.getDirection() - this.currentWall.getPositiveAngle());
+        double distanceToWalk = Math.abs(config.getDistanceBetweenPaths() / Math.sin(angleBetweenBorders));
+
+        double currentWallAngle = this.currentWall.getAngle();
+
+        if (Math.abs(Math.abs(currentWallAngle - this.directionStartToGoal) - Math.PI / 2) < 0.001) {
+            if (Math.abs(Math.cos(this.directionStartToGoal) - Math.cos(currentWallAngle)) >
+                    Math.abs(Math.cos(this.directionStartToGoal) - Math.cos(currentWallAngle + Math.PI))
+            )
+                return currentPoint.walk(distanceToWalk, currentWallAngle);
+
+            return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+        }
+
+        if (Math.abs(Math.cos(currentWallAngle)) < 0.001 ||
+                (Math.abs(Math.cos(this.directionStartToGoal)) < 0.001)
+        ) {
+            if (Math.abs(Math.sin(this.directionStartToGoal) - Math.sin(currentWallAngle)) <
+                    Math.abs(Math.sin(this.directionStartToGoal) - Math.sin(currentWallAngle + Math.PI)))
+                return currentPoint.walk(distanceToWalk, currentWallAngle);
+
+            return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+        }
+
+        else if (Math.abs(Math.cos(this.directionStartToGoal) - Math.cos(currentWallAngle)) <
+                Math.abs(Math.cos(this.directionStartToGoal) - Math.cos(currentWallAngle + Math.PI))
+        )
+            return currentPoint.walk(distanceToWalk, currentWallAngle);
+
+        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
     }
 
-    protected IPoint walkToFront(IPolygon polygon, IPoint currentPoint) {
-        double angleBetweenBorders = this.config.getDirection() - this.currentWall.getPositiveAngle();
-        double distanceToWalk = config.getDistanceBetweenPaths()/ Math.sin(angleBetweenBorders);
-        IPoint anticlockwisePoint = currentPoint.walk(distanceToWalk, this.currentWall.getAngle());
-        IPoint clockwisePoint = currentPoint.walk(distanceToWalk, this.currentWall.getAngle() + Math.PI);
-
-        return clockwisePoint;
+    protected IPoint walkAside(IPolygon polygon, IPoint currentPoint) {
+        this.polygon = polygon;
+//        this.goal = polygon.getOutsiderPointInDirection(currentPoint, this.config.getDirection() + Math.PI /2);
+        return this.walkAside(currentPoint);
     }
 
     @Override

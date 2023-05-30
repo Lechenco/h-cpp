@@ -8,40 +8,58 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
+import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.helpers.primitives.BorderHelper;
 
 public class Polygon implements IPolygon {
 
     public int numberOfPoints = 0;
     public ArrayList<IPoint> points = null;
+    public ArrayList<IBorder> borders = null;
 
     public Polygon(IPoint... points) throws NullPointerException {
-        try {
-            ArrayList<IPoint> p = new ArrayList<>(Arrays.asList(points));
-            setPoints(p);
-        } catch (NullPointerException error) {
-            throw error;
-        }
+        ArrayList<IPoint> p = new ArrayList<>(Arrays.asList(points));
+        setPoints(p);
     }
 
     public Polygon(ArrayList<IPoint> points) throws NullPointerException {
-        try {
-            setPoints(points);
-        } catch (NullPointerException error) {
-            throw error;
-        }
+        setPoints(points);
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public LatLng[] toLatLngArray() {
         return points.stream()
-                .map(point -> point.toLatLng())
-                .collect(Collectors.toList())
-                .toArray(new LatLng[0]);
+                .map(IPoint::toLatLng).toArray(LatLng[]::new);
+    }
+
+    @Override
+    public IPoint getOutsiderPointInDirection(IPoint startPoint, double direction) {
+        IPoint outsiderPoint = null;
+        for (IBorder border : borders) {
+            IPoint intersection = BorderHelper.calcIntersectionToWall(startPoint, border, direction);
+
+            if (outsiderPoint == null ||
+                    (startPoint.calcDistance(intersection) > startPoint.calcDistance(outsiderPoint) &&
+                            Math.abs(border.getAngleDiff(direction)) > 0.001
+                    )
+            )
+                outsiderPoint = intersection;
+
+        }
+        return outsiderPoint;
+    }
+
+    @Override
+    public IPoint getClosestPoint(IPoint point) {
+        IPoint closestPoint = null;
+        for (IBorder border : borders) {
+
+        }
+        return closestPoint;
     }
 
     @Override
@@ -61,5 +79,21 @@ public class Polygon implements IPolygon {
 
         this.points = points;
         this.numberOfPoints = this.points.size();
+        this.borders = getBorders();
+    }
+
+    private ArrayList<IBorder> getBorders() {
+        ArrayList<IBorder> polygonBorders = new ArrayList<>();
+
+        for (int i = 0; i < this.getPoints().size(); i++) {
+            IBorder border = i != this.getNumberOfPoints() - 1
+                    ? new Border(this.getPoints().get(i), this.getPoints().get(i + 1))
+                    : new Border(
+                    this.getPoints().get(this.getNumberOfPoints() - 1),
+                    this.getPoints().get(0)
+            );
+            polygonBorders.add((border));
+        }
+        return polygonBorders;
     }
 }

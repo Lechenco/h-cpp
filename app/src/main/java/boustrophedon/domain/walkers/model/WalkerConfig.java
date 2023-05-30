@@ -4,12 +4,13 @@ import boustrophedon.domain.walkers.error.AngleOffLimitsException;
 
 public class WalkerConfig {
     public static double ANGLE_PRECISION = Math.PI / 180;
+    public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.00009; // ~10 meters
     private double distanceBetweenPaths;
 
     private double direction = 0;
 
     public WalkerConfig() {
-        this.distanceBetweenPaths = 0.00009; // 10 meters
+        this.distanceBetweenPaths =DEFAULT_DISTANCE_BETWEEN_PATHS;
     }
 
     public WalkerConfig(double distanceBetweenPaths) {
