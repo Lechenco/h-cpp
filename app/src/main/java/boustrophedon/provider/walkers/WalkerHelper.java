@@ -51,4 +51,43 @@ public class WalkerHelper {
 
         return countIntersection == 1;
     }
+
+    static protected IPoint walkAside(
+            IPoint currentPoint,
+            double distanceToWalk,
+            double currentWallAngle,
+            double absDiffCosGoalAndWall,
+            double absDiffCosGoalAndWall180
+    ) {
+        if (absDiffCosGoalAndWall < absDiffCosGoalAndWall180)
+            return currentPoint.walk(distanceToWalk, currentWallAngle);
+
+        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+    }
+
+    static protected IPoint walkAsideWallAndGoalOrthogonal(
+            IPoint currentPoint,
+            double distanceToWalk,
+            double currentWallAngle,
+            double absDiffCosGoalAndWall,
+            double absDiffCosGoalAndWall180
+    ) {
+        if (absDiffCosGoalAndWall > absDiffCosGoalAndWall180)
+            return currentPoint.walk(distanceToWalk, currentWallAngle);
+
+        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+    }
+
+    static protected IPoint walkAsideWallOrGoalParallelToXAxis(
+            IPoint currentPoint,
+            double distanceToWalk,
+            double currentWallAngle,
+            double sinStartToGoal
+    ) {
+        if (Math.abs(sinStartToGoal - Math.sin(currentWallAngle)) <
+                Math.abs(sinStartToGoal - Math.sin(currentWallAngle + Math.PI)))
+            return currentPoint.walk(distanceToWalk, currentWallAngle);
+
+        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+    }
 }

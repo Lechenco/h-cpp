@@ -60,34 +60,27 @@ public class Walker implements IWalker {
     protected IPoint walkAside(IPoint currentPoint) {
         double angleBetweenBorders = Math.abs(this.config.getDirection() - this.currentWall.getPositiveAngle());
         double distanceToWalk = Math.abs(config.getDistanceBetweenPaths() / Math.sin(angleBetweenBorders));
-
         double currentWallAngle = this.currentWall.getAngle();
+        double cosStartToGoal = Math.cos(this.directionStartToGoal);
+        double absDiffCosGoalAndWall = Math.abs(cosStartToGoal - Math.cos(currentWallAngle));
+        double absDiffCosGoalAndWall180 = Math.abs(cosStartToGoal - Math.cos(currentWallAngle + Math.PI));
 
         if (Math.abs(Math.abs(currentWallAngle - this.directionStartToGoal) - Math.PI / 2) < 0.001) {
-            if (Math.abs(Math.cos(this.directionStartToGoal) - Math.cos(currentWallAngle)) >
-                    Math.abs(Math.cos(this.directionStartToGoal) - Math.cos(currentWallAngle + Math.PI))
-            )
-                return currentPoint.walk(distanceToWalk, currentWallAngle);
-
-            return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+            return WalkerHelper.walkAsideWallAndGoalOrthogonal(
+             currentPoint, distanceToWalk, currentWallAngle, absDiffCosGoalAndWall, absDiffCosGoalAndWall180
+            );
         }
 
-        if (Math.abs(Math.cos(currentWallAngle)) < 0.001 ||
-                (Math.abs(Math.cos(this.directionStartToGoal)) < 0.001)
-        ) {
-            if (Math.abs(Math.sin(this.directionStartToGoal) - Math.sin(currentWallAngle)) <
-                    Math.abs(Math.sin(this.directionStartToGoal) - Math.sin(currentWallAngle + Math.PI)))
-                return currentPoint.walk(distanceToWalk, currentWallAngle);
-
-            return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+        if (Math.abs(Math.cos(currentWallAngle)) < 0.001 || (Math.abs(cosStartToGoal) < 0.001)) {
+            double sinStartToGoal = Math.sin(this.directionStartToGoal);
+            return WalkerHelper.walkAsideWallOrGoalParallelToXAxis(
+                    currentPoint, distanceToWalk, currentWallAngle, sinStartToGoal
+            );
         }
 
-        else if (Math.abs(Math.cos(this.directionStartToGoal) - Math.cos(currentWallAngle)) <
-                Math.abs(Math.cos(this.directionStartToGoal) - Math.cos(currentWallAngle + Math.PI))
-        )
-            return currentPoint.walk(distanceToWalk, currentWallAngle);
-
-        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+        return WalkerHelper.walkAside(
+                currentPoint, distanceToWalk, currentWallAngle, absDiffCosGoalAndWall, absDiffCosGoalAndWall180
+        );
     }
 
     protected IPoint walkAside(IPolygon polygon, IPoint currentPoint) {
