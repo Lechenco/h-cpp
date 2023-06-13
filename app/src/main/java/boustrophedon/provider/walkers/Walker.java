@@ -85,7 +85,6 @@ public class Walker implements IWalker {
 
     protected IPoint walkAside(IPolygon polygon, IPoint currentPoint) {
         this.polygon = polygon;
-//        this.goal = polygon.getOutsiderPointInDirection(currentPoint, this.config.getDirection() + Math.PI /2);
         return this.walkAside(currentPoint);
     }
 

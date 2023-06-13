@@ -10,5 +10,7 @@ public interface IPolygon {
     void setPoints(ArrayList<IPoint> points);
     LatLng[] toLatLngArray();
     IPoint getOutsiderPointInDirection(IPoint startPoint, double direction);
-    IPoint getClosestPoint(IPoint point);
+    IPoint getClosestVertices(IPoint point);
+    IPoint getFarthestVertices(IPoint point);
+    IPoint getFarthestVertices(IPoint point, double direction);
 }

@@ -109,7 +109,7 @@ public class GATest {
     }
     @Test
     public void testGetCoefficients() throws Exception {
-        double[] coefficients = null;
+        double[] coefficients;
         assertThrows("deltaX can't be equals to zero", Exception.class, () -> GA.getCoefficients(0, 0, 0, 0));
 
         coefficients = GA.getCoefficients(0,0,1,1);
@@ -118,7 +118,7 @@ public class GATest {
     }
     @Test
     public void testGetCoefficientsWithPoints() throws Exception {
-        double[] coefficients = null;
+        double[] coefficients;
         assertThrows("deltaX can't be equals to zero", Exception.class, () -> GA.getCoefficients(new Point(0,0),new Point(0,0)));
 
         coefficients = GA.getCoefficients(new Point(0,0),new Point(1,1));
@@ -127,7 +127,7 @@ public class GATest {
     }
     @Test
     public void testCalcParallelLineCoefficients() {
-        double[] coefficients = null;
+        double[] coefficients;
 
         coefficients = GA.calcParallelLineCoefficients(0, 0,0);
         assertEquals(0, coefficients[0], DOUBLE_DELTA);
@@ -143,7 +143,7 @@ public class GATest {
     }
     @Test
     public void testCalcParallelLineCoefficientsWithPoint() {
-        double[] coefficients = null;
+        double[] coefficients;
 
         coefficients = GA.calcParallelLineCoefficients(0, new Point(0,0));
         assertEquals(0, coefficients[0], DOUBLE_DELTA);
@@ -196,5 +196,19 @@ public class GATest {
         assertEquals(Math.PI / 2, GA.getFirstHalfAngle(-Math.PI / 2), DOUBLE_DELTA);
         assertEquals(3* Math.PI / 4, GA.getFirstHalfAngle(-Math.PI / 4), DOUBLE_DELTA);
         assertEquals(0, GA.getFirstHalfAngle(-Math.PI), DOUBLE_DELTA);
+    }
+    @Test
+    public void testCalcDistanceWithAngle() {
+        assertEquals(0, GA.calcDistanceWithDirection(0,0,0,0, 0), DOUBLE_DELTA);
+        assertEquals(0, GA.calcDistanceWithDirection(0,0,0,1, 0), DOUBLE_DELTA);
+        assertEquals(1, GA.calcDistanceWithDirection(0,0,0,1, Math.PI /2), DOUBLE_DELTA);
+        assertEquals(-1, GA.calcDistanceWithDirection(0,0,0,1, -Math.PI /2), DOUBLE_DELTA);
+    }
+    @Test
+    public void testCalcDistanceWithAnglePoint() {
+        assertEquals(0, GA.calcDistanceWithDirection(new Point(0,0), new Point(0,0), 0), DOUBLE_DELTA);
+        assertEquals(0, GA.calcDistanceWithDirection(new Point(0,0), new Point(0,1), 0), DOUBLE_DELTA);
+        assertEquals(1, GA.calcDistanceWithDirection(new Point(0,0), new Point(0,1),Math.PI /2), DOUBLE_DELTA);
+        assertEquals(-1, GA.calcDistanceWithDirection(new Point(0,0), new Point(0,1),-Math.PI /2), DOUBLE_DELTA);
     }
 }

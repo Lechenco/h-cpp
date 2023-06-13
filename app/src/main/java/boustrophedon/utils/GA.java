@@ -36,6 +36,16 @@ public class GA {
         );
     }
 
+    public static double calcDistanceWithDirection(IPoint p1, IPoint p2, double direction) {
+        return calcDistanceWithDirection(p1.getX(), p1.getY(),
+                p2.getX(), p2.getY(), direction);
+    }
+    public static double calcDistanceWithDirection(double x1, double y1, double x2, double y2, double direction) {
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
+        return deltaX * Math.cos(direction) + deltaY * Math.sin(direction);
+    }
+
     public static double[] getCoefficients(IPoint p1, IPoint p2) throws Exception {
         return getCoefficients(p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }

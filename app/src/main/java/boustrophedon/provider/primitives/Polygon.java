@@ -13,6 +13,7 @@ import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
+import boustrophedon.utils.GA;
 
 public class Polygon implements IPolygon {
 
@@ -52,14 +53,46 @@ public class Polygon implements IPolygon {
         }
         return outsiderPoint;
     }
+    @Override
+    public IPoint getClosestVertices(IPoint point) {
+        IPoint closest = this.points.get(0);
+
+        for (int i = 1; i < this.numberOfPoints; i++) {
+            IPoint p = this.points.get(i);
+            if (point.calcDistance(p) < point.calcDistance(closest))
+                closest = p;
+        }
+
+        return closest;
+    }
 
     @Override
-    public IPoint getClosestPoint(IPoint point) {
-        IPoint closestPoint = null;
-        for (IBorder border : borders) {
+    public IPoint getFarthestVertices(IPoint point) {
+        IPoint farthest = this.points.get(0);
 
+        for (int i = 1; i < this.numberOfPoints; i++) {
+            IPoint p = this.points.get(i);
+            if (point.calcDistance(p) > point.calcDistance(farthest))
+                farthest = p;
         }
-        return closestPoint;
+
+        return farthest;
+    }
+
+    @Override
+    public IPoint getFarthestVertices(IPoint point, double direction) {
+        IPoint farthest = this.points.get(0);
+
+        for (int i = 1; i < this.numberOfPoints; i++) {
+            IPoint p = this.points.get(i);
+            if (
+                    GA.calcDistanceWithDirection(point, p, direction)
+                            > GA.calcDistanceWithDirection(point, farthest, direction)
+            )
+                farthest = p;
+        }
+
+        return farthest;
     }
 
     @Override
