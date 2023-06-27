@@ -9,13 +9,14 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.provider.primitives.Polyline;
+import boustrophedon.utils.GA;
 
 public class Walker implements IWalker {
     private WalkerConfig config;
     private IPolyline path;
-    private IPolygon polygon;
-    private ArrayList<IBorder> polygonBorders;
-    private ArrayList<IBorder> walls;
+    protected IPolygon polygon;
+    protected ArrayList<IBorder> polygonBorders;
+    protected ArrayList<IBorder> walls;
     protected IBorder currentWall;
     protected IPoint goal;
     protected double directionStartToGoal;
@@ -65,22 +66,27 @@ public class Walker implements IWalker {
         double absDiffCosGoalAndWall = Math.abs(cosStartToGoal - Math.cos(currentWallAngle));
         double absDiffCosGoalAndWall180 = Math.abs(cosStartToGoal - Math.cos(currentWallAngle + Math.PI));
 
+        IPoint nextPoint;
+
         if (Math.abs(Math.abs(currentWallAngle - this.directionStartToGoal) - Math.PI / 2) < 0.001) {
-            return WalkerHelper.walkAsideWallAndGoalOrthogonal(
+            nextPoint = WalkerHelper.walkAsideWallAndGoalOrthogonal(
              currentPoint, distanceToWalk, currentWallAngle, absDiffCosGoalAndWall, absDiffCosGoalAndWall180
             );
         }
 
-        if (Math.abs(Math.cos(currentWallAngle)) < 0.001 || (Math.abs(cosStartToGoal) < 0.001)) {
+        else if (Math.abs(Math.cos(currentWallAngle)) < 0.001 || (Math.abs(cosStartToGoal) < 0.001)) {
             double sinStartToGoal = Math.sin(this.directionStartToGoal);
-            return WalkerHelper.walkAsideWallOrGoalParallelToXAxis(
+            nextPoint = WalkerHelper.walkAsideWallOrGoalParallelToXAxis(
                     currentPoint, distanceToWalk, currentWallAngle, sinStartToGoal
+            );
+        } else {
+            nextPoint = WalkerHelper.walkAside(
+                    currentPoint, distanceToWalk, currentWallAngle, absDiffCosGoalAndWall, absDiffCosGoalAndWall180
             );
         }
 
-        return WalkerHelper.walkAside(
-                currentPoint, distanceToWalk, currentWallAngle, absDiffCosGoalAndWall, absDiffCosGoalAndWall180
-        );
+
+        return nextPoint;
     }
 
     protected IPoint walkAside(IPolygon polygon, IPoint currentPoint) {
@@ -102,9 +108,58 @@ public class Walker implements IWalker {
         return config;
     }
 
+    protected IPoint calcStartPoint(IPoint currentPoint) {
+        return this.polygon.getClosestVertices(currentPoint);
+    }
+
+    protected IPoint calcGoal(IPoint startPoint) {
+        IPoint goalClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() - Math.PI / 2);
+        IPoint goalAntiClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() + Math.PI / 2);
+        this.goal =
+                startPoint.calcDistance(goalClockWise) > startPoint.calcDistance(goalAntiClockWise)
+                    ? goalClockWise : goalAntiClockWise;
+        this.directionStartToGoal = GA.calcAngle(startPoint, this.goal);
+        return this.goal;
+    }
+
+    public void setPolygon(IPolygon polygon) {
+        this.polygon = polygon;
+        this.populatePolygonBorders();
+        this.setUpWalls();
+    }
+
     @Override
     public void setConfig(WalkerConfig config) {
         this.config = config;
+    }
+
+    @Override
+    public IPolyline generatePath(IPoint initialPoint) {
+        IPoint currentPoint = this.calcStartPoint(initialPoint);
+
+        this.calcGoal(currentPoint);
+        this.path = new Polyline();
+
+        long numberOfIterations =
+                Math.round(Math.abs(GA.calcDistanceWithDirection(currentPoint, this.goal,this.config.getDirection() + Math.PI / 2)
+                / this.config.getDistanceBetweenPaths())) +1;
+
+        while(numberOfIterations-- != 0) {
+            if (currentPoint == null ||
+                    (this.path.getNumberOfPoints() > 0 && currentPoint == this.path.getLastPoint())
+            )
+                break;
+
+            this.path.add(currentPoint);
+            currentPoint = this.walkToTheOtherSide(currentPoint);
+            if (currentPoint == null || currentPoint == this.path.getLastPoint())
+                break;
+
+            this.path.add(currentPoint);
+            currentPoint = this.walkAside(currentPoint);
+        }
+
+        return this.path;
     }
 
     public IPolyline getPath() {

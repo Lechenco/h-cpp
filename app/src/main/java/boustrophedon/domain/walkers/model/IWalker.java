@@ -6,6 +6,7 @@ import boustrophedon.domain.primitives.model.IPolyline;
 
 public interface IWalker {
     void setConfig(WalkerConfig config);
+    IPolyline generatePath(IPoint initialPoint);
     IPolyline generatePath(IPolygon polygon);
     IPolyline generatePath(IPolygon polygon, IPoint initialPoint);
 }

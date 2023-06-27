@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.walkers.error.AngleOffLimitsException;
 import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.provider.primitives.Point;
@@ -220,5 +219,78 @@ public class WalkerTest {
         walker.currentWall = triangle.borders.get(1); // parallel to y
         assertEquals(new Point(-5, - distanceAngled), walker.walkAside(triangle, new Point(-5, 0)));
         assertEquals(new Point(-5, -3 - distanceAngled), walker.walkAside(triangle, new Point(-5, -3)));
+    }
+    @Test
+    public void testSetPolygon() {
+        Polygon triangle = new Polygon(new Point(0, 0), new Point(-5, -5), new Point(-5, 0));
+        Walker walker = new Walker();
+
+        walker.setPolygon(triangle);
+
+        assertEquals(triangle, walker.polygon);
+        assertEquals(triangle.borders.size(), walker.polygonBorders.size());
+    }
+
+    @Test
+    public void testCalcStartpoint() {
+        Polygon triangle = new Polygon(new Point(0, 0), new Point(-5, -5), new Point(-5, 0));
+        Walker walker = new Walker();
+
+        walker.setPolygon(triangle);
+
+        assertEquals(new Point(0, 0), walker.calcStartPoint(new Point(-1, -1)));
+    }
+
+    @Test
+    public void testCalcGoal() throws AngleOffLimitsException {
+        Polygon triangle = new Polygon(new Point(0, 0), new Point(-5, -5), new Point(-5, 0));
+        Walker walker = new Walker(new WalkerConfig(0.00009, 0));
+
+        walker.setPolygon(triangle);
+
+        walker.calcGoal(new Point(0, 0));
+        assertEquals(new Point(-5, -5), walker.goal);
+        assertEquals(-3 * Math.PI / 4, walker.directionStartToGoal, 0.00001);
+
+        walker.calcGoal(new Point(-5, -5));
+        assertEquals(new Point(0, 0), walker.goal);
+        assertEquals(Math.PI / 4, walker.directionStartToGoal, 0.00001);
+    }
+
+    @Test
+    public void testGeneratePath() throws AngleOffLimitsException {
+        Polygon triangle = new Polygon(new Point(0, 0), new Point(-5, -5), new Point(-5, 0));
+        Walker walker = new Walker(new WalkerConfig(1, 0));
+
+        walker.setPolygon(triangle);
+        walker.generatePath(new Point(0, 0));
+
+        assertEquals(11, walker.getPath().getNumberOfPoints());
+    }
+    @Test
+    public void testGeneratePathSquare() throws AngleOffLimitsException {
+        Polygon square = new Polygon(new Point(0, 0),
+                new Point(5, 0),
+                new Point(5, 5), new Point(0, 5)
+        );
+        Walker walker = new Walker(new WalkerConfig(1, 0));
+
+        walker.setPolygon(square);
+        walker.generatePath(new Point(0, 0));
+
+        assertEquals(12, walker.getPath().getNumberOfPoints());
+    }
+    @Test
+    public void testGeneratePathSquare2() throws AngleOffLimitsException {
+        Polygon square = new Polygon(new Point(0, 0),
+                new Point(2, 2),
+                new Point(0, 4), new Point(-2, 2)
+        );
+        Walker walker = new Walker(new WalkerConfig(1, Math.PI / 4));
+
+        walker.setPolygon(square);
+        walker.generatePath(new Point(0, 0));
+
+        assertEquals(7, walker.getPath().getNumberOfPoints());
     }
 }
