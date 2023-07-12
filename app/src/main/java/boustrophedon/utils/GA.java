@@ -4,6 +4,7 @@ import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 
 public class GA {
+    public static double PRECISION = 0.00001;
     public static double calcYPoint(double[] coefficients, double x) {
         return calcYPoint(coefficients[0], coefficients[1], x);
     }
@@ -95,6 +96,10 @@ public class GA {
 
     public static double getFirstHalfAngle(double angle) {
         double anglePositive = getPositiveAngle(angle);
-        return anglePositive >= Math.PI ? anglePositive - Math.PI : anglePositive;
+        return Math.abs(anglePositive - Math.PI) >= PRECISION ? anglePositive - Math.PI : anglePositive;
+    }
+
+    public static boolean checkAngles(double angle1, double angle2) {
+        return Math.abs(getFirstHalfAngle(angle1) - getFirstHalfAngle(angle2)) <= PRECISION;
     }
 }

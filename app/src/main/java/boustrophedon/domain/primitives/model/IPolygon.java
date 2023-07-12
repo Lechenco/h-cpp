@@ -13,4 +13,5 @@ public interface IPolygon {
     IPoint getClosestVertices(IPoint point);
     IPoint getFarthestVertices(IPoint point);
     IPoint getFarthestVertices(IPoint point, double direction);
+    ArrayList<IBorder> getBorders();
 }

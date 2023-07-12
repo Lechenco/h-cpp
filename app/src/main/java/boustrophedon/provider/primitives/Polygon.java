@@ -112,10 +112,10 @@ public class Polygon implements IPolygon {
 
         this.points = points;
         this.numberOfPoints = this.points.size();
-        this.borders = getBorders();
+        this.borders = populateBorders();
     }
 
-    private ArrayList<IBorder> getBorders() {
+    private ArrayList<IBorder> populateBorders() {
         ArrayList<IBorder> polygonBorders = new ArrayList<>();
 
         for (int i = 0; i < this.getPoints().size(); i++) {
@@ -128,5 +128,9 @@ public class Polygon implements IPolygon {
             polygonBorders.add((border));
         }
         return polygonBorders;
+    }
+
+    public ArrayList<IBorder> getBorders() {
+        return this.borders;
     }
 }

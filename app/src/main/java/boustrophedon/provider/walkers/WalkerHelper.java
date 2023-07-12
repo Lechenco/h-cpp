@@ -33,7 +33,7 @@ public class WalkerHelper {
     }
 
     static protected boolean isPointInsidePolygon(IPoint point, IPolygon polygon) {
-        ArrayList<IBorder> polygonBorders = getPolygonBorders(polygon);
+        ArrayList<IBorder> polygonBorders = polygon.getBorders();
 
         return  isPointInsidePolygonBorders(point, polygonBorders);
     }
