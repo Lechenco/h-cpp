@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
@@ -18,20 +19,36 @@ public class CriticalPoint {
     private Events event = Events.UNKNOWN;
     private ArrayList<IBorder> edges;
 
-    private ArrayList<IPoint> intersectionsInY;
+    private boolean split = false;
 
-    public ArrayList<IPoint> getIntersectionsInY() {
-        return intersectionsInY;
+    private ArrayList<IPoint> intersectionsInNormal;
+
+    public ArrayList<IPoint> getIntersectionsInNormal() {
+        return intersectionsInNormal;
     }
 
-    public void setIntersectionsInY(ArrayList<IPoint> intersectionsInY) {
-        this.intersectionsInY = intersectionsInY;
+    public boolean isSplit() {
+        return split;
     }
 
-    public void setIntersectionsInY(IPoint... intersectionsInY) {
+    public void setSplit(boolean split) {
+        this.split = split;
+    }
+
+    public void setIntersectionsInNormalPoints(ArrayList<IPoint> intersectionsInY) {
+        this.intersectionsInNormal = intersectionsInY;
+    }
+
+    public void setIntersectionsInNormalPoints(IPoint... intersectionsInY) {
         ArrayList<IPoint> i = new ArrayList<>(Arrays.asList(intersectionsInY));
-        setIntersectionsInY(i);
+        setIntersectionsInNormalPoints(i);
     }
+
+    public CriticalPoint(IPoint vertices) {
+        this.vertices = vertices;
+        this.event = Events.NONE;
+    }
+
 
     public CriticalPoint(IPoint vertices, ArrayList<IBorder> edges) {
         this.edges = edges;
@@ -72,7 +89,7 @@ public class CriticalPoint {
             this.setEvent( this.isInEvent() ? Events.IN : Events.OUT);
         }
 
-        this.setIntersectionsInY(intersectionNormalPoints);
+        this.setIntersectionsInNormalPoints(intersectionNormalPoints);
 
         return this;
     }
@@ -117,5 +134,13 @@ public class CriticalPoint {
             }
         }
         return intersectionPoints;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public ArrayList<CriticalPoint> getCpFromIntersections() {
+        return (ArrayList<CriticalPoint>) this.intersectionsInNormal
+                .stream()
+                .map(CriticalPoint::new)
+                .collect(Collectors.toList());
     }
 }

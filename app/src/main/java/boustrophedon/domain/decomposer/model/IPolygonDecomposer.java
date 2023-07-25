@@ -1,14 +1,14 @@
 package boustrophedon.domain.decomposer.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
-import boustrophedon.domain.walkers.model.WalkerConfig;
-import boustrophedon.model.ICell;
+import boustrophedon.provider.graph.MatrixAdjacency;
+import boustrophedon.provider.graph.Node;
 
 public interface IPolygonDecomposer {
     void setConfig(DecomposerConfig config);
-    void decompose(IPolygon polygon);
+    ArrayList<ICell> decompose(IPolygon polygon);
+    MatrixAdjacency<Node<ICell>> getMatrixAdjacency();
+    ArrayList<ICell> getCells();
 }
