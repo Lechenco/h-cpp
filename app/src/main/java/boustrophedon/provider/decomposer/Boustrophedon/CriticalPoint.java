@@ -6,24 +6,25 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
+import boustrophedon.provider.primitives.Border;
 import boustrophedon.utils.GA;
 
 public class CriticalPoint {
-    private IPoint vertices;
+    private final IPoint vertices;
     private Events event = Events.UNKNOWN;
-    private ArrayList<IBorder> edges;
+    private final ArrayList<IBorder> edges;
 
     private boolean split = false;
 
-    private ArrayList<IPoint> intersectionsInNormal;
+    private final ArrayList<CriticalPoint> intersectionsInNormal;
 
-    public ArrayList<IPoint> getIntersectionsInNormal() {
+    public ArrayList<CriticalPoint> getIntersectionsInNormal() {
         return intersectionsInNormal;
     }
 
@@ -35,24 +36,18 @@ public class CriticalPoint {
         this.split = split;
     }
 
-    public void setIntersectionsInNormalPoints(ArrayList<IPoint> intersectionsInY) {
-        this.intersectionsInNormal = intersectionsInY;
+    protected void addIntersectionsInNormalPoints(IBorder border, IPoint intersectionPoint) {
+        ArrayList<IBorder> borders = new ArrayList<>(Arrays
+                .asList(new Border(intersectionPoint, border.getFirstVertice()),
+                        new Border(intersectionPoint, border.getSecondVertice()))
+        );
+        this.intersectionsInNormal.add(new CriticalPoint(intersectionPoint, borders));
     }
-
-    public void setIntersectionsInNormalPoints(IPoint... intersectionsInY) {
-        ArrayList<IPoint> i = new ArrayList<>(Arrays.asList(intersectionsInY));
-        setIntersectionsInNormalPoints(i);
-    }
-
-    public CriticalPoint(IPoint vertices) {
-        this.vertices = vertices;
-        this.event = Events.NONE;
-    }
-
 
     public CriticalPoint(IPoint vertices, ArrayList<IBorder> edges) {
         this.edges = edges;
         this.vertices = vertices;
+        this.intersectionsInNormal = new ArrayList<>();
     }
 
     public void setEvent(Events event) {
@@ -71,8 +66,18 @@ public class CriticalPoint {
         return edges;
     }
 
+    public ArrayList<IPoint> getEdgesPoints() {
+        ArrayList<IPoint> points = new ArrayList<>();
+
+        for (IBorder b : this.edges) {
+            points.add(this.getEdgeFarEnd(b));
+        }
+
+        return points;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public CriticalPoint detectPointEvent(IPolygon polygon) {
+    public void detectPointEvent(IPolygon polygon) {
         double normalAngle = Math.PI / 2; // TODO: calc angle dynamically
         ArrayList<IPoint> intersectionNormalPoints = this.calcIntersectionsInAngle(polygon, normalAngle);
         ArrayList<IPoint> intersectionTangentPoints = this.calcIntersectionsInAngle(polygon, normalAngle + Math.PI / 2);
@@ -82,19 +87,30 @@ public class CriticalPoint {
 
         if (isAConvexPoint(countOfIntersectionsTangent, countOfIntersectionsNormal)) {
             this.setEvent(Events.NONE);
-            return this;
-        } else if (intersectionNormalPoints.size() == 1) {
+            return;
+        }
+
+        this.validateEventWithIntersections(intersectionNormalPoints);
+        this.populateIntersectionNormalPoints(intersectionNormalPoints, polygon);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void populateIntersectionNormalPoints(ArrayList<IPoint> intersectionNormalPoints, IPolygon polygon) {
+        intersectionNormalPoints.forEach(p -> {
+            Optional<IBorder> border = polygon.getBorders().stream().filter(b -> b.isOnBorder(p)).findFirst();
+            border.ifPresent(iBorder -> addIntersectionsInNormalPoints(iBorder, p));
+        });
+    }
+
+    private void validateEventWithIntersections(ArrayList<IPoint> intersectionNormalPoints) {
+        if (intersectionNormalPoints.size() == 1) {
             this.setEvent(Events.MIDDLE);
         } else {
             this.setEvent( this.isInEvent() ? Events.IN : Events.OUT);
         }
-
-        this.setIntersectionsInNormalPoints(intersectionNormalPoints);
-
-        return this;
     }
 
-    private boolean isAConvexPoint(int countOfIntersectionsTangent, int countOfIntersectionsNormal) {
+    protected boolean isAConvexPoint(int countOfIntersectionsTangent, int countOfIntersectionsNormal) {
         return (countOfIntersectionsTangent <= 1 && countOfIntersectionsNormal <= 1) ||
                 (countOfIntersectionsTangent > 1 && countOfIntersectionsTangent % 2 == 1) ||
                 (countOfIntersectionsNormal > 1 && countOfIntersectionsNormal % 2 == 1);
@@ -110,7 +126,7 @@ public class CriticalPoint {
     }
 
     private IPoint getEdgeFarEnd(IBorder edge) {
-        return edge.getFirstVertice() == this.vertices ? edge.getSecondVertice() : edge.getFirstVertice();
+        return edge.getFirstVertice().equals(this.vertices) ? edge.getSecondVertice() : edge.getFirstVertice();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -134,13 +150,5 @@ public class CriticalPoint {
             }
         }
         return intersectionPoints;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public ArrayList<CriticalPoint> getCpFromIntersections() {
-        return (ArrayList<CriticalPoint>) this.intersectionsInNormal
-                .stream()
-                .map(CriticalPoint::new)
-                .collect(Collectors.toList());
     }
 }
