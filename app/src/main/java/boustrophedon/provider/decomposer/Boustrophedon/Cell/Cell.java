@@ -1,4 +1,4 @@
-package boustrophedon.provider.decomposer.Boustrophedon;
+package boustrophedon.provider.decomposer.Boustrophedon.Cell;
 
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IPolygon;
@@ -6,7 +6,7 @@ import boustrophedon.domain.primitives.model.IPolygon;
 public class Cell implements ICell {
     private boolean visited = false;
 
-    private IPolygon polygon;
+    private final IPolygon polygon;
 
     public Cell(IPolygon polygon) {
         this.polygon = polygon;

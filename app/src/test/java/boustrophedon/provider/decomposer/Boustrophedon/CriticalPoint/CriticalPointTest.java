@@ -1,7 +1,8 @@
-package boustrophedon.provider.decomposer.Boustrophedon;
+package boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint;
 
 import static org.junit.Assert.*;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.provider.decomposer.Boustrophedon.Events;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 
@@ -47,7 +49,7 @@ public class CriticalPointTest {
 
         criticalPoint.detectPointEvent(squareRectangle);
 
-        assertEquals(Events.NONE, criticalPoint.getEvent());
+        Assert.assertEquals(Events.NONE, criticalPoint.getEvent());
     }
 
     @Test

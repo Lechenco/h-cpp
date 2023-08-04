@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
+import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 

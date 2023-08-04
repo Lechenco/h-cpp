@@ -1,4 +1,4 @@
-package boustrophedon.provider.decomposer.Boustrophedon;
+package boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint;
 
 import android.os.Build;
 
@@ -8,14 +8,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
+import boustrophedon.provider.decomposer.Boustrophedon.Events;
 import boustrophedon.provider.primitives.Border;
 import boustrophedon.utils.GA;
 
-public class CriticalPoint {
+public class CriticalPoint implements ICriticalPoint {
     private final IPoint vertices;
     private Events event = Events.UNKNOWN;
     private final ArrayList<IBorder> edges;

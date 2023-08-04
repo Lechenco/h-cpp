@@ -5,7 +5,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,9 +22,11 @@ import boustrophedon.domain.decomposer.model.IPolygonDecomposer;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
+import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
+import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPointerHelper;
 import boustrophedon.provider.graph.MatrixAdjacency;
 import boustrophedon.provider.graph.Node;
-import boustrophedon.provider.primitives.Polygon;
 
 public class Decomposer implements IPolygonDecomposer {
     private DecomposerConfig config;
@@ -69,11 +70,7 @@ public class Decomposer implements IPolygonDecomposer {
         }
 
         addIntersections();
-        ArrayList<CriticalPoint> sortedCP = criticalPoints
-                .stream()
-                .sorted(Comparator.comparingDouble(criticalPoint -> criticalPoint.getVertices().getX()))
-                .collect(Collectors.toCollection(ArrayList::new));
-
+        ArrayList<CriticalPoint> sortedCP = CriticalPointerHelper.sort(this.criticalPoints);
         this.splitCells(sortedCP);
 
         return null;
@@ -128,7 +125,7 @@ public class Decomposer implements IPolygonDecomposer {
             }
         }
 
-        ICell cell = createCell(criticalPoints);
+        ICell cell = CellHelper.createCell(criticalPoints);
         this.addCellToMatrix(cell);
     }
 
@@ -159,7 +156,7 @@ public class Decomposer implements IPolygonDecomposer {
 
                 previousCell.add(current);
             }
-            ICell cell = createCell(CriticalPointerHelper.unsorted(previousCell, this.criticalPoints));
+            ICell cell = CellHelper.createCell(CriticalPointerHelper.unsorted(previousCell, this.criticalPoints));
             this.addCellToMatrix(cell);
         }
 
@@ -176,7 +173,7 @@ public class Decomposer implements IPolygonDecomposer {
         ArrayList<CriticalPoint> middleCellCP = CriticalPointerHelper.filter(sortedPoints, beforeY);
         ArrayList<CriticalPoint> criticalPoints = CriticalPointerHelper.unsorted(middleCellCP, this.criticalPoints);
 
-        ICell cell = createCell(criticalPoints);
+        ICell cell = CellHelper.createCell(criticalPoints);
         this.addCellToMatrix(cell);
 
         ArrayList<CriticalPoint> remainingCP = CriticalPointerHelper.unsorted(
@@ -198,34 +195,15 @@ public class Decomposer implements IPolygonDecomposer {
 
         ArrayList<CriticalPoint> criticalPoints = CriticalPointerHelper.unsorted(middleCellCP, this.criticalPoints);
 
-        ICell cell = createCell(criticalPoints);
+        ICell cell = CellHelper.createCell(criticalPoints);
         this.addCellToMatrix(cell);
 
         ArrayList<CriticalPoint> remainingCP = CriticalPointerHelper.filter(sortedPoints, afterY);
         return remainingCP;
     }
 
-    private ICell createCell(ArrayList<CriticalPoint> sortedPoints) {
-        ArrayList<IPoint> polygonPoints = new ArrayList<>();
-
-        for (CriticalPoint cp : this.criticalPoints) {
-            if (sortedPoints.contains(cp)) {
-                polygonPoints.add(cp.getVertices());
-            }
-        }
-
-        return new Cell(new Polygon(polygonPoints));
-    }
-
-    private void swapStacks() {
-        this.sourceStack = this.destinationStack;
-        this.destinationStack = new Stack<>();
-    }
-
     private void addCellToMatrix(ICell cell) {
-        Node<ICell> node = new Node<>(cell);
-        int index = this.matrixAdjacency.addNode(node);
-        node.setIndex(index);
+        DecomposerHelper.addCellToMatrix(cell, this.matrixAdjacency);
     }
 
     private void addEventToCount(Events event) {
@@ -257,20 +235,5 @@ public class Decomposer implements IPolygonDecomposer {
         }
 
         return criticalPoints;
-    }
-
-    public Stack<Integer> copyStack(Stack<Integer> source) {
-        Stack<Integer> destination =  new Stack<>();
-        Stack<Integer> temp =  new Stack<>();
-
-        while(!source.empty()) { temp.add(source.pop()); }
-
-        while(!temp.empty()) {
-            Integer value = temp.pop();
-            source.add(value);
-            destination.add(value);
-        }
-
-        return destination;
     }
 }
