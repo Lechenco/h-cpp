@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
+import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.decomposer.model.ISplitter;
@@ -29,7 +30,7 @@ public abstract class Splitter implements ISplitter {
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void split(ICriticalPoint splitPoint) {
+    public void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
         this.cells = new ArrayList<>();
         this.matrixAdjacency = new MatrixAdjacency<>();
 
@@ -40,7 +41,7 @@ public abstract class Splitter implements ISplitter {
         this.populateCells(cellPoints, (CriticalPoint) splitPoint);
     }
 
-    abstract void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint);
+    abstract void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint) throws ExceedNumberOfAttempts;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     protected ArrayList<CriticalPoint> calcCellPoints(CriticalPoint splitPoint) {
