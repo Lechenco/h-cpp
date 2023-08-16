@@ -127,7 +127,7 @@ public class CriticalPoint implements ICriticalPoint {
         return pointX <= firstEdgePointX && pointX <= secondEdgePointX;
     }
 
-    private IPoint getEdgeFarEnd(IBorder edge) {
+    public IPoint getEdgeFarEnd(IBorder edge) {
         return edge.getFirstVertice().equals(this.vertices) ? edge.getSecondVertice() : edge.getFirstVertice();
     }
 

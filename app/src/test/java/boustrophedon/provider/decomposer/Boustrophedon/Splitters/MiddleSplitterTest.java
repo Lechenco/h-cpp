@@ -2,105 +2,94 @@ package boustrophedon.provider.decomposer.Boustrophedon.Splitters;
 
 import static org.junit.Assert.*;
 
-import com.github.javafaker.Faker;
-
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import boustrophedon.domain.primitives.model.IBorder;
+import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
-import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPointerHelper;
-import boustrophedon.provider.decomposer.Boustrophedon.Events;
 import boustrophedon.provider.primitives.Point;
+import boustrophedon.provider.primitives.Polygon;
 
 public class MiddleSplitterTest {
-    ArrayList<IBorder> borders = new ArrayList<>();
-    @Test
-    public void testGetCriticalPointsBeforeIndex() {
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
-            new CriticalPoint(new Point(0, 0), borders),
-            new CriticalPoint(new Point(1, 1), borders),
-            new CriticalPoint(new Point(1, 0), borders),
-            new CriticalPoint(new Point(2, 0), borders),
-            new CriticalPoint(new Point(2, 1), borders),
-            new CriticalPoint(new Point(0, 1), borders)
-        ));
-
-        ArrayList<CriticalPoint> sortedCps = CriticalPointerHelper.sort(cps);
-
-        MiddleSplitter middleSplitter = new MiddleSplitter(cps);
-
-        assertEquals(2, middleSplitter.getCriticalPointsBeforeIndex(sortedCps, 0).size());
-        assertEquals(2, middleSplitter.getCriticalPointsBeforeIndex(sortedCps, 1).size());
-        assertEquals(4, middleSplitter.getCriticalPointsBeforeIndex(sortedCps, 2).size());
-        assertEquals(6, middleSplitter.getCriticalPointsBeforeIndex(sortedCps, 4).size());
+    Polygon triangleRectangle;
+    @Before
+    public void setUp() {
+        triangleRectangle = new Polygon(new Point(0, 0),
+                new Point(5, 5), new Point(5, 0));
     }
 
     @Test
-    public void testGetRemainingPoints() {
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
-                new CriticalPoint(new Point(0, 0), borders),
-                new CriticalPoint(new Point(1, 1), borders),
-                new CriticalPoint(new Point(1, 0), borders),
-                new CriticalPoint(new Point(2, 0), borders),
-                new CriticalPoint(new Point(2, 1), borders),
-                new CriticalPoint(new Point(0, 1), borders)
-        ));
+    public void testPopulateCellsCallCreateCells() {
+        try (MockedStatic<CellHelper> mockedStatic = Mockito.mockStatic(CellHelper.class)) {
 
-        ArrayList<CriticalPoint> sortedCps = CriticalPointerHelper.sort(cps);
+            ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+                    new CriticalPoint(triangleRectangle.getPoints().get(0), new ArrayList<>(Arrays.asList(
+                            triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(2)
+                    ))),
+                    new CriticalPoint(triangleRectangle.getPoints().get(1), new ArrayList<>(Arrays.asList(
+                            triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(1)
+                    ))),
+                    new CriticalPoint(triangleRectangle.getPoints().get(2), new ArrayList<>(Arrays.asList(
+                            triangleRectangle.getBorders().get(1), triangleRectangle.getBorders().get(2)
+                    )))
+            ));
+            MiddleSplitter splitter = new MiddleSplitter(cps);
+            splitter.cells = new ArrayList<>();
+            splitter.populateCells(cps, cps.get(0));
 
-        MiddleSplitter middleSplitter = new MiddleSplitter(cps);
+            mockedStatic.verify(
+                    () -> CellHelper.createCell(Mockito.any()),
+                    Mockito.times(1)
+            );
 
-        assertEquals(6, middleSplitter.getRemainingPoints(sortedCps, 0).size());
-        assertEquals(6, middleSplitter.getRemainingPoints(sortedCps, 1).size());
-        assertEquals(4, middleSplitter.getRemainingPoints(sortedCps, 2).size());
-        assertEquals(2, middleSplitter.getRemainingPoints(sortedCps, 4).size());
+            assertEquals(1, splitter.cells.size());
+        }
     }
     @Test
-    public void testGetRemainingPointsReturnNull() {
-        ArrayList<CriticalPoint> cps = new ArrayList<>();
+    public void testPopulateCells() {
 
-
-        MiddleSplitter middleSplitter = new MiddleSplitter(cps);
-
-        assertNull(middleSplitter.getRemainingPoints(cps, MiddleSplitter.INDEX_NOT_FOUNDED));
-    }
-
-    @Test
-    public void testLookForMiddleIndex() {
-        Faker faker = new Faker();
         ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
-                new CriticalPoint(new Point(0, 0), borders),
-                new CriticalPoint(new Point(1, 1), borders),
-                new CriticalPoint(new Point(1, 0), borders),
-                new CriticalPoint(new Point(2, 0), borders),
-                new CriticalPoint(new Point(2, 1), borders),
-                new CriticalPoint(new Point(0, 1), borders)
+                new CriticalPoint(triangleRectangle.getPoints().get(0), new ArrayList<>(Arrays.asList(
+                        triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(2)
+                ))),
+                new CriticalPoint(triangleRectangle.getPoints().get(1), new ArrayList<>(Arrays.asList(
+                        triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(1)
+                ))),
+                new CriticalPoint(triangleRectangle.getPoints().get(2), new ArrayList<>(Arrays.asList(
+                        triangleRectangle.getBorders().get(1), triangleRectangle.getBorders().get(2)
+                )))
         ));
+        MiddleSplitter splitter = new MiddleSplitter(cps);
+        splitter.cells = new ArrayList<>();
+        splitter.populateCells(cps, cps.get(0));
 
-        ArrayList<CriticalPoint> sortedCps = CriticalPointerHelper.sort(cps);
-        int indexMiddle = faker.number().numberBetween(0, sortedCps.size());
-        sortedCps.get(indexMiddle).setEvent(Events.MIDDLE);
-
-        MiddleSplitter middleSplitter = new MiddleSplitter(cps);
-        assertEquals(indexMiddle, middleSplitter.lookForMiddleIndex(sortedCps));
+        assertEquals(1, splitter.cells.size());
+        assertEquals(3, splitter.cells.get(0).getPolygon().getNumberOfPoints());
     }
     @Test
-    public void testLookForMiddleIndexNotFound() {
+    public void testPopulateCellsWithPointWithoutConnection() {
+
         ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
-                new CriticalPoint(new Point(0, 0), borders),
-                new CriticalPoint(new Point(1, 1), borders),
-                new CriticalPoint(new Point(1, 0), borders),
-                new CriticalPoint(new Point(2, 0), borders),
-                new CriticalPoint(new Point(2, 1), borders),
-                new CriticalPoint(new Point(0, 1), borders)
+                new CriticalPoint(triangleRectangle.getPoints().get(0), new ArrayList<>(Arrays.asList(
+                        triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(2)
+                ))),
+                new CriticalPoint(triangleRectangle.getPoints().get(1), new ArrayList<>(Arrays.asList(
+                        triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(1)
+                ))),
+                new CriticalPoint(triangleRectangle.getPoints().get(2), new ArrayList<>(Arrays.asList(
+                        triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(2)
+                )))
         ));
+        MiddleSplitter splitter = new MiddleSplitter(cps);
+        splitter.cells = new ArrayList<>();
+        splitter.populateCells(cps, cps.get(0));
 
-        ArrayList<CriticalPoint> sortedCps = CriticalPointerHelper.sort(cps);
-
-        MiddleSplitter middleSplitter = new MiddleSplitter(cps);
-        assertEquals(MiddleSplitter.INDEX_NOT_FOUNDED, middleSplitter.lookForMiddleIndex(sortedCps));
+        assertEquals(1, splitter.cells.size());
+        assertEquals(2, splitter.cells.get(0).getPolygon().getNumberOfPoints());
     }
 }
