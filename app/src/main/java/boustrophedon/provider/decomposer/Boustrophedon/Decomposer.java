@@ -86,7 +86,6 @@ public class Decomposer implements IPolygonDecomposer {
 
         intersections.forEach(element -> CriticalPointerHelper.addIntersections(element, this.criticalPoints));
     }
-
     @Override
     public MatrixAdjacency<Node<ICell>> getMatrixAdjacency() {
         return this.matrixAdjacency;
