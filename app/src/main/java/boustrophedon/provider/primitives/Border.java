@@ -86,14 +86,13 @@ public class Border implements IBorder {
     }
 
     private boolean isPointInsideLimitations(@NonNull IPoint point) {
-        return (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
-                firstVertice.getY() <= point.getY() && point.getY() <= secondVertice.getY()) ||
-                (firstVertice.getX() <= point.getX() && point.getX() <= secondVertice.getX() &&
-                        secondVertice.getY() <= point.getY() && point.getY() <= firstVertice.getY()) ||
-                (firstVertice.getX() >= point.getX() && point.getX() >= secondVertice.getX() &&
-                        firstVertice.getY() >= point.getY() && point.getY() >= secondVertice.getY()) ||
-                (firstVertice.getX() >= point.getX() && point.getX() >= secondVertice.getX() &&
-                        secondVertice.getY() >= point.getY() && point.getY() >= firstVertice.getY());
+        double maxX = Math.max(firstVertice.getX(), secondVertice.getX()) + PRECISION;
+        double minX = Math.min(firstVertice.getX(), secondVertice.getX()) - PRECISION;
+        double maxY = Math.max(firstVertice.getY(), secondVertice.getY()) + PRECISION;
+        double minY = Math.min(firstVertice.getY(), secondVertice.getY()) - PRECISION;
+
+        return minX <= point.getX() && point.getX() <= maxX &&
+                minY <= point.getY() && point.getY() <= maxY;
     }
 
     @Override

@@ -4,6 +4,7 @@ import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 
 public class GA {
+    public static double PRECISION = 0.00001;
     public static double calcYPoint(double[] coefficients, double x) {
         return calcYPoint(coefficients[0], coefficients[1], x);
     }
@@ -34,6 +35,16 @@ public class GA {
                 Math.pow(x1 - x2, 2) +
                         Math.pow(y1 - y2, 2)
         );
+    }
+
+    public static double calcDistanceWithDirection(IPoint p1, IPoint p2, double direction) {
+        return calcDistanceWithDirection(p1.getX(), p1.getY(),
+                p2.getX(), p2.getY(), direction);
+    }
+    public static double calcDistanceWithDirection(double x1, double y1, double x2, double y2, double direction) {
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
+        return deltaX * Math.cos(direction) + deltaY * Math.sin(direction);
     }
 
     public static double[] getCoefficients(IPoint p1, IPoint p2) throws Exception {
@@ -85,6 +96,10 @@ public class GA {
 
     public static double getFirstHalfAngle(double angle) {
         double anglePositive = getPositiveAngle(angle);
-        return anglePositive >= Math.PI ? anglePositive - Math.PI : anglePositive;
+        return Math.abs(anglePositive - Math.PI) >= PRECISION ? anglePositive - Math.PI : anglePositive;
+    }
+
+    public static boolean checkAngles(double angle1, double angle2) {
+        return Math.abs(getFirstHalfAngle(angle1) - getFirstHalfAngle(angle2)) <= PRECISION;
     }
 }

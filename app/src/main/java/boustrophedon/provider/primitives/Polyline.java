@@ -20,28 +20,18 @@ public class Polyline implements IPolyline {
     private ArrayList<IPoint> points = null;
 
     public Polyline(IPoint... points) throws NullPointerException {
-        try {
-            ArrayList<IPoint> p = new ArrayList<>(Arrays.asList(points));
-            setPoints(p);
-        } catch (NullPointerException error) {
-            throw error;
-        }
+        ArrayList<IPoint> p = new ArrayList<>(Arrays.asList(points));
+        setPoints(p);
     }
 
     public Polyline(ArrayList<IPoint> points) throws NullPointerException {
-        try {
-            setPoints(points);
-        } catch (NullPointerException error) {
-            throw error;
-        }
+        setPoints(points);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public LatLng[] toLatLngArray() {
         return points.stream()
-                .map(point -> point.toLatLng())
-                .collect(Collectors.toList())
-                .toArray(new LatLng[0]);
+                .map(IPoint::toLatLng).toArray(LatLng[]::new);
     }
 
     @Override
@@ -52,6 +42,11 @@ public class Polyline implements IPolyline {
     @Override
     public ArrayList<IPoint> getPoints() {
         return points;
+    }
+
+    @Override
+    public IPoint getLastPoint() {
+        return this.points.get(this.numberOfPoints -1);
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.Collection;
 public interface IPolyline {
     int getNumberOfPoints();
     ArrayList<IPoint> getPoints();
+    IPoint getLastPoint();
     void setPoints(ArrayList<IPoint> points);
     void add(IPoint point);
     void add(IPoint... points);
