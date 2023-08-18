@@ -5,15 +5,12 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import boustrophedon.domain.decomposer.model.DecomposerConfig;
@@ -22,7 +19,6 @@ import boustrophedon.domain.decomposer.model.IPolygonDecomposer;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
-import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPointerHelper;
 import boustrophedon.provider.graph.MatrixAdjacency;
@@ -66,12 +62,11 @@ public class Decomposer implements IPolygonDecomposer {
         this.destinationStack = new Stack<>();
         for (CriticalPoint criticalPoint : criticalPoints) {
             criticalPoint.detectPointEvent(polygon);
-            addEventToCount(criticalPoint.getEvent());
         }
 
         addIntersections();
         ArrayList<CriticalPoint> sortedCP = CriticalPointerHelper.sort(this.criticalPoints);
-        this.splitCells(sortedCP);
+// TODO Integrate With SplitterController
 
         return null;
     }
@@ -90,128 +85,6 @@ public class Decomposer implements IPolygonDecomposer {
         ArrayList<CriticalPoint> intersections = getAllIntersections();
 
         intersections.forEach(element -> CriticalPointerHelper.addIntersections(element, this.criticalPoints));
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void splitCells(ArrayList<CriticalPoint> criticalPoints) {
-        if (criticalPoints.size() == 0) return;
-
-        for (int i = 0; i < criticalPoints.size(); i++) {
-            CriticalPoint cp = criticalPoints.get(i);
-
-            if (cp.isSplit())
-                continue;
-
-            cp.setSplit(true);
-
-            switch (cp.getEvent()) {
-                case MIDDLE:
-                    ArrayList<CriticalPoint> remainingCPMiddle = this.splitCellMiddleEvent(criticalPoints, i);
-                    this.splitCells(remainingCPMiddle);
-                    return;
-                case IN:
-
-                    ArrayList<CriticalPoint> remainingCPIn = this.splitCellInEvent(criticalPoints, i);
-
-                    int splitIndex = remainingCPIn.indexOf(cp);
-                    this.splitCells(new ArrayList<>(remainingCPIn.subList(0, splitIndex +1)));
-                    this.splitCells(new ArrayList<>(remainingCPIn.subList(splitIndex, remainingCPIn.size())));
-                    return;
-                case OUT:
-                    ArrayList<CriticalPoint> remainingCPOut = this.splitCellOutEvent(criticalPoints, i);
-
-                    this.splitCells(remainingCPOut);
-                    return;
-            }
-        }
-
-        ICell cell = CellHelper.createCell(criticalPoints);
-        this.addCellToMatrix(cell);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private ArrayList<CriticalPoint> splitCellOutEvent(ArrayList<CriticalPoint> sortedPoints, int cpIndex) {
-        IPoint splitPoint = sortedPoints.get(cpIndex).getVertices();
-
-        Predicate<CriticalPoint> beforeY = criticalPoint -> criticalPoint.getVertices().getY() <= splitPoint.getY();
-        Predicate<CriticalPoint> afterY = criticalPoint -> criticalPoint.getVertices().getY() >= splitPoint.getY();
-        Predicate<CriticalPoint> intersectionsFilter = criticalPoint -> criticalPoint.getVertices().getY() == splitPoint.getY()
-                && criticalPoint.getVertices() != splitPoint;
-
-        ArrayList<CriticalPoint> previousCP = CriticalPointerHelper.filter(sortedPoints, beforeY.and(intersectionsFilter.negate()));
-        ArrayList<CriticalPoint> initialPoints = CriticalPointerHelper.filter(sortedPoints, intersectionsFilter);
-
-        for (CriticalPoint start : initialPoints) {
-            ArrayList<CriticalPoint> previousCell = new ArrayList<>(Collections.singletonList(start));
-            CriticalPoint current = start;
-
-            while (current != null && current != sortedPoints.get(cpIndex)) {
-
-                ArrayList<IPoint> edgesPoints = current.getEdgesPoints();
-                current = previousCP.stream()
-                        .filter(cp -> cp.getVertices() == edgesPoints.get(0)
-                                || cp.getVertices() == edgesPoints.get(1))
-                        .findFirst().orElse(null);
-
-
-                previousCell.add(current);
-            }
-            ICell cell = CellHelper.createCell(CriticalPointerHelper.unsorted(previousCell, this.criticalPoints));
-            this.addCellToMatrix(cell);
-        }
-
-        return CriticalPointerHelper.filter(sortedPoints, afterY);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private ArrayList<CriticalPoint> splitCellInEvent(ArrayList<CriticalPoint> sortedPoints, int cpIndex) {
-        IPoint splitPoint = sortedPoints.get(cpIndex).getVertices();
-
-        Predicate<CriticalPoint> beforeY = criticalPoint -> criticalPoint.getVertices().getY() <= splitPoint.getY();
-        Predicate<CriticalPoint> afterY = criticalPoint -> criticalPoint.getVertices().getY() >= splitPoint.getY();
-
-        ArrayList<CriticalPoint> middleCellCP = CriticalPointerHelper.filter(sortedPoints, beforeY);
-        ArrayList<CriticalPoint> criticalPoints = CriticalPointerHelper.unsorted(middleCellCP, this.criticalPoints);
-
-        ICell cell = CellHelper.createCell(criticalPoints);
-        this.addCellToMatrix(cell);
-
-        ArrayList<CriticalPoint> remainingCP = CriticalPointerHelper.unsorted(
-                CriticalPointerHelper.filter(sortedPoints, afterY),
-                this.criticalPoints
-        );
-
-        return remainingCP;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private ArrayList<CriticalPoint> splitCellMiddleEvent(ArrayList<CriticalPoint> sortedPoints, int cpIndex) {
-        IPoint splitPoint = sortedPoints.get(cpIndex).getVertices();
-
-        Predicate<CriticalPoint> beforeY = criticalPoint -> criticalPoint.getVertices().getY() <= splitPoint.getY();
-        Predicate<CriticalPoint> afterY = criticalPoint -> criticalPoint.getVertices().getY() >= splitPoint.getY();
-
-        ArrayList<CriticalPoint> middleCellCP = CriticalPointerHelper.filter(sortedPoints, beforeY);
-
-        ArrayList<CriticalPoint> criticalPoints = CriticalPointerHelper.unsorted(middleCellCP, this.criticalPoints);
-
-        ICell cell = CellHelper.createCell(criticalPoints);
-        this.addCellToMatrix(cell);
-
-        ArrayList<CriticalPoint> remainingCP = CriticalPointerHelper.filter(sortedPoints, afterY);
-        return remainingCP;
-    }
-
-    private void addCellToMatrix(ICell cell) {
-        DecomposerHelper.addCellToMatrix(cell, this.matrixAdjacency);
-    }
-
-    private void addEventToCount(Events event) {
-        try {
-            Integer lastCount = eventsCount.get(event);
-            eventsCount.put(event, lastCount + 1);
-        } catch (NullPointerException exception) {
-        }
     }
 
     @Override

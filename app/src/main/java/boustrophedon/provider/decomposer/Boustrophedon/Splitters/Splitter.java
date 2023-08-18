@@ -11,17 +11,13 @@ import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.decomposer.model.ISplitter;
-import boustrophedon.domain.graph.IMatrixAdjacency;
-import boustrophedon.domain.graph.INode;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPointerHelper;
-import boustrophedon.provider.graph.MatrixAdjacency;
 import boustrophedon.provider.primitives.Border;
 
 public abstract class Splitter implements ISplitter {
-    protected IMatrixAdjacency<INode<ICell>> matrixAdjacency;
     protected ArrayList<ICell> cells;
     protected final ArrayList<CriticalPoint> criticalPoints;
     protected ArrayList<CriticalPoint> remainingPoints;
@@ -32,7 +28,6 @@ public abstract class Splitter implements ISplitter {
     @Override
     public void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
         this.cells = new ArrayList<>();
-        this.matrixAdjacency = new MatrixAdjacency<>();
 
         ArrayList<CriticalPoint> cellPoints = calcCellPoints((CriticalPoint) splitPoint);
         this.remainingPoints = this.calcRemainingPoints((CriticalPoint) splitPoint);
@@ -70,10 +65,6 @@ public abstract class Splitter implements ISplitter {
         IBorder newEdge = new Border(rp.getVertices(), splitPoint.getVertices());
         rp.getEdges().add(newEdge);
         splitPoint.getEdges().add(newEdge);
-    }
-    @Override
-    public IMatrixAdjacency<INode<ICell>> getMatrixAdjacency() {
-        return matrixAdjacency;
     }
 
     @Override
