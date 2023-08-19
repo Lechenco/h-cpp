@@ -5,9 +5,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
@@ -33,14 +31,6 @@ public class Decomposer implements IPolygonDecomposer {
     Queue<Integer> inOutQueue;
     Stack<Integer> sourceStack;
     Stack<Integer> destinationStack;
-
-    Map<Events, Integer> eventsCount = new HashMap<Events, Integer>() {{
-        put(Events.IN, 0);
-        put(Events.MIDDLE, 0);
-        put(Events.OUT, 0);
-        put(Events.NONE, 0);
-        put(Events.UNKNOWN, 0);
-    }};
 
     public Decomposer() {
         this.setConfig(new DecomposerConfig());

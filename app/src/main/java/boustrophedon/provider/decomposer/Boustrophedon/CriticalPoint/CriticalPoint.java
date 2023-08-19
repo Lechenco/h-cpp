@@ -13,7 +13,7 @@ import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
-import boustrophedon.provider.decomposer.Boustrophedon.Events;
+import boustrophedon.domain.decomposer.enums.Events;
 import boustrophedon.provider.primitives.Border;
 import boustrophedon.utils.GA;
 

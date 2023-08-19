@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import boustrophedon.domain.primitives.model.IPoint;
-import boustrophedon.provider.decomposer.Boustrophedon.Events;
+import boustrophedon.domain.decomposer.enums.Events;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 
