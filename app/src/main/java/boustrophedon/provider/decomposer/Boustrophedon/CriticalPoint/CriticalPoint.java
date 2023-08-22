@@ -1,9 +1,5 @@
 package boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -78,7 +74,6 @@ public class CriticalPoint implements ICriticalPoint {
         return points;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void detectPointEvent(IPolygon polygon) {
         double normalAngle = Math.PI / 2; // TODO: calc angle dynamically
         ArrayList<IPoint> intersectionNormalPoints = this.calcIntersectionsInAngle(polygon, normalAngle);
@@ -96,7 +91,6 @@ public class CriticalPoint implements ICriticalPoint {
         this.populateIntersectionNormalPoints(intersectionNormalPoints, polygon);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void populateIntersectionNormalPoints(ArrayList<IPoint> intersectionNormalPoints, IPolygon polygon) {
         intersectionNormalPoints.forEach(p -> {
             Optional<IBorder> border = polygon.getBorders().stream().filter(b -> b.isOnBorder(p)).findFirst();
@@ -131,7 +125,6 @@ public class CriticalPoint implements ICriticalPoint {
         return edge.getFirstVertice().equals(this.vertices) ? edge.getSecondVertice() : edge.getFirstVertice();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     protected ArrayList<IPoint> calcIntersectionsInAngle(IPolygon polygon, double angle) {
         ArrayList<IPoint> intersectionPoints = new ArrayList<>();
 

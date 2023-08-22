@@ -1,10 +1,8 @@
 package com.dji.gsdemo.gmapsteste.presentation.view.activity;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 
 import com.dji.gsdemo.gmapsteste.R;
@@ -50,7 +48,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

@@ -1,9 +1,5 @@
 package boustrophedon.controllers.decomposer.Boustrophedon.Splitters;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 
 import boustrophedon.controllers.graph.MatrixController;
@@ -30,7 +26,6 @@ public class SplitterController {
         this.criticalPoints = criticalPoints;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public MatrixAdjacency<Node<ICell>> execute() throws ExceedNumberOfAttempts {
         this.remainingPoints = this.criticalPoints;
         this.matrixController = new MatrixController();
@@ -43,7 +38,6 @@ public class SplitterController {
         return this.matrixController.getMatrixAdjacency();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     protected ArrayList<CriticalPoint> splitNextEvent(ArrayList<CriticalPoint> sortedCP) throws ExceedNumberOfAttempts {
         CriticalPoint nextCP = this.findNextEvent(sortedCP);
 

@@ -96,7 +96,7 @@ public class GA {
 
     public static double getFirstHalfAngle(double angle) {
         double anglePositive = getPositiveAngle(angle);
-        return Math.abs(anglePositive - Math.PI) >= PRECISION ? anglePositive - Math.PI : anglePositive;
+        return Math.abs(anglePositive - Math.PI) <= PRECISION ? anglePositive - Math.PI : anglePositive;
     }
 
     public static boolean checkAngles(double angle1, double angle2) {

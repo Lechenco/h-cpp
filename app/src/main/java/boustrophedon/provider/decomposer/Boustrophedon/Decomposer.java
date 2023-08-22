@@ -1,9 +1,5 @@
 package boustrophedon.provider.decomposer.Boustrophedon;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -41,7 +37,6 @@ public class Decomposer implements IPolygonDecomposer {
         this.config = config;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public ArrayList<ICell> decompose(IPolygon polygon) {
         this.criticalPoints = this.getCriticalPoints(polygon);
@@ -61,7 +56,6 @@ public class Decomposer implements IPolygonDecomposer {
         return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private ArrayList<CriticalPoint> getAllIntersections() {
         return (ArrayList<CriticalPoint>) this.criticalPoints
                 .stream()
@@ -70,7 +64,6 @@ public class Decomposer implements IPolygonDecomposer {
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void addIntersections() {
         ArrayList<CriticalPoint> intersections = getAllIntersections();
 
@@ -86,7 +79,6 @@ public class Decomposer implements IPolygonDecomposer {
         return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     protected ArrayList<CriticalPoint> getCriticalPoints(IPolygon polygon) {
         ArrayList<CriticalPoint> criticalPoints = new ArrayList<>();
 

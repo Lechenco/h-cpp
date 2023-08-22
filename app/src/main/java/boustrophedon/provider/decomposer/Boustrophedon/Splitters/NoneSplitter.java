@@ -1,12 +1,7 @@
 package boustrophedon.provider.decomposer.Boustrophedon.Splitters;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 
-import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.decomposer.model.ISplitter;
@@ -21,7 +16,6 @@ public class NoneSplitter implements ISplitter {
         this.criticalPoints = criticalPoints;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void split(ICriticalPoint splitPoint) {
         this.cells = new ArrayList<>();

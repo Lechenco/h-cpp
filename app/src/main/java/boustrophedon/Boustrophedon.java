@@ -1,9 +1,5 @@
 package boustrophedon;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 
 import boustrophedon.domain.primitives.model.IBorder;
@@ -34,7 +30,6 @@ public class Boustrophedon {
         this.endpoint = getFinalPoint();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public IPolyline generatePath() {
         IPolyline line = new Polyline();
 

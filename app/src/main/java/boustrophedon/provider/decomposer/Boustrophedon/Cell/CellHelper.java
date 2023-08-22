@@ -1,9 +1,5 @@
 package boustrophedon.provider.decomposer.Boustrophedon.Cell;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -13,7 +9,6 @@ import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoi
 import boustrophedon.provider.primitives.Polygon;
 
 public class CellHelper {
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static ICell createCell(ArrayList<CriticalPoint> criticalPoints) {
         ArrayList<IPoint> polygonPoints = criticalPoints
                 .stream()

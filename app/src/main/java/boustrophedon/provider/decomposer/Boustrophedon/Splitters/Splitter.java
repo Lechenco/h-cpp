@@ -1,9 +1,5 @@
 package boustrophedon.provider.decomposer.Boustrophedon.Splitters;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
@@ -24,7 +20,6 @@ public abstract class Splitter implements ISplitter {
     public Splitter(ArrayList<CriticalPoint> criticalPoints) {
         this.criticalPoints = criticalPoints;
     }
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
         this.cells = new ArrayList<>();
@@ -38,7 +33,6 @@ public abstract class Splitter implements ISplitter {
 
     abstract void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint) throws ExceedNumberOfAttempts;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     protected ArrayList<CriticalPoint> calcCellPoints(CriticalPoint splitPoint) {
         IPoint vertices = splitPoint.getVertices();
 
@@ -46,13 +40,11 @@ public abstract class Splitter implements ISplitter {
         return  CriticalPointerHelper.filter(this.criticalPoints, beforeX);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     protected ArrayList<CriticalPoint> calcRemainingPoints(CriticalPoint splitPoint) {
         IPoint vertices = splitPoint.getVertices();
         Predicate<CriticalPoint> afterX = criticalPoint -> criticalPoint.getVertices().getX() >= vertices.getX();
         return CriticalPointerHelper.filter(this.criticalPoints, afterX);
     }
-    @RequiresApi(api = Build.VERSION_CODES.N)
     protected void adjustEdges(CriticalPoint splitPoint) {
         splitPoint.getEdges().clear();
         this.remainingPoints.stream()
@@ -60,7 +52,6 @@ public abstract class Splitter implements ISplitter {
                 .forEach(rp -> addSplitEdge(rp, splitPoint));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     protected void addSplitEdge(CriticalPoint rp, CriticalPoint splitPoint) {
         IBorder newEdge = new Border(rp.getVertices(), splitPoint.getVertices());
         rp.getEdges().add(newEdge);

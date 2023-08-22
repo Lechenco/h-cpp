@@ -1,15 +1,10 @@
 package boustrophedon.provider.primitives;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolyline;
@@ -28,7 +23,6 @@ public class Polyline implements IPolyline {
         setPoints(points);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public LatLng[] toLatLngArray() {
         return points.stream()
                 .map(IPoint::toLatLng).toArray(LatLng[]::new);

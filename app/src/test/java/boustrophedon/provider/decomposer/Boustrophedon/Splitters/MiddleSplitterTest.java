@@ -93,7 +93,6 @@ public class MiddleSplitterTest {
     }
     @Test
     public void testPopulateCellsWithPointWithoutConnection() throws ExceedNumberOfAttempts {
-
         ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(triangleRectangle.getPoints().get(0), new ArrayList<>(Arrays.asList(
                         new Border(new Point(-1, 0), new Point(0, 0)),

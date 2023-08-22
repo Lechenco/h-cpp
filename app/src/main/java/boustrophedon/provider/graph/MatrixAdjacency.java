@@ -1,9 +1,5 @@
 package boustrophedon.provider.graph;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -12,11 +8,11 @@ import boustrophedon.domain.graph.IMatrixAdjacency;
 public class MatrixAdjacency<T> implements IMatrixAdjacency<T> {
     private int [][] matrixAdjacency;
     private int length;
-    private ArrayList<T> nodes;
+    private final ArrayList<T> nodes;
 
     public MatrixAdjacency() {
         this.nodes = new ArrayList<>();
-        this.length = this.nodes.size();
+        this.length = 0;
         this.matrixAdjacency = new int[length][length];
     }
 
@@ -46,7 +42,6 @@ public class MatrixAdjacency<T> implements IMatrixAdjacency<T> {
         return length -1;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Optional<T> getNode(int source, int destination) {
         if (source >= this.length
