@@ -23,9 +23,6 @@ import boustrophedon.provider.primitives.Point;
 public class SplitterControllerTest {
     ArrayList<CriticalPoint> cps;
     ArrayList<IBorder> borders = new ArrayList<>();
-//    MockedConstruction<NoneSplitter> noneSplitter;
-//    MockedConstruction<OutSplitter> outSplitter;
-//    MockedConstruction<MiddleSplitter> middleSplitter;
 
     @Before
     public void setUp() {
@@ -37,9 +34,7 @@ public class SplitterControllerTest {
                 new CriticalPoint(new Point(2, 1), borders),
                 new CriticalPoint(new Point(0, 1), borders)
         ));
-//         noneSplitter = Mockito.mockConstruction(NoneSplitter.class);
-//         outSplitter = Mockito.mockConstruction(OutSplitter.class);
-//         middleSplitter = Mockito.mockConstruction(MiddleSplitter.class);
+
     }
 
     @Test

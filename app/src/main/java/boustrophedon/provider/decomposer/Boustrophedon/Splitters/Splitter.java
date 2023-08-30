@@ -24,9 +24,9 @@ public abstract class Splitter implements ISplitter {
     public void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
         this.cells = new ArrayList<>();
 
+        this.adjustEdges((CriticalPoint) splitPoint);
         ArrayList<CriticalPoint> cellPoints = calcCellPoints((CriticalPoint) splitPoint);
         this.remainingPoints = this.calcRemainingPoints((CriticalPoint) splitPoint);
-        this.adjustEdges((CriticalPoint) splitPoint);
 
         this.populateCells(cellPoints, (CriticalPoint) splitPoint);
     }
@@ -46,10 +46,12 @@ public abstract class Splitter implements ISplitter {
         return CriticalPointerHelper.filter(this.criticalPoints, afterX);
     }
     protected void adjustEdges(CriticalPoint splitPoint) {
-        splitPoint.getEdges().clear();
-        this.remainingPoints.stream()
+        this.criticalPoints.stream()
                 .filter(rp -> splitPoint.getIntersectionsInNormal().contains(rp))
-                .forEach(rp -> addSplitEdge(rp, splitPoint));
+                .forEach(rp -> {
+                    addSplitEdge(rp, splitPoint);
+                    CriticalPointerHelper.populateIntersectionEdges(rp, this.criticalPoints);
+                });
     }
 
     protected void addSplitEdge(CriticalPoint rp, CriticalPoint splitPoint) {

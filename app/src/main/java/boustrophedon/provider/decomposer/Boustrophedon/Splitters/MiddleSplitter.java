@@ -21,15 +21,17 @@ public class MiddleSplitter extends Splitter {
         deadEnd.clear();
         walked.push(splitPoint);
         boolean looped = false;
+        int walkSizeLastTime = 0;
         int attempts = 0;
         while (!looped && attempts < NUMBER_OF_ATTEMPTS) {
             this.walk(cellPoints);
             looped = connectsWithEdges(splitPoint) && walked.size() > 2;
 
-            if (!looped && walked.size() > 1) {
+            if (!looped && walked.size() == walkSizeLastTime && walked.size() > 1) {
                 deadEnd.push(walked.pop());
+                attempts++;
             }
-            attempts++;
+            walkSizeLastTime = walked.size();
         }
 
         if (attempts == NUMBER_OF_ATTEMPTS)

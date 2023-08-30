@@ -74,4 +74,8 @@ public class MatrixAdjacency<T> implements IMatrixAdjacency<T> {
         }
         return null;
     }
+
+    public ArrayList<T> getNodes() {
+        return nodes;
+    }
 }

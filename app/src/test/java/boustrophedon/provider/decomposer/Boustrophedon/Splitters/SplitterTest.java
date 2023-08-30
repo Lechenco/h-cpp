@@ -63,7 +63,7 @@ public class SplitterTest {
     }
 
     @Test
-    public void testReplaceEdges() {
+    public void testAddSplitEdge() {
         CriticalPoint cp1 = new CriticalPoint(new Point(0, 0), new ArrayList<>(Arrays.asList(
                 new Border(new Point(0, 0), new Point(2, 0)),
                 new Border(new Point(0, 0), new Point(2, 2))

@@ -2,11 +2,10 @@ package boustrophedon.provider.decomposer.Boustrophedon;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
+import boustrophedon.controllers.decomposer.Boustrophedon.Splitters.SplitterController;
+import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.DecomposerConfig;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.IPolygonDecomposer;
@@ -24,10 +23,6 @@ public class Decomposer implements IPolygonDecomposer {
 
     private MatrixAdjacency<Node<ICell>> matrixAdjacency;
 
-    Queue<Integer> inOutQueue;
-    Stack<Integer> sourceStack;
-    Stack<Integer> destinationStack;
-
     public Decomposer() {
         this.setConfig(new DecomposerConfig());
     }
@@ -38,21 +33,16 @@ public class Decomposer implements IPolygonDecomposer {
     }
 
     @Override
-    public ArrayList<ICell> decompose(IPolygon polygon) {
+    public ArrayList<ICell> decompose(IPolygon polygon) throws ExceedNumberOfAttempts {
         this.criticalPoints = this.getCriticalPoints(polygon);
-        this.matrixAdjacency = new MatrixAdjacency<>();
-
-        this.inOutQueue = new PriorityQueue<>();
-        this.sourceStack = new Stack<>();
-        this.destinationStack = new Stack<>();
         for (CriticalPoint criticalPoint : criticalPoints) {
             criticalPoint.detectPointEvent(polygon);
         }
 
         addIntersections();
-        ArrayList<CriticalPoint> sortedCP = CriticalPointerHelper.sort(this.criticalPoints);
-// TODO Integrate With SplitterController
 
+        SplitterController splitterController = new SplitterController(this.criticalPoints);
+        this.matrixAdjacency = splitterController.execute();
         return null;
     }
 

@@ -1,5 +1,9 @@
 package boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint;
 
+import android.annotation.SuppressLint;
+
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -145,5 +149,16 @@ public class CriticalPoint implements ICriticalPoint {
             }
         }
         return intersectionPoints;
+    }
+
+    @SuppressLint("DefaultLocale")
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format("CriticalPoint{ Vertices={ x=%f, y=%f }, Event=%s }",
+                vertices.getX(),
+                vertices.getY(),
+                event.toString()
+                );
     }
 }
