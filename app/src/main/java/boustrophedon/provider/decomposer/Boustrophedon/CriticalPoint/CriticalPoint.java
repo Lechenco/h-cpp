@@ -5,8 +5,7 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
+
 
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.primitives.model.IBorder;
@@ -14,7 +13,6 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
 import boustrophedon.domain.decomposer.enums.Events;
-import boustrophedon.provider.primitives.Border;
 import boustrophedon.utils.GA;
 
 public class CriticalPoint implements ICriticalPoint {
@@ -38,12 +36,10 @@ public class CriticalPoint implements ICriticalPoint {
         this.split = split;
     }
 
-    protected void addIntersectionsInNormalPoints(IBorder border, IPoint intersectionPoint) {
-        ArrayList<IBorder> borders = new ArrayList<>(Arrays
-                .asList(new Border(intersectionPoint, border.getFirstVertice()),
-                        new Border(intersectionPoint, border.getSecondVertice()))
-        );
-        this.intersectionsInNormal.add(new CriticalPoint(intersectionPoint, borders));
+    public CriticalPoint(IPoint vertices) {
+        this.edges = new ArrayList<>();
+        this.vertices = vertices;
+        this.intersectionsInNormal = new ArrayList<>();
     }
 
     public CriticalPoint(IPoint vertices, ArrayList<IBorder> edges) {
@@ -96,10 +92,7 @@ public class CriticalPoint implements ICriticalPoint {
     }
 
     private void populateIntersectionNormalPoints(ArrayList<IPoint> intersectionNormalPoints, IPolygon polygon) {
-        intersectionNormalPoints.forEach(p -> {
-            Optional<IBorder> border = polygon.getBorders().stream().filter(b -> b.isOnBorder(p)).findFirst();
-            border.ifPresent(iBorder -> addIntersectionsInNormalPoints(iBorder, p));
-        });
+        intersectionNormalPoints.forEach(p -> this.intersectionsInNormal.add(new CriticalPoint(p)));
     }
 
     private void validateEventWithIntersections(ArrayList<IPoint> intersectionNormalPoints) {
@@ -117,6 +110,7 @@ public class CriticalPoint implements ICriticalPoint {
     }
 
     protected boolean isInEvent() {
+        if (this.getEdges().size() < 2) return false;
         IPoint point = this.getVertices();
         double pointX = point.getX();
         double firstEdgePointX = getEdgeFarEnd(this.getEdges().get(0)).getX();

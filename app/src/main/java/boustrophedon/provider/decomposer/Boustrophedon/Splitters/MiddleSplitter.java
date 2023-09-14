@@ -27,8 +27,8 @@ public class MiddleSplitter extends Splitter {
             this.walk(cellPoints);
             looped = connectsWithEdges(splitPoint) && walked.size() > 2;
 
-            if (!looped && walked.size() == walkSizeLastTime && walked.size() > 1) {
-                deadEnd.push(walked.pop());
+            if (!looped && walked.size() == walkSizeLastTime) {
+                deadEnd.push(walked.size() > 1 ? walked.pop() : walked.peek());
                 attempts++;
             }
             walkSizeLastTime = walked.size();

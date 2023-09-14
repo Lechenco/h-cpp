@@ -149,17 +149,6 @@ public class CriticalPointTest {
     }
 
     @Test
-    public void testAddIntersectionInNormalPoints() {
-        Point p = new Point(1, 1);
-        cp.addIntersectionsInNormalPoints(triangleRectangle.getBorders().get(1), p);
-
-        ArrayList<CriticalPoint> intersections = cp.getIntersectionsInNormal();
-
-        assertEquals(1, intersections.size());
-        assertEquals(p, intersections.get(0).getVertices());
-    }
-
-    @Test
     public void testCalcIntersectionsInAngle() {
         ArrayList<IPoint> points = cp.calcIntersectionsInAngle(triangleRectangle, 0);
 

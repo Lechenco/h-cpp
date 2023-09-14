@@ -40,8 +40,8 @@ public class OutSplitter extends Splitter {
             this.walk(cellPoints, goal);
             looped = connectsWithEdges(goal) && walked.size() > 2;
 
-            if (!looped && walked.size() == walkSizeLastTime && walked.size() > 1) {
-                deadEnd.push(walked.pop());
+            if (!looped && walked.size() == walkSizeLastTime) {
+                deadEnd.push(walked.size() > 1 ? walked.pop() : walked.peek());
                 attempts++;
             }
             walkSizeLastTime = walked.size();
