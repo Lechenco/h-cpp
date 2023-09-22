@@ -1,29 +1,25 @@
 package com.dji.gsdemo.gmapsteste.presentation.view.activity;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 
 import com.dji.gsdemo.gmapsteste.R;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.dji.gsdemo.gmapsteste.adapter.map.PolygonAdapter;
+import com.dji.gsdemo.gmapsteste.controller.map.MapController;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.dji.gsdemo.gmapsteste.databinding.ActivityMapsBinding;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import boustrophedon.Boustrophedon;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
-import boustrophedon.provider.primitives.Polyline;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    private MapController mapController;
     private ActivityMapsBinding binding;
 
     @Override
@@ -36,6 +32,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
     }
 
@@ -49,27 +46,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mapController = new MapController(googleMap);
 
         // Add a marker in Sydney and move the camera
         LatLng cornelio = new LatLng(-23.1813, -50.648);
 //        mMap.addMarker(new MarkerOptions().position(cornelio).title("Cornélio Procópio"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(cornelio));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(cornelio));
+//        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+//        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
 
 
         double squareSize = 0.005;
 
         double angle = Math.PI / 4;
-        //Call Boustrophedon Function
-//        Polygon square = new Polygon(
-//                new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
-//                new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
-//                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
-//                new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
-//        );
 
         Polygon square = new Polygon(
                 new Point(cornelio.latitude - 2 * squareSize, cornelio.longitude),
@@ -78,18 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new Point(cornelio.latitude, cornelio.longitude - 2 * squareSize)
         );
 
-        Polyline path = (Polyline) new Boustrophedon(square).generatePath();
-
-        PolygonOptions polyOptions = new PolygonOptions().add(
-                square.toLatLngArray()
-        ).fillColor(Color.GREEN);
-        mMap.addPolygon(polyOptions);
-
-        PolylineOptions polylineOptions = new PolylineOptions().add(
-                path.toLatLngArray()
-        ).color(Color.RED);
-
-        mMap.addPolyline(polylineOptions);
+        mapController.addPolygon(PolygonAdapter.toPolygonOptions(square));
 
 //        for (LatLng p : polylineOptions.getPoints()) {
 //            mMap.addMarker(new MarkerOptions().position(p));
