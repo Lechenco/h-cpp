@@ -9,7 +9,7 @@ import boustrophedon.provider.graph.Node;
 
 public interface IPolygonDecomposer {
     void setConfig(DecomposerConfig config);
-    ArrayList<ICell> decompose(IPolygon polygon) throws ExceedNumberOfAttempts;
+    MatrixAdjacency<Node<ICell>> decompose(IPolygon polygon) throws ExceedNumberOfAttempts;
     MatrixAdjacency<Node<ICell>> getMatrixAdjacency();
     ArrayList<ICell> getCells();
 }

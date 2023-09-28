@@ -1,5 +1,7 @@
 package boustrophedon.provider.primitives;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 
 import boustrophedon.domain.primitives.model.IBorder;
@@ -104,4 +106,12 @@ public class Border implements IBorder {
         return p.getFirstVertice().equals(this.getFirstVertice()) &&
                 p.getSecondVertice().equals(this.getSecondVertice());
     }
+
+    @SuppressLint("DefaultLocale")
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format("Border{ v1=%s, v2=%s }", this.firstVertice, this.secondVertice);
+    }
+
 }

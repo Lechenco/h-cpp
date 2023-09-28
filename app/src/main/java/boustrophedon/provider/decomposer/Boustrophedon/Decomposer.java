@@ -29,12 +29,12 @@ public class Decomposer implements IPolygonDecomposer {
     }
 
     @Override
-    public ArrayList<ICell> decompose(IPolygon polygon) throws ExceedNumberOfAttempts {
+    public MatrixAdjacency<Node<ICell>> decompose(IPolygon polygon) throws ExceedNumberOfAttempts {
         this.criticalPoints = CriticalPointFactory.execute(polygon);
 
         SplitterController splitterController = new SplitterController(this.criticalPoints);
         this.matrixAdjacency = splitterController.execute();
-        return null;
+        return this.matrixAdjacency;
     }
 
     @Override

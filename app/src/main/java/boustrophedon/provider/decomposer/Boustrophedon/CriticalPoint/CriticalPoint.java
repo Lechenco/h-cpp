@@ -132,7 +132,7 @@ public class CriticalPoint implements ICriticalPoint {
 
             IPoint intersection = BorderHelper.calcIntersectionToWall(this.getVertices(), border, angle);
             boolean duplicated = intersectionPoints
-                    .stream().anyMatch(iPoint -> intersection == iPoint);
+                    .stream().anyMatch(intersection::equals);
 
             if (
                     border.isOnBorder(intersection) &&

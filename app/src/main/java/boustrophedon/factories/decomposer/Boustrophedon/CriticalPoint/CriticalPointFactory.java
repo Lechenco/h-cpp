@@ -2,6 +2,7 @@ package boustrophedon.factories.decomposer.Boustrophedon.CriticalPoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ public class CriticalPointFactory {
             criticalPoints.add(new CriticalPoint(point, new ArrayList<>(pointBorders)));
         }
 
+        Collections.swap(criticalPoints.get(0).getEdges(), 0, 1);
         return criticalPoints;
     }
 
@@ -71,7 +73,7 @@ public class CriticalPointFactory {
 
         criticalPoint.getEdges().addAll(Arrays.asList(borderBefore, borderAfter));
         criticalPointBefore.getEdges().add(borderBefore);
-        criticalPointAfter.getEdges().add(borderAfter);
+        criticalPointAfter.getEdges().add(0, borderAfter);
 
         criticalPointBefore.getEdges().removeIf(
                 b -> b.getFirstVertice().equals(criticalPointAfter.getVertices())
