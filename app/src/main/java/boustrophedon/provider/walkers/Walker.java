@@ -59,6 +59,8 @@ public class Walker implements IWalker {
     }
 
     protected IPoint walkAside(IPoint currentPoint) {
+        if (this.currentWall == null) return null;
+
         double angleBetweenBorders = Math.abs(this.config.getDirection() - this.currentWall.getPositiveAngle());
         double distanceToWalk = Math.abs(config.getDistanceBetweenPaths() / Math.sin(angleBetweenBorders));
         double currentWallAngle = this.currentWall.getAngle();
@@ -101,7 +103,8 @@ public class Walker implements IWalker {
 
     @Override
     public IPolyline generatePath(IPolygon polygon, IPoint initialPoint) {
-        return null;
+        this.setPolygon(polygon);
+        return this.generatePath(initialPoint);
     }
 
     public WalkerConfig getConfig() {
@@ -116,7 +119,8 @@ public class Walker implements IWalker {
         IPoint goalClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() - Math.PI / 2);
         IPoint goalAntiClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() + Math.PI / 2);
         this.goal =
-                startPoint.calcDistance(goalClockWise) > startPoint.calcDistance(goalAntiClockWise)
+                Math.abs(GA.calcDistanceWithDirection(startPoint, goalClockWise, this.config.getDirection() + Math.PI / 2))
+                        > Math.abs(GA.calcDistanceWithDirection(startPoint, goalAntiClockWise, this.config.getDirection() + Math.PI / 2))
                     ? goalClockWise : goalAntiClockWise;
         this.directionStartToGoal = GA.calcAngle(startPoint, this.goal);
         return this.goal;
@@ -152,6 +156,18 @@ public class Walker implements IWalker {
 
             this.path.add(currentPoint);
             currentPoint = this.walkToTheOtherSide(currentPoint);
+
+            if (currentPoint == null && this.path.getNumberOfPoints() == 1) {
+                IPoint finalCurrentPoint = this.path.getLastPoint();
+                this.currentWall = this.walls
+                        .stream()
+                        .filter(w -> w.isOnBorder(finalCurrentPoint))
+                        .findFirst().orElse(null);
+
+                currentPoint = this.walkAside(finalCurrentPoint);
+                continue;
+            }
+
             if (currentPoint == null || currentPoint == this.path.getLastPoint())
                 break;
 

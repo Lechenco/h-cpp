@@ -12,6 +12,7 @@ import boustrophedon.provider.primitives.Polygon;
 
 public class DecomposerController {
     public ArrayList<ICell> decompose(Polygon polygon) throws ExceedNumberOfAttempts {
+
         Decomposer decomposer = new Decomposer();
         MatrixAdjacency<Node<ICell>> matrixAdjacency = decomposer.decompose(polygon);
         return matrixAdjacency.getNodes()

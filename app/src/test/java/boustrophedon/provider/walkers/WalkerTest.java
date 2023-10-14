@@ -268,6 +268,16 @@ public class WalkerTest {
         assertEquals(11, walker.getPath().getNumberOfPoints());
     }
     @Test
+    public void testGeneratePath2() throws AngleOffLimitsException {
+        Polygon triangle = new Polygon(new Point(0, 0), new Point(-5, -5), new Point(-5, 0));
+        Walker walker = new Walker(new WalkerConfig(1, 0));
+
+        walker.setPolygon(triangle);
+        walker.generatePath(new Point(-5, -5));
+
+        assertEquals(11, walker.getPath().getNumberOfPoints());
+    }
+    @Test
     public void testGeneratePathSquare() throws AngleOffLimitsException {
         Polygon square = new Polygon(new Point(0, 0),
                 new Point(5, 0),
@@ -292,5 +302,31 @@ public class WalkerTest {
         walker.generatePath(new Point(0, 0));
 
         assertEquals(7, walker.getPath().getNumberOfPoints());
+    }
+    @Test
+    public void testGeneratePathTrapezoid() throws AngleOffLimitsException {
+        Polygon square = new Polygon(new Point(-1, 0),
+                new Point(5, 0),
+                new Point(5, 5), new Point(0, 5)
+        );
+        Walker walker = new Walker(new WalkerConfig(1, 0));
+
+        walker.setPolygon(square);
+        walker.generatePath(new Point(-1, 0));
+
+        assertEquals(12, walker.getPath().getNumberOfPoints());
+    }
+    @Test
+    public void testGeneratePathTrapezoid2() throws AngleOffLimitsException {
+        Polygon square = new Polygon(new Point(-1, 0),
+                new Point(5, 0),
+                new Point(5, 5), new Point(0, 5)
+        );
+        Walker walker = new Walker(new WalkerConfig(1, Math.PI /2));
+
+        walker.setPolygon(square);
+        walker.generatePath(new Point(-1, 0));
+
+        assertEquals(13, walker.getPath().getNumberOfPoints());
     }
 }

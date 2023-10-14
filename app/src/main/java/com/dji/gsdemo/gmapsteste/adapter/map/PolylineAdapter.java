@@ -4,12 +4,12 @@ import android.graphics.Color;
 
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import boustrophedon.provider.primitives.Polygon;
+import boustrophedon.domain.primitives.model.IPolyline;
 
 public class PolylineAdapter {
-    public static PolylineOptions toPolylineOptions(Polygon polygon) {
+    public static PolylineOptions toPolylineOptions(IPolyline polyline) {
         return new PolylineOptions().add(
-                polygon.toLatLngArray()
+                polyline.toLatLngArray()
         ).color(Color.RED);
     }
 }
