@@ -7,10 +7,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MatrixAdjacencyTest {
+public class AdjacencyMatrixTest {
     @Test
     public void testAddNode () {
-        MatrixAdjacency<Integer> matrix = new MatrixAdjacency<>(
+        AdjacencyMatrix<Integer> matrix = new AdjacencyMatrix<>(
                 new ArrayList<>(Arrays.asList(0, 1, 2, 3))
         );
 

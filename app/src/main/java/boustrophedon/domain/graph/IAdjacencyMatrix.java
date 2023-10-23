@@ -3,7 +3,7 @@ package boustrophedon.domain.graph;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public interface IMatrixAdjacency<T> {
+public interface IAdjacencyMatrix<T> {
     void addAdjacency(int source, int destination);
     int addNode(T node);
     Optional<T> getNode(int source, int destination);

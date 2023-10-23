@@ -3,40 +3,40 @@ package boustrophedon.provider.graph;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import boustrophedon.domain.graph.IMatrixAdjacency;
+import boustrophedon.domain.graph.IAdjacencyMatrix;
 
-public class MatrixAdjacency<T> implements IMatrixAdjacency<T> {
-    private int [][] matrixAdjacency;
+public class AdjacencyMatrix<T> implements IAdjacencyMatrix<T> {
+    private int [][] adjacencyMatrix;
     private int length;
     private final ArrayList<T> nodes;
 
-    public MatrixAdjacency() {
+    public AdjacencyMatrix() {
         this.nodes = new ArrayList<>();
         this.length = 0;
-        this.matrixAdjacency = new int[length][length];
+        this.adjacencyMatrix = new int[length][length];
     }
 
-    public MatrixAdjacency(ArrayList<T> nodes) {
+    public AdjacencyMatrix(ArrayList<T> nodes) {
         this.nodes = nodes;
         this.length = this.nodes.size();
-        this.matrixAdjacency = new int[length][length];
+        this.adjacencyMatrix = new int[length][length];
     }
 
     @Override
     public void addAdjacency(int source, int destination) {
-        this.matrixAdjacency[source][destination] = 1;
-        this.matrixAdjacency[destination][source] = 1;
+        this.adjacencyMatrix[source][destination] = 1;
+        this.adjacencyMatrix[destination][source] = 1;
     }
 
     @Override
     public int addNode(T node) {
         this.length += 1;
         this.nodes.add(node);
-        int[][] oldMatrix = this.matrixAdjacency;
-        this.matrixAdjacency = new int[this.length][this.length];
+        int[][] oldMatrix = this.adjacencyMatrix;
+        this.adjacencyMatrix = new int[this.length][this.length];
         for (int i = 0; i < this.length -1; i++) {
             int[] oldRow = oldMatrix[i];
-            System.arraycopy(oldRow, 0, this.matrixAdjacency[i], 0, oldRow.length);
+            System.arraycopy(oldRow, 0, this.adjacencyMatrix[i], 0, oldRow.length);
         }
 
         return length -1;
@@ -46,16 +46,16 @@ public class MatrixAdjacency<T> implements IMatrixAdjacency<T> {
     public Optional<T> getNode(int source, int destination) {
         if (source >= this.length
                 || destination >= this.length
-                || this.matrixAdjacency[source][destination] == 0
+                || this.adjacencyMatrix[source][destination] == 0
         )
             return Optional.empty();
 
-        return Optional.of(this.nodes.get(this.matrixAdjacency[source][destination])) ;
+        return Optional.of(this.nodes.get(this.adjacencyMatrix[source][destination])) ;
     }
 
     @Override
     public ArrayList<T> getAdjacency(int source) {
-        int[] destinations = this.matrixAdjacency[source];
+        int[] destinations = this.adjacencyMatrix[source];
         ArrayList<T> adjacencyNodes = new ArrayList<>();
 
         for (int i = 0; i < this.length; i++) {

@@ -10,14 +10,14 @@ import boustrophedon.domain.decomposer.model.IPolygonDecomposer;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.factories.decomposer.Boustrophedon.CriticalPoint.CriticalPointFactory;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
-import boustrophedon.provider.graph.MatrixAdjacency;
+import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.Node;
 
 public class Decomposer implements IPolygonDecomposer {
     private DecomposerConfig config;
     private ArrayList<CriticalPoint> criticalPoints;
 
-    private MatrixAdjacency<Node<ICell>> matrixAdjacency;
+    private AdjacencyMatrix<Node<ICell>> adjacencyMatrix;
 
     public Decomposer() {
         this.setConfig(new DecomposerConfig());
@@ -29,17 +29,17 @@ public class Decomposer implements IPolygonDecomposer {
     }
 
     @Override
-    public MatrixAdjacency<Node<ICell>> decompose(IPolygon polygon) throws ExceedNumberOfAttempts {
+    public AdjacencyMatrix<Node<ICell>> decompose(IPolygon polygon) throws ExceedNumberOfAttempts {
         this.criticalPoints = CriticalPointFactory.execute(polygon);
 
         SplitterController splitterController = new SplitterController(this.criticalPoints);
-        this.matrixAdjacency = splitterController.execute();
-        return this.matrixAdjacency;
+        this.adjacencyMatrix = splitterController.execute();
+        return this.adjacencyMatrix;
     }
 
     @Override
-    public MatrixAdjacency<Node<ICell>> getMatrixAdjacency() {
-        return this.matrixAdjacency;
+    public AdjacencyMatrix<Node<ICell>> getMatrixAdjacency() {
+        return this.adjacencyMatrix;
     }
 
     @Override

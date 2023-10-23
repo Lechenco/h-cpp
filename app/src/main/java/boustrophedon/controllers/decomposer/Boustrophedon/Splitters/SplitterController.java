@@ -13,7 +13,7 @@ import boustrophedon.domain.decomposer.enums.Events;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.MiddleSplitter;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.NoneSplitter;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.OutSplitter;
-import boustrophedon.provider.graph.MatrixAdjacency;
+import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.Node;
 
 public class SplitterController {
@@ -26,7 +26,7 @@ public class SplitterController {
         this.criticalPoints = criticalPoints;
     }
 
-    public MatrixAdjacency<Node<ICell>> execute() throws ExceedNumberOfAttempts {
+    public AdjacencyMatrix<Node<ICell>> execute() throws ExceedNumberOfAttempts {
         this.remainingPoints = this.criticalPoints;
         this.matrixController = new MatrixController();
 
