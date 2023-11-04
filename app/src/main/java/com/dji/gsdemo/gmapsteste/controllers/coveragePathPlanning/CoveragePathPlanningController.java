@@ -3,6 +3,7 @@ package com.dji.gsdemo.gmapsteste.controllers.coveragePathPlanning;
 import android.os.Handler;
 
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
+import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.CalcBestCellOrderRunnable;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.CalcObjectiveMatrixRunnable;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.DecomposerRunnable;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.WalkerRunnable;
@@ -20,23 +21,26 @@ import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.CenterOfMassFunction;
 import boustrophedon.provider.graph.Node;
 
+
 public class CoveragePathPlanningController {
     private AdjacencyMatrix<Node<ICell>> adjacencyMatrix;
     private IObjectiveMatrix<IPolygon> objectiveMatrix;
+
+    private Collection<Integer> cellsOrder;
     private final Handler handler;
 
     public CoveragePathPlanningController(Handler handler) {
         this.handler = handler;
     }
 
-    public void decompose(IPolygon polygon, RunnableCallback<ArrayList<ICell>> callback) {
+    public Thread decompose(IPolygon polygon, RunnableCallback<ArrayList<ICell>> callback) {
         DecomposerRunnable decomposerRunnable = new DecomposerRunnable(polygon, handler, new RunnableCallback<AdjacencyMatrix<Node<ICell>>>() {
             @Override
             public void onComplete(AdjacencyMatrix<Node<ICell>> result) {
                 adjacencyMatrix = result;
                 ArrayList<ICell> cells = result.getNodes()
                         .stream()
-                        .map(Node<ICell>::getObject)
+                        .map(Node::getObject)
                                 .collect(Collectors.toCollection(ArrayList::new));
                 callback.onComplete(cells);
             }
@@ -47,10 +51,12 @@ public class CoveragePathPlanningController {
             }
         });
 
-        new Thread(decomposerRunnable).start();
+        Thread thread = new Thread(decomposerRunnable);
+        thread.start();
+        return thread;
     }
 
-    public void walk(ICell cell, RunnableCallback<IPolyline> callback) {
+    public Thread walk(ICell cell, RunnableCallback<IPolyline> callback) {
         WalkerRunnable walkerRunnable = new WalkerRunnable(cell, this.handler, new RunnableCallback<IPolyline>() {
             @Override
             public void onComplete(IPolyline result) {
@@ -63,15 +69,17 @@ public class CoveragePathPlanningController {
             }
         });
 
-        new Thread(walkerRunnable).start();
+        Thread thread = new Thread(walkerRunnable);
+        thread.start();
+        return thread;
     }
-    public void walkAll(RunnableCallback<ArrayList<IPolyline>> callback) {
+    public Thread walkAll(RunnableCallback<ArrayList<IPolyline>> callback) {
         Collection<ICell> cells = this.adjacencyMatrix
                 .getNodes().stream().map(Node::getObject)
                 .collect(Collectors.toCollection(ArrayList::new));
-        walkAll(cells, callback);
+        return walkAll(cells, callback);
     }
-    public void walkAll(Collection<ICell> cells, RunnableCallback<ArrayList<IPolyline>> callback) {
+    public Thread walkAll(Collection<ICell> cells, RunnableCallback<ArrayList<IPolyline>> callback) {
         Runnable runnable = () -> {
             ArrayList<IPolyline> polylines = new ArrayList<>();
             for (ICell cell : cells) {
@@ -91,18 +99,20 @@ public class CoveragePathPlanningController {
             callback.onComplete(polylines);
         };
 
-        new Thread(runnable).start();
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
     }
 
-    public void calcObjective(RunnableCallback<IObjectiveMatrix<IPolygon>> callback) {
+    public Thread calcObjective(RunnableCallback<IObjectiveMatrix<IPolygon>> callback) {
         ArrayList<IPolygon> polygons = this.adjacencyMatrix
                 .getNodes().stream().map(node -> node.getObject().getPolygon())
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        calcObjective(polygons, callback);
+        return calcObjective(polygons, callback);
     }
 
-    public void calcObjective(ArrayList<IPolygon> polygons, RunnableCallback<IObjectiveMatrix<IPolygon>> callback) {
+    public Thread calcObjective(ArrayList<IPolygon> polygons, RunnableCallback<IObjectiveMatrix<IPolygon>> callback) {
         IObjectiveFunction<IPolygon> function = new CenterOfMassFunction();
         CalcObjectiveMatrixRunnable matrixRunnable = new CalcObjectiveMatrixRunnable(polygons, function, handler, new RunnableCallback<IObjectiveMatrix<IPolygon>>() {
             @Override
@@ -117,6 +127,30 @@ public class CoveragePathPlanningController {
             }
         });
 
-        new Thread(matrixRunnable).start();
+        Thread thread = new Thread(matrixRunnable);
+        thread.start();
+        return thread;
+    }
+
+    public Thread calcBestCellOrder(RunnableCallback<Collection<Integer>> callback) {
+        return calcBestCellOrder(0, callback);
+    }
+    public Thread calcBestCellOrder(int starterCell, RunnableCallback<Collection<Integer>> callback) {
+        CalcBestCellOrderRunnable calcBestCellOrderRunnable = new CalcBestCellOrderRunnable(this.objectiveMatrix, starterCell, handler, new RunnableCallback<Collection<Integer>>() {
+            @Override
+            public void onComplete(Collection<Integer> result) {
+                cellsOrder = result;
+                callback.onComplete(result);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                callback.onError(e);
+            }
+        });
+
+        Thread thread = new Thread(calcBestCellOrderRunnable);
+        thread.start();
+        return thread;
     }
 }

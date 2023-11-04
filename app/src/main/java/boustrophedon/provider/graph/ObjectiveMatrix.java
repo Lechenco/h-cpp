@@ -4,6 +4,9 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.OptionalDouble;
 
 import boustrophedon.domain.graph.error.ElementNotFoundedException;
@@ -47,6 +50,11 @@ public class ObjectiveMatrix<T> implements IObjectiveMatrix<T> {
     }
 
     @Override
+    public ArrayList<T> getNodes() {
+        return this.nodes;
+    }
+
+    @Override
     public double getObjective(int i, int j) {
         return this.objectiveMatrix[i][j];
     }
@@ -68,12 +76,35 @@ public class ObjectiveMatrix<T> implements IObjectiveMatrix<T> {
     public int getBestObjectiveIndex(T i) throws ElementNotFoundedException {
         int rowIndex = this.nodes.indexOf(i);
 
-        if (rowIndex == -1)
+        return getBestObjectiveIndex(rowIndex);
+    }
+    @Override
+    public int getBestObjectiveIndex(int  rowIndex) throws ElementNotFoundedException {
+        if (rowIndex == -1 || rowIndex >= this.nodes.size())
             throw new ElementNotFoundedException(rowIndex);
         OptionalDouble bestObjectiveOptional = Arrays.stream(this.objectiveMatrix[rowIndex]).min();
 
         if (bestObjectiveOptional.isPresent())
             return ArrayUtils.indexOf(this.objectiveMatrix[rowIndex], bestObjectiveOptional.getAsDouble());
+
+        throw new ElementNotFoundedException();
+    }
+
+    @Override
+    public int getBestObjectiveIndexExcept(int rowIndex, Collection<Integer> ignoreIndexes) throws ElementNotFoundedException {
+        if (rowIndex == -1 || rowIndex >= this.nodes.size())
+            throw new ElementNotFoundedException(rowIndex);
+
+        ArrayList<Double> objectives = new ArrayList<>();
+        for (int i = 0; i < this.nodes.size(); i++) {
+            double v = ignoreIndexes.contains(i) ? Double.MAX_VALUE : this.objectiveMatrix[rowIndex][i];
+            objectives.add(v);
+        }
+
+        Optional<Double> bestObjectiveOptional = objectives.stream().min(Comparator.naturalOrder());
+
+        if (bestObjectiveOptional.isPresent())
+            return ArrayUtils.indexOf(this.objectiveMatrix[rowIndex], bestObjectiveOptional.get());
 
         throw new ElementNotFoundedException();
     }
