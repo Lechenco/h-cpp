@@ -1,4 +1,4 @@
-package boustrophedon.domain.graph;
+package boustrophedon.domain.graph.model;
 
 public interface INode<T> {
     void setIndex(int index);

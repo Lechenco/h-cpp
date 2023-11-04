@@ -6,16 +6,16 @@ import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.Arrays;
 
-import boustrophedon.provider.primitives.Polygon;
+import boustrophedon.domain.primitives.model.IPolygon;
 
 public class PolygonAdapter {
-    public static PolygonOptions toPolygonOptions(Polygon polygon) {
+    public static PolygonOptions toPolygonOptions(IPolygon polygon) {
         return new PolygonOptions().add(
                 polygon.toLatLngArray()
         ).fillColor(Color.GREEN);
     }
 
-    public static PolygonOptions addHole(PolygonOptions options, Polygon hole) {
+    public static PolygonOptions addHole(PolygonOptions options, IPolygon hole) {
         return options.addHole(Arrays.asList(hole.toLatLngArray()));
     }
 }

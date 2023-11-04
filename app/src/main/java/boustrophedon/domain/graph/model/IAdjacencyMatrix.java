@@ -1,4 +1,4 @@
-package boustrophedon.domain.graph;
+package boustrophedon.domain.graph.model;
 
 import java.util.ArrayList;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package boustrophedon.provider.graph;
 
-import boustrophedon.domain.graph.INode;
+import boustrophedon.domain.graph.model.INode;
 
 public class Node<T> implements INode<T> {
     private T object;

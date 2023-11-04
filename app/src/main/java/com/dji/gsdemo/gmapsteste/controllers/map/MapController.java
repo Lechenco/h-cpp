@@ -1,4 +1,4 @@
-package com.dji.gsdemo.gmapsteste.controller.map;
+package com.dji.gsdemo.gmapsteste.controllers.map;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

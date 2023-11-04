@@ -3,7 +3,7 @@ package boustrophedon.provider.graph;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import boustrophedon.domain.graph.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
 
 public class AdjacencyMatrix<T> implements IAdjacencyMatrix<T> {
     private int [][] adjacencyMatrix;
