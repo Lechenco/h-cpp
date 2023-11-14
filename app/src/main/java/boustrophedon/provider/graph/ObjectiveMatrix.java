@@ -14,11 +14,11 @@ import boustrophedon.domain.graph.model.IObjectiveFunction;
 import boustrophedon.domain.graph.model.IObjectiveMatrix;
 
 public class ObjectiveMatrix<T> implements IObjectiveMatrix<T> {
-    private double[][] objectiveMatrix;
+    protected double[][] objectiveMatrix;
     private int length;
     private ArrayList<T> nodes;
 
-    private IObjectiveFunction<T> objectiveFunction;
+    protected IObjectiveFunction<T> objectiveFunction;
 
     public ObjectiveMatrix(ArrayList<T> nodes) {
         this.initiatePrivateFields(nodes);
@@ -111,7 +111,7 @@ public class ObjectiveMatrix<T> implements IObjectiveMatrix<T> {
 
     private void initiatePrivateFields(ArrayList<T> nodes) {
         this.nodes = nodes;
-        this.length = 0;
+        this.length = nodes.size();
         this.objectiveMatrix = new double[length][length];
     }
 }

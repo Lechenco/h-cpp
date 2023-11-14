@@ -32,10 +32,11 @@ public class CalcBestCellOrderRunnable extends RunnableWithCallback<IObjectiveMa
         while(indexes.size() < this.getInput().getNodes().size()) {
             try {
                 currentIndex = this.getInput().getBestObjectiveIndexExcept(currentIndex, indexes);
+                indexes.add(currentIndex);
             } catch (ElementNotFoundedException e) {
-                this.getCallback().onError(e);
+                this.getHandler().post(() -> this.getCallback().onError(e));
             }
         }
-        this.getCallback().onComplete(indexes);
+        this.getHandler().post(() -> this.getCallback().onComplete(indexes));
     }
 }

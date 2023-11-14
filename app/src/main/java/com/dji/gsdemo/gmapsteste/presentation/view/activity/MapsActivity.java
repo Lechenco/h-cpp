@@ -21,11 +21,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.dji.gsdemo.gmapsteste.databinding.ActivityMapsBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
+import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
+import dk.brics.automaton.RunAutomaton;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public static final double AREA_SIZE = 0.005;
@@ -64,42 +67,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         work(middleOutPolygon);
     }
 
-    @NonNull
-    private void work(IPolygon middleOutPolygon) {
-        this.coveragePathPlanningController.decompose(middleOutPolygon, new RunnableCallback<ArrayList<ICell>>() {
-            @Override
-            public void onComplete(ArrayList<ICell> result) {
-                result.forEach(cell ->
-                    mapController.addPolygon(
-                            PolygonAdapter
-                                .toPolygonOptions((Polygon) cell.getPolygon())
-                                .fillColor(Color.argb(33, 0, 0, 200))
-                            )
+    ArrayList<ICell> cells;
+    private void work(IPolygon polygon) {
+        Runnable runnable = () -> {
+            try {
+                IPolyline path = coveragePathPlanningController.generateFinalPathSync(polygon, new Point(0,0));
+                handler.post(() -> mapController.addPolyline(
+                    PolylineAdapter
+                        .toPolylineOptions(path)
+                        .color(Color.argb(200, 54, 173, 56))
+                    )
                 );
 
-                for (ICell cell : result) {
-                    walkCell(cell);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        this.coveragePathPlanningController.decompose(polygon, new RunnableCallback<ArrayList<ICell>>() {
+            final ArrayList<Integer> colors = new ArrayList<>(Arrays.asList(Color.BLUE, Color.RED, Color.MAGENTA, Color.YELLOW));
+            @Override
+            public void onComplete(ArrayList<ICell> result) {
+                cells = result;
+                for (int i = 0; i < result.size(); i++) {
+                    mapController.addPolygon(
+                            PolygonAdapter
+                                    .toPolygonOptions((Polygon) result.get(i).getPolygon())
+                                    .fillColor(colors.get(i)));
                 }
+
+//                new Thread(runnable).start();
+                walkCell(0, 3);
             }
             @Override
             public void onError(Exception e) {
-                mapController.addPolygon(PolygonAdapter.toPolygonOptions(middleOutPolygon)
+                mapController.addPolygon(PolygonAdapter.toPolygonOptions(polygon)
                         .fillColor(Color.argb(33, 0, 200, 0))
                 );
             }
         });
     }
 
-    private void walkCell(ICell cell) {
-        WalkerRunnable walkerRunnable = new WalkerRunnable(cell, handler, new RunnableCallback<IPolyline>() {
+    public void walkCell(int i, int finish) {
+        coveragePathPlanningController.walk(cells.get(i), new RunnableCallback<IPolyline>() {
             @Override
             public void onComplete(IPolyline result) {
-                mapController
-                    .addPolyline(
-                        PolylineAdapter
-                                .toPolylineOptions(result)
-                                .color(Color.argb(200, 54, 173, 56))
-                    );
+                handler.post(() -> mapController.addPolyline(
+                                PolylineAdapter
+                                        .toPolylineOptions(result)
+                                        .color(Color.argb(200, 54, 173, 56))
+                        )
+                );
+
+                if (i < finish) walkCell(i +1, finish);
             }
 
             @Override
@@ -107,8 +126,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
-        Thread walkThread = new Thread(walkerRunnable);
-        walkThread.start();
     }
 
 }
