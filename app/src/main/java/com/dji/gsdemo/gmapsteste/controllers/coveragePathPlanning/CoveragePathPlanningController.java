@@ -6,10 +6,12 @@ import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.CalcBestCellOrderRunnable;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.CalcObjectiveMatrixRunnable;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.DecomposerRunnable;
+import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.WalkAllRunnable;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.WalkerRunnable;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -19,11 +21,10 @@ import boustrophedon.domain.graph.model.IObjectiveMatrix;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
-import boustrophedon.domain.walkers.error.AngleOffLimitsException;
+import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
 import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.CenterOfMassFunction;
 import boustrophedon.provider.graph.Node;
-import boustrophedon.provider.primitives.Polyline;
 
 
 public class CoveragePathPlanningController {
@@ -33,6 +34,7 @@ public class CoveragePathPlanningController {
     private Collection<Integer> cellsOrder;
     private IPolyline finalPath;
     private final Handler handler;
+    private IPoint startPoint;
 
     public CoveragePathPlanningController(Handler handler) {
         this.handler = handler;
@@ -78,36 +80,6 @@ public class CoveragePathPlanningController {
         thread.start();
         return thread;
     }
-    public Thread walkAll(RunnableCallback<ArrayList<IPolyline>> callback) {
-        Collection<ICell> cells = this.adjacencyMatrix
-                .getNodes().stream().map(Node::getObject)
-                .collect(Collectors.toCollection(ArrayList::new));
-        return walkAll(cells, callback);
-    }
-    public Thread walkAll(Collection<ICell> cells, RunnableCallback<ArrayList<IPolyline>> callback) {
-        Runnable runnable = () -> {
-            ArrayList<IPolyline> polylines = new ArrayList<>();
-            for (ICell cell : cells) {
-                WalkerRunnable walkerRunnable = new WalkerRunnable(cell, handler, new RunnableCallback<IPolyline>() {
-                    @Override
-                    public void onComplete(IPolyline result) {
-                        polylines.add(result);
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        callback.onError(e);
-                    }
-                });
-                walkerRunnable.run();
-            }
-            handler.post(() -> callback.onComplete(polylines));
-        };
-
-        Thread thread = new Thread(runnable);
-        thread.start();
-        return thread;
-    }
 
     public Thread calcObjective(RunnableCallback<IObjectiveMatrix<IPolygon>> callback) {
         ArrayList<IPolygon> polygons = this.adjacencyMatrix
@@ -138,7 +110,9 @@ public class CoveragePathPlanningController {
     }
 
     public Thread calcBestCellOrder(RunnableCallback<Collection<Integer>> callback) {
-        return calcBestCellOrder(0, callback);
+        ArrayList<ICell> cells = this.adjacencyMatrix.getNodes().stream().map(Node::getObject).collect(Collectors.toCollection(ArrayList::new));
+        ICell starterCell = CellHelper.getClosestCellToPoint(cells, this.startPoint);
+        return calcBestCellOrder(cells.indexOf(starterCell), callback);
     }
     public Thread calcBestCellOrder(int starterCell, RunnableCallback<Collection<Integer>> callback) {
         CalcBestCellOrderRunnable calcBestCellOrderRunnable = new CalcBestCellOrderRunnable(this.objectiveMatrix, starterCell, handler, new RunnableCallback<Collection<Integer>>() {
@@ -160,53 +134,31 @@ public class CoveragePathPlanningController {
     }
 
     public Thread generateFinalPath(RunnableCallback<IPolyline> callback) {
-        Runnable runnable = () -> {
-            IPolyline path = new Polyline();
-
-            for (int index: this.cellsOrder) {
-                ICell cell = adjacencyMatrix.getNodes().get(index).getObject();
-                RunnableCallback<IPolyline> runnableCallback =  new RunnableCallback<IPolyline>() {
+        ArrayList<ICell> cells = this.adjacencyMatrix.getNodes().stream()
+                .map(Node::getObject).collect(Collectors.toCollection(ArrayList::new));
+        WalkAllRunnable walkAllRunnable = new WalkAllRunnable(
+                new ImmutableTriple<>(cells, this.cellsOrder, this.startPoint),
+                this.handler,
+                new RunnableCallback<IPolyline>() {
                     @Override
                     public void onComplete(IPolyline result) {
-                        System.out.println("CALLBACK");
-                        path.add(result.getPoints());
+                        finalPath = result;
+                        callback.onComplete(result);
                     }
 
                     @Override
                     public void onError(Exception e) {
                         callback.onError(e);
                     }
-                };
-                if (path.getNumberOfPoints() > 0) {
-                    System.out.println("IF");
-                    WalkerRunnable walkerRunnable = new WalkerRunnable(cell, path.getLastPoint(), handler, runnableCallback);
-                    try {
-                        IPolyline polyline = walkerRunnable.walk(cell);
-                        path.add(polyline.getPoints());
-                    } catch (AngleOffLimitsException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    System.out.println("ELSE");
-                    WalkerRunnable walkerRunnable = new WalkerRunnable(cell, handler, runnableCallback);
-                    try {
-                        IPolyline polyline = walkerRunnable.walk(cell);
-                        path.add(polyline.getPoints());
-                    } catch (AngleOffLimitsException e) {
-                        throw new RuntimeException(e);
-                    }
                 }
-            }
-            finalPath = path;
-            handler.post(() -> callback.onComplete(path));
-        };
+        );
 
-        Thread thread = new Thread(runnable);
+        Thread thread = new Thread(walkAllRunnable);
         thread.start();
         return thread;
     }
 
-    public IPolyline generateFinalPathSync(IPolygon polygon, IPoint starterPoint) throws InterruptedException {
+    public IPolyline generateFinalPathSync(IPolygon polygon) throws InterruptedException {
         this.decompose(polygon, new RunnableCallback<ArrayList<ICell>>() {
             @Override
             public void onComplete(ArrayList<ICell> result) {
@@ -229,7 +181,6 @@ public class CoveragePathPlanningController {
 
             }
         }).join(0);
-//        TODO: calc starter cell
         this.calcBestCellOrder(new RunnableCallback<Collection<Integer>>() {
             @Override
             public void onComplete(Collection<Integer> result) {
@@ -254,5 +205,9 @@ public class CoveragePathPlanningController {
         }).join(0);
 
         return  this.finalPath;
+    }
+
+    public void setStartPoint(IPoint startedPoint) {
+        this.startPoint = startedPoint;
     }
 }

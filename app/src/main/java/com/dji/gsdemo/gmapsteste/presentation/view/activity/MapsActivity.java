@@ -12,7 +12,6 @@ import com.dji.gsdemo.gmapsteste.adapter.map.PolygonAdapter;
 import com.dji.gsdemo.gmapsteste.adapter.map.PolylineAdapter;
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
 import com.dji.gsdemo.gmapsteste.controllers.coveragePathPlanning.CoveragePathPlanningController;
-import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.WalkerRunnable;
 import com.dji.gsdemo.gmapsteste.controllers.map.MapController;
 import com.dji.gsdemo.gmapsteste.factories.PolygonFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,11 +23,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import boustrophedon.domain.decomposer.model.ICell;
+import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
-import dk.brics.automaton.RunAutomaton;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public static final double AREA_SIZE = 0.005;
@@ -64,14 +63,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapController.goToLocation(latitude, longitude);
 
         IPolygon middleOutPolygon = PolygonFactory.generateMiddleOut(latitude, longitude, AREA_SIZE);
-        work(middleOutPolygon);
+        IPoint startedPoint = new Point(latitude, longitude - AREA_SIZE / 5);
+        work(middleOutPolygon, startedPoint);
     }
 
     ArrayList<ICell> cells;
-    private void work(IPolygon polygon) {
+    private void work(IPolygon polygon, IPoint startedPoint) {
         Runnable runnable = () -> {
             try {
-                IPolyline path = coveragePathPlanningController.generateFinalPathSync(polygon, new Point(0,0));
+                IPolyline path = coveragePathPlanningController.generateFinalPathSync(polygon);
                 handler.post(() -> mapController.addPolyline(
                     PolylineAdapter
                         .toPolylineOptions(path)
@@ -83,6 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 throw new RuntimeException(e);
             }
         };
+        this.coveragePathPlanningController.setStartPoint(startedPoint);
         this.coveragePathPlanningController.decompose(polygon, new RunnableCallback<ArrayList<ICell>>() {
             final ArrayList<Integer> colors = new ArrayList<>(Arrays.asList(Color.BLUE, Color.RED, Color.MAGENTA, Color.YELLOW));
             @Override
@@ -91,12 +92,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int i = 0; i < result.size(); i++) {
                     mapController.addPolygon(
                             PolygonAdapter
-                                    .toPolygonOptions((Polygon) result.get(i).getPolygon())
+                                    .toPolygonOptions(result.get(i).getPolygon())
                                     .fillColor(colors.get(i)));
                 }
 
-//                new Thread(runnable).start();
-                walkCell(0, 3);
+                new Thread(runnable).start();
             }
             @Override
             public void onError(Exception e) {

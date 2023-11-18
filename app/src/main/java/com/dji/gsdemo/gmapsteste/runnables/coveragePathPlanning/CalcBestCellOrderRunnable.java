@@ -13,11 +13,9 @@ import boustrophedon.domain.graph.model.IObjectiveMatrix;
 import boustrophedon.domain.primitives.model.IPolygon;
 
 
+
 public class CalcBestCellOrderRunnable extends RunnableWithCallback<IObjectiveMatrix<IPolygon>, Collection<Integer>> {
     int startIndex;
-    public CalcBestCellOrderRunnable(IObjectiveMatrix<IPolygon> input, Handler handler, RunnableCallback<Collection<Integer>> callback) {
-        super(input, handler, callback);
-    }
     public CalcBestCellOrderRunnable(IObjectiveMatrix<IPolygon> input, int startIndex, Handler handler, RunnableCallback<Collection<Integer>> callback) {
         super(input, handler, callback);
         this.startIndex = startIndex;

@@ -97,11 +97,6 @@ public class Walker implements IWalker {
     }
 
     @Override
-    public IPolyline generatePath(IPolygon polygon) {
-        return null;
-    }
-
-    @Override
     public IPolyline generatePath(IPolygon polygon, IPoint initialPoint) {
         this.setPolygon(polygon);
         return this.generatePath(initialPoint);
