@@ -8,7 +8,9 @@ import com.dji.gsdemo.gmapsteste.runnables.RunnableWithCallback;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IPoint;
