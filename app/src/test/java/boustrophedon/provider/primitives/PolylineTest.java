@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolyline;
@@ -124,7 +125,7 @@ public class PolylineTest {
     @Test
     public void testAddMethodWithCollection() {
         Faker faker = new Faker();
-        ArrayList<IPoint> points = new ArrayList<>(Arrays.asList(
+        ArrayList<IPoint> points = new ArrayList<>(Collections.singletonList(
                 new Point(faker.number().randomDouble(3, 0, 1000),
                         faker.number().randomDouble(3, 0, 1000))
         ));
@@ -144,7 +145,7 @@ public class PolylineTest {
     @Test
     public void testLatLngMethod() {
         Faker faker = new Faker();
-        ArrayList<IPoint> points = new ArrayList<>(Arrays.asList(
+        ArrayList<IPoint> points = new ArrayList<>(Collections.singletonList(
                 new Point(faker.number().randomDouble(3, 0, 90),
                         faker.number().randomDouble(3, 0, 90))
         ));

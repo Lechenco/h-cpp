@@ -96,10 +96,22 @@ public class GA {
 
     public static double getFirstHalfAngle(double angle) {
         double anglePositive = getPositiveAngle(angle);
-        return Math.abs(anglePositive - Math.PI) >= PRECISION ? anglePositive - Math.PI : anglePositive;
+        return Math.abs(anglePositive - Math.PI) <= PRECISION ? anglePositive - Math.PI : anglePositive;
     }
 
     public static boolean checkAngles(double angle1, double angle2) {
         return Math.abs(getFirstHalfAngle(angle1) - getFirstHalfAngle(angle2)) <= PRECISION;
+    }
+
+    public static boolean checkOrthogonality(double angle1, double angle2) {
+        double angleDiff = Math.abs(getFirstHalfAngle(angle1) - getFirstHalfAngle(angle2));
+
+        return GA.checkAngles(angleDiff, Math.PI / 2);
+    }
+    public static boolean isParallelToX(double angle) {
+        return Math.abs(Math.sin(angle)) <= PRECISION;
+    }
+    public static boolean isParallelToY(double angle) {
+        return Math.abs(Math.cos(angle)) <= PRECISION;
     }
 }

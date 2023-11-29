@@ -1,46 +1,23 @@
 package boustrophedon.provider.decomposer.Boustrophedon;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
+import boustrophedon.controllers.decomposer.Boustrophedon.Splitters.SplitterController;
+import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.DecomposerConfig;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.IPolygonDecomposer;
-import boustrophedon.domain.primitives.model.IBorder;
-import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.factories.decomposer.Boustrophedon.CriticalPoint.CriticalPointFactory;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
-import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPointerHelper;
-import boustrophedon.provider.graph.MatrixAdjacency;
+import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.Node;
 
 public class Decomposer implements IPolygonDecomposer {
     private DecomposerConfig config;
     private ArrayList<CriticalPoint> criticalPoints;
 
-    private MatrixAdjacency<Node<ICell>> matrixAdjacency;
-
-    Queue<Integer> inOutQueue;
-    Stack<Integer> sourceStack;
-    Stack<Integer> destinationStack;
-
-    Map<Events, Integer> eventsCount = new HashMap<Events, Integer>() {{
-        put(Events.IN, 0);
-        put(Events.MIDDLE, 0);
-        put(Events.OUT, 0);
-        put(Events.NONE, 0);
-        put(Events.UNKNOWN, 0);
-    }};
+    private AdjacencyMatrix<Node<ICell>> adjacencyMatrix;
 
     public Decomposer() {
         this.setConfig(new DecomposerConfig());
@@ -51,62 +28,22 @@ public class Decomposer implements IPolygonDecomposer {
         this.config = config;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public ArrayList<ICell> decompose(IPolygon polygon) {
-        this.criticalPoints = this.getCriticalPoints(polygon);
-        this.matrixAdjacency = new MatrixAdjacency<>();
+    public AdjacencyMatrix<Node<ICell>> decompose(IPolygon polygon) throws ExceedNumberOfAttempts {
+        this.criticalPoints = CriticalPointFactory.execute(polygon);
 
-        this.inOutQueue = new PriorityQueue<>();
-        this.sourceStack = new Stack<>();
-        this.destinationStack = new Stack<>();
-        for (CriticalPoint criticalPoint : criticalPoints) {
-            criticalPoint.detectPointEvent(polygon);
-        }
-
-        addIntersections();
-        ArrayList<CriticalPoint> sortedCP = CriticalPointerHelper.sort(this.criticalPoints);
-// TODO Integrate With SplitterController
-
-        return null;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private ArrayList<CriticalPoint> getAllIntersections() {
-        return (ArrayList<CriticalPoint>) this.criticalPoints
-                .stream()
-                .map(CriticalPoint::getIntersectionsInNormal)
-                .flatMap(ArrayList::stream)
-                .collect(Collectors.toList());
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void addIntersections() {
-        ArrayList<CriticalPoint> intersections = getAllIntersections();
-
-        intersections.forEach(element -> CriticalPointerHelper.addIntersections(element, this.criticalPoints));
+        SplitterController splitterController = new SplitterController(this.criticalPoints);
+        this.adjacencyMatrix = splitterController.execute();
+        return this.adjacencyMatrix;
     }
 
     @Override
-    public MatrixAdjacency<Node<ICell>> getMatrixAdjacency() {
-        return this.matrixAdjacency;
+    public AdjacencyMatrix<Node<ICell>> getMatrixAdjacency() {
+        return this.adjacencyMatrix;
     }
 
     @Override
     public ArrayList<ICell> getCells() {
         return null;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    protected ArrayList<CriticalPoint> getCriticalPoints(IPolygon polygon) {
-        ArrayList<CriticalPoint> criticalPoints = new ArrayList<>();
-
-        for (IPoint point : polygon.getPoints()) {
-            List<IBorder> pointBorders = polygon.getBorders()
-                    .stream().filter((b) -> b.isOnBorder(point)).collect(Collectors.toList());
-            criticalPoints.add(new CriticalPoint(point, new ArrayList<>(pointBorders)));
-        }
-
-        return criticalPoints;
     }
 }

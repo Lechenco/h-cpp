@@ -1,6 +1,7 @@
 package boustrophedon.provider.walkers;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import boustrophedon.domain.walkers.model.IWalker;
 import boustrophedon.domain.walkers.model.WalkerConfig;
@@ -19,6 +20,7 @@ public class Walker implements IWalker {
     protected ArrayList<IBorder> walls;
     protected IBorder currentWall;
     protected IPoint goal;
+    protected IPoint start;
     protected double directionStartToGoal;
     public Walker() {
         this.setConfig(new WalkerConfig());
@@ -59,49 +61,68 @@ public class Walker implements IWalker {
     }
 
     protected IPoint walkAside(IPoint currentPoint) {
-        double angleBetweenBorders = Math.abs(this.config.getDirection() - this.currentWall.getPositiveAngle());
-        double distanceToWalk = Math.abs(config.getDistanceBetweenPaths() / Math.sin(angleBetweenBorders));
-        double currentWallAngle = this.currentWall.getAngle();
-        double cosStartToGoal = Math.cos(this.directionStartToGoal);
-        double absDiffCosGoalAndWall = Math.abs(cosStartToGoal - Math.cos(currentWallAngle));
-        double absDiffCosGoalAndWall180 = Math.abs(cosStartToGoal - Math.cos(currentWallAngle + Math.PI));
+        return this.walkAside(currentPoint, this.config.getDistanceBetweenPaths());
+    }
 
-        IPoint nextPoint;
+    private double calcDistanceToWalk(double distance) {
+        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.config.getDirection();
+        return Math.abs(distance / Math.sin(angleBetweenBorders));
+    }
+    private double calcDistance(double distanceToWalk) {
+        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.config.getDirection();
+        return Math.abs(distanceToWalk * Math.sin(angleBetweenBorders));
+    }
 
-        if (Math.abs(Math.abs(currentWallAngle - this.directionStartToGoal) - Math.PI / 2) < 0.001) {
-            nextPoint = WalkerHelper.walkAsideWallAndGoalOrthogonal(
-             currentPoint, distanceToWalk, currentWallAngle, absDiffCosGoalAndWall, absDiffCosGoalAndWall180
-            );
+    protected IPoint walkAside(IPoint currentPoint, double distance) {
+        if (this.currentWall == null) return null;
+
+        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.config.getDirection(); // Theta
+        double normalizedDirectionToGoal = this.directionStartToGoal - this.config.getDirection(); //Beta
+
+        double distanceToWalk = this.calcDistanceToWalk(distance);
+        double currentWallAngle = this.currentWall.getAngleFirstHalf();
+
+        // TODO: case Theta or Beta parallel to X
+        if (Math.signum(Math.sin(angleBetweenBorders)) == Math.signum(Math.sin(normalizedDirectionToGoal))) {
+            return currentPoint.walk(distanceToWalk, currentWallAngle);
         }
 
-        else if (Math.abs(Math.cos(currentWallAngle)) < 0.001 || (Math.abs(cosStartToGoal) < 0.001)) {
-            double sinStartToGoal = Math.sin(this.directionStartToGoal);
-            nextPoint = WalkerHelper.walkAsideWallOrGoalParallelToXAxis(
-                    currentPoint, distanceToWalk, currentWallAngle, sinStartToGoal
-            );
-        } else {
-            nextPoint = WalkerHelper.walkAside(
-                    currentPoint, distanceToWalk, currentWallAngle, absDiffCosGoalAndWall, absDiffCosGoalAndWall180
-            );
-        }
+        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+    }
 
+    private boolean walkedOutOfWall(IPoint currentPoint) {
+        return !this.currentWall.isOnBorder(currentPoint);
+    }
+
+    protected IPoint walkAsideAndValidate(IPoint currentPoint) {
+        IPoint nextPoint = walkAside(currentPoint);
+
+        if (walkedOutOfWall(nextPoint)) {
+            IPoint closestWallPoint = WalkerHelper.getClosestWallVertices(nextPoint, this.currentWall);
+
+            Optional<IBorder> nextWall = this.walls.stream()
+                    .filter(w -> w.isOnBorder(closestWallPoint) && w != this.currentWall).findFirst();
+            if (nextWall.isPresent()) {
+                double distanceOutOfWall = closestWallPoint.calcDistance(nextPoint);
+
+                double remainDistance = this.calcDistance(distanceOutOfWall);
+
+                this.currentWall = nextWall.get();
+                nextPoint = walkAside(closestWallPoint, remainDistance);
+            }
+        }
 
         return nextPoint;
     }
-
     protected IPoint walkAside(IPolygon polygon, IPoint currentPoint) {
         this.polygon = polygon;
         return this.walkAside(currentPoint);
     }
 
     @Override
-    public IPolyline generatePath(IPolygon polygon) {
-        return null;
-    }
-
-    @Override
     public IPolyline generatePath(IPolygon polygon, IPoint initialPoint) {
-        return null;
+        this.setPolygon(polygon);
+        return this.generatePath(initialPoint);
     }
 
     public WalkerConfig getConfig() {
@@ -113,10 +134,12 @@ public class Walker implements IWalker {
     }
 
     protected IPoint calcGoal(IPoint startPoint) {
+        this.start = startPoint;
         IPoint goalClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() - Math.PI / 2);
         IPoint goalAntiClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() + Math.PI / 2);
         this.goal =
-                startPoint.calcDistance(goalClockWise) > startPoint.calcDistance(goalAntiClockWise)
+                Math.abs(GA.calcDistanceWithDirection(startPoint, goalClockWise, this.config.getDirection() + Math.PI / 2))
+                        > Math.abs(GA.calcDistanceWithDirection(startPoint, goalAntiClockWise, this.config.getDirection() + Math.PI / 2))
                     ? goalClockWise : goalAntiClockWise;
         this.directionStartToGoal = GA.calcAngle(startPoint, this.goal);
         return this.goal;
@@ -152,11 +175,23 @@ public class Walker implements IWalker {
 
             this.path.add(currentPoint);
             currentPoint = this.walkToTheOtherSide(currentPoint);
+
+            if (currentPoint == null && this.path.getNumberOfPoints() == 1) {
+                IPoint finalCurrentPoint = this.path.getLastPoint();
+                this.currentWall = this.walls
+                        .stream()
+                        .filter(w -> w.isOnBorder(finalCurrentPoint))
+                        .findFirst().orElse(null);
+
+                currentPoint = this.walkAsideAndValidate(finalCurrentPoint);
+                continue;
+            }
+
             if (currentPoint == null || currentPoint == this.path.getLastPoint())
                 break;
 
             this.path.add(currentPoint);
-            currentPoint = this.walkAside(currentPoint);
+            currentPoint = this.walkAsideAndValidate(currentPoint);
         }
 
         return this.path;

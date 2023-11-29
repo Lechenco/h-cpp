@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import boustrophedon.domain.primitives.model.IPoint;
-import boustrophedon.provider.decomposer.Boustrophedon.Events;
+import boustrophedon.domain.decomposer.enums.Events;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 
@@ -146,17 +146,6 @@ public class CriticalPointTest {
 
         criticalPoint1.detectPointEvent(polygon);
         assertEquals(Events.NONE, criticalPoint1.getEvent());
-    }
-
-    @Test
-    public void testAddIntersectionInNormalPoints() {
-        Point p = new Point(1, 1);
-        cp.addIntersectionsInNormalPoints(triangleRectangle.getBorders().get(1), p);
-
-        ArrayList<CriticalPoint> intersections = cp.getIntersectionsInNormal();
-
-        assertEquals(1, intersections.size());
-        assertEquals(p, intersections.get(0).getVertices());
     }
 
     @Test

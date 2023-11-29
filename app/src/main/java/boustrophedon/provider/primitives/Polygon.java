@@ -1,9 +1,5 @@
 package boustrophedon.provider.primitives;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -31,7 +27,6 @@ public class Polygon implements IPolygon {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public LatLng[] toLatLngArray() {
         return points.stream()
                 .map(IPoint::toLatLng).toArray(LatLng[]::new);

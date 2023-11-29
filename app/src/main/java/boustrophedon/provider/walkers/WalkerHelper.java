@@ -7,6 +7,7 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
 import boustrophedon.provider.primitives.Border;
+import boustrophedon.utils.GA;
 
 public class WalkerHelper {
     static protected IPoint calcIntersectionToWall(IPoint currentPoint, IBorder wall, double angle) {
@@ -89,5 +90,13 @@ public class WalkerHelper {
             return currentPoint.walk(distanceToWalk, currentWallAngle);
 
         return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+    }
+
+    static protected  IPoint getClosestWallVertices(IPoint point, IBorder wall) {
+        return Math.abs(
+                GA.calcDistance(point, wall.getFirstVertice())
+        ) < Math.abs(
+                GA.calcDistance(point, wall.getSecondVertice())
+        ) ? wall.getFirstVertice() : wall.getSecondVertice();
     }
 }

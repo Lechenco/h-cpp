@@ -1,9 +1,5 @@
 package boustrophedon.provider.decomposer.Boustrophedon.Splitters;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -19,22 +15,23 @@ public class MiddleSplitter extends Splitter {
         super(criticalPoints);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint) throws ExceedNumberOfAttempts {
         walked.clear();
         deadEnd.clear();
         walked.push(splitPoint);
         boolean looped = false;
+        int walkSizeLastTime = 0;
         int attempts = 0;
         while (!looped && attempts < NUMBER_OF_ATTEMPTS) {
             this.walk(cellPoints);
             looped = connectsWithEdges(splitPoint) && walked.size() > 2;
 
-            if (!looped && walked.size() < 1) {
-                deadEnd.push(walked.pop());
+            if (!looped && walked.size() == walkSizeLastTime) {
+                deadEnd.push(walked.size() > 1 ? walked.pop() : walked.peek());
+                attempts++;
             }
-            attempts++;
+            walkSizeLastTime = walked.size();
         }
 
         if (attempts == NUMBER_OF_ATTEMPTS)

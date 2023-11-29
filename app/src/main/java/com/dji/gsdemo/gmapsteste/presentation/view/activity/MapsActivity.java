@@ -1,31 +1,38 @@
 package com.dji.gsdemo.gmapsteste.presentation.view.activity;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.dji.gsdemo.gmapsteste.R;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.dji.gsdemo.gmapsteste.adapter.map.PolygonAdapter;
+import com.dji.gsdemo.gmapsteste.adapter.map.PolylineAdapter;
+import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
+import com.dji.gsdemo.gmapsteste.controllers.coveragePathPlanning.CoveragePathPlanningController;
+import com.dji.gsdemo.gmapsteste.controllers.map.MapController;
+import com.dji.gsdemo.gmapsteste.factories.PolygonFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.dji.gsdemo.gmapsteste.databinding.ActivityMapsBinding;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import boustrophedon.Boustrophedon;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import boustrophedon.domain.decomposer.model.ICell;
+import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
-import boustrophedon.provider.primitives.Polyline;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-
-    private GoogleMap mMap;
+    public static final double AREA_SIZE = 0.005;
+    private MapController mapController;
+    private CoveragePathPlanningController coveragePathPlanningController;
     private ActivityMapsBinding binding;
 
     @Override
@@ -38,64 +45,87 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
+    Handler handler = new Handler();
+
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mapController = new MapController(googleMap);
+        coveragePathPlanningController = new CoveragePathPlanningController(handler);
 
-        // Add a marker in Sydney and move the camera
-        LatLng cornelio = new LatLng(-23.1813, -50.648);
-//        mMap.addMarker(new MarkerOptions().position(cornelio).title("Cornélio Procópio"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(cornelio));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
+        double latitude = Double.parseDouble(getString(R.string.CORNELIO_LATITUDE));
+        double longitude = Double.parseDouble(getString(R.string.CORNELIO_LONGITUDE));
 
+        mapController.goToLocation(latitude, longitude);
 
-        double squareSize = 0.005;
-
-        double angle = Math.PI / 4;
-        //Call Boustrophedon Function
-//        Polygon square = new Polygon(
-//                new Point(cornelio.latitude - squareSize, cornelio.longitude + squareSize),
-//                new Point(cornelio.latitude + squareSize, cornelio.longitude + squareSize),
-//                new Point(cornelio.latitude + squareSize, cornelio.longitude - squareSize),
-//                new Point(cornelio.latitude - squareSize, cornelio.longitude - squareSize)
-//        );
-
-        Polygon square = new Polygon(
-                new Point(cornelio.latitude - 2 * squareSize, cornelio.longitude),
-                new Point(cornelio.latitude, cornelio.longitude + 2 * squareSize),
-//                new Point(cornelio.latitude + 2 * squareSize, cornelio.longitude),
-                new Point(cornelio.latitude, cornelio.longitude - 2 * squareSize)
-        );
-
-        Polyline path = (Polyline) new Boustrophedon(square).generatePath();
-
-        PolygonOptions polyOptions = new PolygonOptions().add(
-                square.toLatLngArray()
-        ).fillColor(Color.GREEN);
-        mMap.addPolygon(polyOptions);
-
-        PolylineOptions polylineOptions = new PolylineOptions().add(
-                path.toLatLngArray()
-        ).color(Color.RED);
-
-        mMap.addPolyline(polylineOptions);
-
-//        for (LatLng p : polylineOptions.getPoints()) {
-//            mMap.addMarker(new MarkerOptions().position(p));
-//        }
+        IPolygon middleOutPolygon = PolygonFactory.generateMiddleOut(latitude, longitude, AREA_SIZE);
+        IPoint startedPoint = new Point(latitude, longitude - AREA_SIZE / 5);
+        work(middleOutPolygon, startedPoint);
     }
+
+    ArrayList<ICell> cells;
+    private void work(IPolygon polygon, IPoint startedPoint) {
+        Runnable runnable = () -> {
+            try {
+                IPolyline path = coveragePathPlanningController.generateFinalPathSync(polygon);
+                handler.post(() -> mapController.addPolyline(
+                    PolylineAdapter
+                        .toPolylineOptions(path)
+                        .color(Color.argb(200, 54, 173, 56))
+                    )
+                );
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        this.coveragePathPlanningController.setStartPoint(startedPoint);
+        this.coveragePathPlanningController.decompose(polygon, new RunnableCallback<ArrayList<ICell>>() {
+            final ArrayList<Integer> colors = new ArrayList<>(Arrays.asList(Color.BLUE, Color.RED, Color.MAGENTA, Color.YELLOW));
+            @Override
+            public void onComplete(ArrayList<ICell> result) {
+                cells = result;
+                for (int i = 0; i < result.size(); i++) {
+                    mapController.addPolygon(
+                            PolygonAdapter
+                                    .toPolygonOptions(result.get(i).getPolygon())
+                                    .fillColor(colors.get(i)));
+                }
+
+                new Thread(runnable).start();
+            }
+            @Override
+            public void onError(Exception e) {
+                mapController.addPolygon(PolygonAdapter.toPolygonOptions(polygon)
+                        .fillColor(Color.argb(33, 0, 200, 0))
+                );
+            }
+        });
+    }
+
+    public void walkCell(int i, int finish) {
+        coveragePathPlanningController.walk(cells.get(i), new RunnableCallback<IPolyline>() {
+            @Override
+            public void onComplete(IPolyline result) {
+                handler.post(() -> mapController.addPolyline(
+                                PolylineAdapter
+                                        .toPolylineOptions(result)
+                                        .color(Color.argb(200, 54, 173, 56))
+                        )
+                );
+
+                if (i < finish) walkCell(i +1, finish);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
+
 }
