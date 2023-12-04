@@ -14,12 +14,13 @@ import org.mockito.Mockito;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
-import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.domain.primitives.model.IArea;
 
-import boustrophedon.provider.decomposer.Boustrophedon.Decomposer;
+import boustrophedon.provider.decomposer.Boustrophedon.AreaDecomposer;
+import boustrophedon.provider.decomposer.Boustrophedon.PolygonDecomposer;
 import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.Node;
-import boustrophedon.provider.primitives.Polygon;
+import boustrophedon.provider.primitives.Area;
 
 public class DecomposerRunnableTest {
 
@@ -36,30 +37,28 @@ public class DecomposerRunnableTest {
     }
     @Test
     public void testConstructor() {
-        IPolygon polygonMock = Mockito.mock(Polygon.class);
+        IArea areaMock = Mockito.mock(Area.class);
         Handler handlerMock = Mockito.mock(Handler.class);
         RunnableCallback<AdjacencyMatrix<Node<ICell>>> callback = new Callback();
-        DecomposerRunnable runnable = new DecomposerRunnable(polygonMock, handlerMock, callback);
+        DecomposerRunnable runnable = new DecomposerRunnable(areaMock, handlerMock, callback);
 
-        assertEquals(polygonMock, runnable.getInput());
+        assertEquals(areaMock, runnable.getInput());
         assertEquals(handlerMock, runnable.getHandler());
         assertEquals(callback, runnable.getCallback());
     }
     @Test
     public void testRun() {
-        IPolygon polygonMock = Mockito.mock(Polygon.class);
+        IArea areaMock = Mockito.mock(Area.class);
         Handler handlerMock = Mockito.mock(Handler.class);
         RunnableCallback<AdjacencyMatrix<Node<ICell>>> callback = Mockito.mock(Callback.class);
 
         AdjacencyMatrix<Node<ICell>> matrix = (AdjacencyMatrix<Node<ICell>>) Mockito.mock(AdjacencyMatrix.class);
-        try(MockedConstruction<Decomposer> decomposerMocked = Mockito.mockConstruction(Decomposer.class,(mock, context)-> {
-            when(mock.decompose(Mockito.any())).thenReturn(matrix);
-        })){
+        try(MockedConstruction<AreaDecomposer> decomposerMocked = Mockito.mockConstruction(AreaDecomposer.class,(mock, context)-> when(mock.decompose(Mockito.any())).thenReturn(matrix))){
             Mockito.when(handlerMock.post(Mockito.any())).then(invocation -> {
                 ((Runnable) invocation.getArgument(0)).run();
                 return null;
             });
-            DecomposerRunnable runnable = new DecomposerRunnable(polygonMock, handlerMock, callback);
+            DecomposerRunnable runnable = new DecomposerRunnable(areaMock, handlerMock, callback);
             runnable.run();
 
             assertEquals(1, decomposerMocked.constructed().size());
@@ -69,18 +68,16 @@ public class DecomposerRunnableTest {
     }
     @Test
     public void testRun_onError() {
-        IPolygon polygonMock = Mockito.mock(Polygon.class);
+        IArea areaMock = Mockito.mock(Area.class);
         Handler handlerMock = Mockito.mock(Handler.class);
         RunnableCallback<AdjacencyMatrix<Node<ICell>>> callback = Mockito.mock(Callback.class);
 
-        try(MockedConstruction<Decomposer> decomposerMocked = Mockito.mockConstruction(Decomposer.class,(mock, context)-> {
-            when(mock.decompose(Mockito.any())).thenThrow(ExceedNumberOfAttempts.class);
-        })){
+        try(MockedConstruction<PolygonDecomposer> decomposerMocked = Mockito.mockConstruction(PolygonDecomposer.class,(mock, context)-> when(mock.decompose(Mockito.any())).thenThrow(ExceedNumberOfAttempts.class))){
             Mockito.when(handlerMock.post(Mockito.any())).then(invocation -> {
                 ((Runnable) invocation.getArgument(0)).run();
                 return null;
             });
-            DecomposerRunnable runnable = new DecomposerRunnable(polygonMock, handlerMock, callback);
+            DecomposerRunnable runnable = new DecomposerRunnable(areaMock, handlerMock, callback);
             runnable.run();
 
             assertEquals(1, decomposerMocked.constructed().size());

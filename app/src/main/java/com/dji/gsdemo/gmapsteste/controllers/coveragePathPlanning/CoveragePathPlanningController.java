@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.graph.model.IObjectiveFunction;
 import boustrophedon.domain.graph.model.IObjectiveMatrix;
+import boustrophedon.domain.primitives.model.IArea;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
@@ -40,8 +41,8 @@ public class CoveragePathPlanningController {
         this.handler = handler;
     }
 
-    public Thread decompose(IPolygon polygon, RunnableCallback<ArrayList<ICell>> callback) {
-        DecomposerRunnable decomposerRunnable = new DecomposerRunnable(polygon, handler, new RunnableCallback<AdjacencyMatrix<Node<ICell>>>() {
+    public Thread decompose(IArea area, RunnableCallback<ArrayList<ICell>> callback) {
+        DecomposerRunnable decomposerRunnable = new DecomposerRunnable(area, handler, new RunnableCallback<AdjacencyMatrix<Node<ICell>>>() {
             @Override
             public void onComplete(AdjacencyMatrix<Node<ICell>> result) {
                 adjacencyMatrix = result;
@@ -158,8 +159,8 @@ public class CoveragePathPlanningController {
         return thread;
     }
 
-    public IPolyline generateFinalPathSync(IPolygon polygon) throws InterruptedException {
-        this.decompose(polygon, new RunnableCallback<ArrayList<ICell>>() {
+    public IPolyline generateFinalPathSync(IArea area) throws InterruptedException {
+        this.decompose(area, new RunnableCallback<ArrayList<ICell>>() {
             @Override
             public void onComplete(ArrayList<ICell> result) {
 

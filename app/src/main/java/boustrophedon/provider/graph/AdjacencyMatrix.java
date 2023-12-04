@@ -29,6 +29,11 @@ public class AdjacencyMatrix<T> implements IAdjacencyMatrix<T> {
     }
 
     @Override
+    public void concat(IAdjacencyMatrix<T> matrix) {
+
+    }
+
+    @Override
     public int addNode(T node) {
         this.length += 1;
         this.nodes.add(node);

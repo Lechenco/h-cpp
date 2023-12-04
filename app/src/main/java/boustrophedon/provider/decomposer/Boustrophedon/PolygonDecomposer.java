@@ -7,19 +7,19 @@ import boustrophedon.controllers.decomposer.Boustrophedon.Splitters.SplitterCont
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.DecomposerConfig;
 import boustrophedon.domain.decomposer.model.ICell;
-import boustrophedon.domain.decomposer.model.IPolygonDecomposer;
+import boustrophedon.domain.decomposer.model.IDecomposer;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.factories.decomposer.Boustrophedon.CriticalPoint.CriticalPointFactory;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.Node;
 
-public class Decomposer implements IPolygonDecomposer {
+public class PolygonDecomposer implements IDecomposer<IPolygon> {
     private DecomposerConfig config;
 
     private AdjacencyMatrix<Node<ICell>> adjacencyMatrix;
 
-    public Decomposer() {
+    public PolygonDecomposer() {
         this.setConfig(new DecomposerConfig());
     }
 

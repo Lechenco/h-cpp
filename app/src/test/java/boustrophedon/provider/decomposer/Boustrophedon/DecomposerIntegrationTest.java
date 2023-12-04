@@ -1,15 +1,9 @@
 package boustrophedon.provider.decomposer.Boustrophedon;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.primitives.model.IPolygon;
-import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 
@@ -25,7 +19,7 @@ public class DecomposerIntegrationTest {
     );
     @Test
     public void testDecompose() throws ExceedNumberOfAttempts {
-        Decomposer decomposer = new Decomposer();
+        PolygonDecomposer decomposer = new PolygonDecomposer();
 
         decomposer.decompose(polygon);
     }
