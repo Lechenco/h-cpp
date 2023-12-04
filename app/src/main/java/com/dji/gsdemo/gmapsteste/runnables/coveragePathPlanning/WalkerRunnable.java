@@ -21,16 +21,11 @@ public class WalkerRunnable extends RunnableWithCallback<ICell, IPolyline> {
         this.startPoint = input.getPolygon().getPoints().get(0);
     }
 
-    public WalkerRunnable(ICell input, IPoint startPoint, Handler handler, RunnableCallback<IPolyline> callback) {
-        super(input, handler, callback);
-        this.startPoint = startPoint;
-    }
-
     public IPolyline walk(IPolygon polygon) throws AngleOffLimitsException {
         Walker walker = new Walker(
             new WalkerConfig(0.0006, Math.PI / 2)
         );
-        return walker.generatePath(
+        return walker.walk(
             polygon,
             this.startPoint
         );

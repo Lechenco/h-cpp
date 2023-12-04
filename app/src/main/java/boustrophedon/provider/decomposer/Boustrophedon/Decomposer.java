@@ -1,6 +1,7 @@
 package boustrophedon.provider.decomposer.Boustrophedon;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import boustrophedon.controllers.decomposer.Boustrophedon.Splitters.SplitterController;
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
@@ -15,7 +16,6 @@ import boustrophedon.provider.graph.Node;
 
 public class Decomposer implements IPolygonDecomposer {
     private DecomposerConfig config;
-    private ArrayList<CriticalPoint> criticalPoints;
 
     private AdjacencyMatrix<Node<ICell>> adjacencyMatrix;
 
@@ -30,20 +30,17 @@ public class Decomposer implements IPolygonDecomposer {
 
     @Override
     public AdjacencyMatrix<Node<ICell>> decompose(IPolygon polygon) throws ExceedNumberOfAttempts {
-        this.criticalPoints = CriticalPointFactory.execute(polygon);
+        ArrayList<CriticalPoint> criticalPoints = CriticalPointFactory.execute(polygon);
 
-        SplitterController splitterController = new SplitterController(this.criticalPoints);
+        SplitterController splitterController = new SplitterController(criticalPoints);
         this.adjacencyMatrix = splitterController.execute();
         return this.adjacencyMatrix;
     }
 
     @Override
-    public AdjacencyMatrix<Node<ICell>> getMatrixAdjacency() {
-        return this.adjacencyMatrix;
-    }
-
-    @Override
     public ArrayList<ICell> getCells() {
-        return null;
+        return this.adjacencyMatrix.getNodes()
+                .stream().map(Node::getObject)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

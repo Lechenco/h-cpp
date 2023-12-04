@@ -2,16 +2,21 @@ package boustrophedon.provider.decomposer.Boustrophedon.Cell;
 
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.domain.primitives.model.ISubarea;
+import boustrophedon.provider.primitives.Subarea;
 
 public class Cell implements ICell {
     private boolean visited = false;
 
-    private final IPolygon polygon;
+    private final ISubarea subarea;
 
     public Cell(IPolygon polygon) {
-        this.polygon = polygon;
+        this.subarea = new Subarea(polygon);
     }
 
+    public Cell(ISubarea subarea) {
+        this.subarea = subarea;
+    }
 
     @Override
     public void visit() {
@@ -25,6 +30,11 @@ public class Cell implements ICell {
 
     @Override
     public IPolygon getPolygon() {
-        return this.polygon;
+        return this.subarea.getPolygon();
+    }
+
+    @Override
+    public ISubarea getSubarea() {
+        return subarea;
     }
 }

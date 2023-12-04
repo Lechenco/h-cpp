@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.walkers.error.AngleOffLimitsException;
 import boustrophedon.domain.walkers.model.WalkerConfig;
@@ -229,8 +228,7 @@ public class WalkerTest {
         walker.currentWall = triangle.borders.get(2);
         walker.goal = new Point(-5, 5);
         walker.directionStartToGoal = 3 * Math.PI / 4;
-        double distance = walker.getConfig().getDistanceBetweenPaths();
-        double distanceAngled = distance;
+        double distanceAngled = walker.getConfig().getDistanceBetweenPaths();
 
         assertEquals(new Point(-distanceAngled, distanceAngled), walker.walkAside(triangle, new Point(0, 0)));
         assertEquals(new Point(-2 - distanceAngled, 2 + distanceAngled), walker.walkAside(triangle, new Point(-2, 2)));
@@ -297,7 +295,7 @@ public class WalkerTest {
         Walker walker = new Walker(new WalkerConfig(1, 0));
 
         walker.setPolygon(triangle);
-        walker.generatePath(new Point(0, 0));
+        walker.walk(new Point(0, 0));
 
         assertEquals(11, walker.getPath().getNumberOfPoints());
     }
@@ -307,7 +305,7 @@ public class WalkerTest {
         Walker walker = new Walker(new WalkerConfig(1, 0));
 
         walker.setPolygon(triangle);
-        walker.generatePath(new Point(-5, -5));
+        walker.walk(new Point(-5, -5));
 
         assertEquals(11, walker.getPath().getNumberOfPoints());
     }
@@ -320,7 +318,7 @@ public class WalkerTest {
         Walker walker = new Walker(new WalkerConfig(1, 0));
 
         walker.setPolygon(square);
-        walker.generatePath(new Point(0, 0));
+        walker.walk(new Point(0, 0));
 
         assertEquals(12, walker.getPath().getNumberOfPoints());
     }
@@ -333,7 +331,7 @@ public class WalkerTest {
         Walker walker = new Walker(new WalkerConfig(1, Math.PI / 4));
 
         walker.setPolygon(square);
-        walker.generatePath(new Point(0, 0));
+        walker.walk(new Point(0, 0));
 
         assertEquals(7, walker.getPath().getNumberOfPoints());
     }
@@ -346,7 +344,7 @@ public class WalkerTest {
         Walker walker = new Walker(new WalkerConfig(1, 0));
 
         walker.setPolygon(square);
-        walker.generatePath(new Point(-1, 0));
+        walker.walk(new Point(-1, 0));
 
         assertEquals(12, walker.getPath().getNumberOfPoints());
     }
@@ -359,7 +357,7 @@ public class WalkerTest {
         Walker walker = new Walker(new WalkerConfig(1, Math.PI /2));
 
         walker.setPolygon(square);
-        walker.generatePath(new Point(-1, 0));
+        walker.walk(new Point(-1, 0));
 
         assertEquals(13, walker.getPath().getNumberOfPoints());
     }
@@ -374,7 +372,7 @@ public class WalkerTest {
         Walker walker = new Walker(new WalkerConfig(1, 0));
 
         walker.setPolygon(polygon);
-        walker.generatePath(new Point(0, 0));
+        walker.walk(new Point(0, 0));
 
         assertEquals(8, walker.getPath().getNumberOfPoints());
     }
@@ -392,7 +390,7 @@ public class WalkerTest {
         Walker walker = new Walker(new WalkerConfig(6.0E-4, Math.PI / 2 ));
 
         walker.setPolygon(polygon);
-        walker.generatePath(new Point(-23.210048, -50.638759 ));
+        walker.walk(new Point(-23.210048, -50.638759 ));
 
         assertEquals(18, walker.getPath().getNumberOfPoints());
     }

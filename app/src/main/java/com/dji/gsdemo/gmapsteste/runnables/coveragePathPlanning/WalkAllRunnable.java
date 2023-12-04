@@ -8,9 +8,7 @@ import com.dji.gsdemo.gmapsteste.runnables.RunnableWithCallback;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IPoint;
@@ -35,7 +33,7 @@ public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell
         Walker walker = new Walker(
                 new WalkerConfig(DEFAULT_DISTANCE_BETWEEN_PATHS, DEFAULT_DIRECTION)
         );
-        return walker.generatePath(
+        return walker.walk(
                 polygon,
                 initialPoint != null ? initialPoint : polygon.getPoints().get(0)
         );

@@ -120,9 +120,9 @@ public class Walker implements IWalker {
     }
 
     @Override
-    public IPolyline generatePath(IPolygon polygon, IPoint initialPoint) {
+    public IPolyline walk(IPolygon polygon, IPoint initialPoint) {
         this.setPolygon(polygon);
-        return this.generatePath(initialPoint);
+        return this.walk(initialPoint);
     }
 
     public WalkerConfig getConfig() {
@@ -133,7 +133,7 @@ public class Walker implements IWalker {
         return this.polygon.getClosestVertices(currentPoint);
     }
 
-    protected IPoint calcGoal(IPoint startPoint) {
+    protected void calcGoal(IPoint startPoint) {
         this.start = startPoint;
         IPoint goalClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() - Math.PI / 2);
         IPoint goalAntiClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() + Math.PI / 2);
@@ -142,7 +142,6 @@ public class Walker implements IWalker {
                         > Math.abs(GA.calcDistanceWithDirection(startPoint, goalAntiClockWise, this.config.getDirection() + Math.PI / 2))
                     ? goalClockWise : goalAntiClockWise;
         this.directionStartToGoal = GA.calcAngle(startPoint, this.goal);
-        return this.goal;
     }
 
     public void setPolygon(IPolygon polygon) {
@@ -157,7 +156,7 @@ public class Walker implements IWalker {
     }
 
     @Override
-    public IPolyline generatePath(IPoint initialPoint) {
+    public IPolyline walk(IPoint initialPoint) {
         IPoint currentPoint = this.calcStartPoint(initialPoint);
 
         this.calcGoal(currentPoint);
