@@ -1,6 +1,11 @@
 package boustrophedon.provider.primitives;
 
 
+import static boustrophedon.constants.AngleConstants.FORTY_FIVE_DEGREES;
+import static boustrophedon.constants.AngleConstants.HUNDRED_AND_EIGHTY_DEGREES;
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+import static boustrophedon.constants.PrecisionConstants.DISTANCE_PRECISION;
+
 import com.github.javafaker.Faker;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -8,13 +13,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import boustrophedon.domain.primitives.model.IPoint;
-import boustrophedon.provider.primitives.Point;
 
 public class PointTest {
-    private static final double DOUBLE_DELTA = 0.00001;
-    private static final double HUNDRED_AND_EIGHTY_DEGREES = Math.PI;
-    private static final double NINETY_DEGREES = Math.PI / 2;
-    private static final double FORTY_FIVE_DEGREES = Math.PI / 4;
     @Test
     public void testConstructorAndGets() {
         Faker faker = new Faker();
@@ -24,8 +24,8 @@ public class PointTest {
         IPoint point = new Point(x, y);
 
         Assert.assertNotNull(point);
-        Assert.assertEquals(point.getX(), x, DOUBLE_DELTA);
-        Assert.assertEquals(point.getY(), y, DOUBLE_DELTA);
+        Assert.assertEquals(point.getX(), x, DISTANCE_PRECISION);
+        Assert.assertEquals(point.getY(), y, DISTANCE_PRECISION);
     }
 
     @Test
@@ -37,8 +37,8 @@ public class PointTest {
         IPoint point = new Point(x, y);
         LatLng latLng = point.toLatLng();
 
-        Assert.assertEquals(x, latLng.latitude, DOUBLE_DELTA);
-        Assert.assertEquals(y, latLng.longitude, DOUBLE_DELTA);
+        Assert.assertEquals(x, latLng.latitude, DISTANCE_PRECISION);
+        Assert.assertEquals(y, latLng.longitude, DISTANCE_PRECISION);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class PointTest {
         IPoint pointWalked = point.walkXY(0.1, 0);
 
         Assert.assertNotEquals(point, pointWalked);
-        Assert.assertEquals(x + 0.1, pointWalked.getX(), DOUBLE_DELTA);
+        Assert.assertEquals(x + 0.1, pointWalked.getX(), DISTANCE_PRECISION);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class PointTest {
         IPoint pointWalked = point.walkXY(0, 0.1);
 
         Assert.assertNotEquals(point, pointWalked);
-        Assert.assertEquals(y + 0.1, pointWalked.getY(), DOUBLE_DELTA);
+        Assert.assertEquals(y + 0.1, pointWalked.getY(), DISTANCE_PRECISION);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class PointTest {
         IPoint point = new Point(x, y);
         IPoint pointWalked = point.walk(0.1, 0);
 
-        Assert.assertEquals(x + 0.1, pointWalked.getX(), DOUBLE_DELTA);
+        Assert.assertEquals(x + 0.1, pointWalked.getX(), DISTANCE_PRECISION);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class PointTest {
         IPoint point = new Point(x, y);
         IPoint pointWalked = point.walk(0.1, NINETY_DEGREES);
 
-        Assert.assertEquals(y + 0.1, pointWalked.getY(), DOUBLE_DELTA);
+        Assert.assertEquals(y + 0.1, pointWalked.getY(), DISTANCE_PRECISION);
     }
     @Test
     public void testWalkMethodWithMinus90Degrees() {
@@ -123,7 +123,7 @@ public class PointTest {
         IPoint point = new Point(x, y);
         IPoint pointWalked = point.walk(0.1, - NINETY_DEGREES);
 
-        Assert.assertEquals(y - 0.1, pointWalked.getY(), DOUBLE_DELTA);
+        Assert.assertEquals(y - 0.1, pointWalked.getY(), DISTANCE_PRECISION);
     }
     @Test
     public void testWalkMethodWith45Degrees() {
@@ -134,8 +134,8 @@ public class PointTest {
         IPoint point = new Point(x, y);
         IPoint pointWalked = point.walk(0.1, FORTY_FIVE_DEGREES);
 
-        Assert.assertEquals(y + 0.1 * Math.sin(FORTY_FIVE_DEGREES), pointWalked.getY(), DOUBLE_DELTA);
-        Assert.assertEquals(x + 0.1 * Math.cos(FORTY_FIVE_DEGREES), pointWalked.getX(), DOUBLE_DELTA);
+        Assert.assertEquals(y + 0.1 * Math.sin(FORTY_FIVE_DEGREES), pointWalked.getY(), DISTANCE_PRECISION);
+        Assert.assertEquals(x + 0.1 * Math.cos(FORTY_FIVE_DEGREES), pointWalked.getX(), DISTANCE_PRECISION);
     }
     @Test
     public void testWalkMethodWithMinus45Degrees() {
@@ -146,8 +146,8 @@ public class PointTest {
         IPoint point = new Point(x, y);
         IPoint pointWalked = point.walk(0.1, - FORTY_FIVE_DEGREES);
 
-        Assert.assertEquals(y - 0.1 * Math.sin(FORTY_FIVE_DEGREES), pointWalked.getY(), DOUBLE_DELTA);
-        Assert.assertEquals(x + 0.1 * Math.cos(FORTY_FIVE_DEGREES), pointWalked.getX(), DOUBLE_DELTA);
+        Assert.assertEquals(y - 0.1 * Math.sin(FORTY_FIVE_DEGREES), pointWalked.getY(), DISTANCE_PRECISION);
+        Assert.assertEquals(x + 0.1 * Math.cos(FORTY_FIVE_DEGREES), pointWalked.getX(), DISTANCE_PRECISION);
     }
     @Test
     public void testWalkMethodWith180Degrees() {
@@ -158,7 +158,7 @@ public class PointTest {
         IPoint point = new Point(x, y);
         IPoint pointWalked = point.walk(0.1, HUNDRED_AND_EIGHTY_DEGREES);
 
-        Assert.assertEquals(x - 0.1, pointWalked.getX(), DOUBLE_DELTA);
+        Assert.assertEquals(x - 0.1, pointWalked.getX(), DISTANCE_PRECISION);
     }
     @Test
     public void testWalkMethodWithMinus180Degrees() {
@@ -169,7 +169,7 @@ public class PointTest {
         IPoint point = new Point(x, y);
         IPoint pointWalked = point.walk(0.1, - HUNDRED_AND_EIGHTY_DEGREES);
 
-        Assert.assertEquals(x - 0.1, pointWalked.getX(), DOUBLE_DELTA);
+        Assert.assertEquals(x - 0.1, pointWalked.getX(), DISTANCE_PRECISION);
     }
 
     @Test
@@ -214,6 +214,7 @@ public class PointTest {
         double y = faker.number().randomNumber();
 
         IPoint point1 = new Point(x, y);
+        //noinspection SuspiciousNameCombination
         IPoint point2 = new Point(y, x);
 
         Assert.assertNotEquals(point1, point2);
@@ -225,7 +226,7 @@ public class PointTest {
         double y = faker.number().randomNumber();
 
         IPoint point1 = new Point(x, y);
-        IPoint point2 = new Point(x, y + DOUBLE_DELTA);
+        IPoint point2 = new Point(x, y + DISTANCE_PRECISION);
 
         Assert.assertNotEquals(point1, point2);
     }

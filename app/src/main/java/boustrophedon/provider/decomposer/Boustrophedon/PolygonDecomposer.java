@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import boustrophedon.controllers.decomposer.Boustrophedon.Splitters.SplitterController;
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
-import boustrophedon.domain.decomposer.model.DecomposerConfig;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.IDecomposer;
 import boustrophedon.domain.primitives.model.IPolygon;
@@ -15,17 +14,11 @@ import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.Node;
 
 public class PolygonDecomposer implements IDecomposer<IPolygon> {
-    private DecomposerConfig config;
 
     private AdjacencyMatrix<Node<ICell>> adjacencyMatrix;
 
     public PolygonDecomposer() {
-        this.setConfig(new DecomposerConfig());
-    }
 
-    @Override
-    public void setConfig(DecomposerConfig config) {
-        this.config = config;
     }
 
     @Override

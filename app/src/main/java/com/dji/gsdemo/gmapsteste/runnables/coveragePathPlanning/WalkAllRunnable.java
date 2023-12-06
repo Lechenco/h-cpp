@@ -15,7 +15,6 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.domain.walkers.error.AngleOffLimitsException;
-import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.provider.primitives.Polyline;
 import boustrophedon.provider.walkers.Walker;
 
@@ -30,9 +29,8 @@ public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell
     }
 
     private IPolyline walk(IPolygon polygon, IPoint initialPoint) throws AngleOffLimitsException {
-        Walker walker = new Walker(
-                new WalkerConfig(DEFAULT_DISTANCE_BETWEEN_PATHS, DEFAULT_DIRECTION)
-        );
+        Walker walker = new Walker.WalkerBuilder().withDistanceBetweenPaths(DEFAULT_DISTANCE_BETWEEN_PATHS).atDirection(DEFAULT_DIRECTION).build();
+
         return walker.walk(
                 polygon,
                 initialPoint != null ? initialPoint : polygon.getPoints().get(0)

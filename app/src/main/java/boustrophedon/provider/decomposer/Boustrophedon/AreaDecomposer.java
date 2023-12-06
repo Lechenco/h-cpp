@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
-import boustrophedon.domain.decomposer.model.DecomposerConfig;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.IDecomposer;
 import boustrophedon.domain.graph.model.IAdjacencyMatrix;
@@ -22,11 +21,6 @@ public class AreaDecomposer implements IDecomposer<IArea> {
         return this.adjacencyMatrix.getNodes()
                 .stream().map(Node::getObject)
                 .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    @Override
-    public void setConfig(DecomposerConfig config) {
-
     }
 
     @Override

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.utils.AngleUtils;
 import boustrophedon.utils.GA;
 
 public class Border implements IBorder {
@@ -35,7 +36,7 @@ public class Border implements IBorder {
 
     @Override
     public double getAngle() {
-        return GA.calcAngle(firstVertice, secondVertice);
+        return AngleUtils.calcAngle(firstVertice, secondVertice);
     }
 
     @Override

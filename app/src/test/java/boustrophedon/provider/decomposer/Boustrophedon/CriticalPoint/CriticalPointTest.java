@@ -2,6 +2,8 @@ package boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint;
 
 import static org.junit.Assert.*;
 
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -157,7 +159,7 @@ public class CriticalPointTest {
     }
     @Test
     public void testCalcIntersectionsInAngle90() {
-        ArrayList<IPoint> points = cp.calcIntersectionsInAngle(triangleRectangle, Math.PI /2);
+        ArrayList<IPoint> points = cp.calcIntersectionsInAngle(triangleRectangle, NINETY_DEGREES);
 
         assertEquals(0, points.size());
     }

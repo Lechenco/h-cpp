@@ -2,6 +2,11 @@ package boustrophedon.provider.primitives;
 
 import static org.junit.Assert.*;
 
+import static boustrophedon.constants.AngleConstants.FORTY_FIVE_DEGREES;
+import static boustrophedon.constants.AngleConstants.HUNDRED_AND_EIGHTY_DEGREES;
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+import static boustrophedon.constants.AngleConstants.THIRTY_DEGREES;
+
 import com.github.javafaker.Faker;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -40,6 +45,7 @@ public class PolygonTest {
     public void testConstructorThrow() {
         Point[] points = null;
 
+        //noinspection ConstantValue
         assertThrows(NullPointerException.class, () -> new Polygon(points));
     }
 
@@ -66,6 +72,7 @@ public class PolygonTest {
     public void testConstructorArrayThrow() {
         ArrayList<IPoint> points = null;
 
+        //noinspection ConstantValue
         assertThrows(NullPointerException.class, () -> new Polygon(points));
     }
 
@@ -88,9 +95,9 @@ public class PolygonTest {
     public void testGetOutsiderPointInDirection() {
         IPolygon triangleRectangle = new Polygon(new Point(0, 0), new Point(5, 5), new Point(5, 0));
         Assert.assertEquals(new Point(0, 0),
-                triangleRectangle.getOutsiderPointInDirection(new Point(0, 0), Math.PI / 2));
+                triangleRectangle.getOutsiderPointInDirection(new Point(0, 0), NINETY_DEGREES));
         Assert.assertEquals(new Point(5, 5),
-                triangleRectangle.getOutsiderPointInDirection(new Point(0, 0), Math.PI / 4));
+                triangleRectangle.getOutsiderPointInDirection(new Point(0, 0), FORTY_FIVE_DEGREES));
     }
 
     @Test
@@ -127,7 +134,7 @@ public class PolygonTest {
         IPolygon triangleRectangle = new Polygon(points);
 
         Assert.assertEquals(points.get(1), triangleRectangle.getFarthestVertices(new Point(-1, 0)));
-        Assert.assertEquals(points.get(0), triangleRectangle.getFarthestVertices(new Point(4, -1), Math.PI));
-        Assert.assertEquals(points.get(1), triangleRectangle.getFarthestVertices(new Point(0, 0), Math.PI / 6));
+        Assert.assertEquals(points.get(0), triangleRectangle.getFarthestVertices(new Point(4, -1), HUNDRED_AND_EIGHTY_DEGREES));
+        Assert.assertEquals(points.get(1), triangleRectangle.getFarthestVertices(new Point(0, 0), THIRTY_DEGREES));
     }
 }

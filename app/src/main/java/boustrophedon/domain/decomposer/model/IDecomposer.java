@@ -7,8 +7,6 @@ import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.Node;
 
 public interface IDecomposer<T> {
-    void setConfig(DecomposerConfig config);
     AdjacencyMatrix<Node<ICell>> decompose(T object) throws ExceedNumberOfAttempts;
-
     ArrayList<ICell> getCells();
 }

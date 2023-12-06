@@ -3,17 +3,18 @@ package boustrophedon.provider.walkers;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import boustrophedon.domain.walkers.error.AngleOffLimitsException;
 import boustrophedon.domain.walkers.model.IWalker;
-import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.provider.primitives.Polyline;
+import boustrophedon.utils.AngleUtils;
 import boustrophedon.utils.GA;
 
 public class Walker implements IWalker {
-    private WalkerConfig config;
+    public static double ANGLE_PRECISION = Math.PI / 180;
     private IPolyline path;
     protected IPolygon polygon;
     protected ArrayList<IBorder> polygonBorders;
@@ -22,13 +23,14 @@ public class Walker implements IWalker {
     protected IPoint goal;
     protected IPoint start;
     protected double directionStartToGoal;
-    public Walker() {
-        this.setConfig(new WalkerConfig());
-        path = new Polyline();
-    }
 
-    public Walker(WalkerConfig config) {
-        this.setConfig(config);
+    private final double distanceBetweenPaths;
+
+    private final double direction;
+
+    private Walker(WalkerBuilder walkerBuilder) {
+        this.direction = walkerBuilder.direction;
+        this.distanceBetweenPaths = walkerBuilder.distanceBetweenPaths;
         path = new Polyline();
     }
 
@@ -40,7 +42,7 @@ public class Walker implements IWalker {
             return null;
 
         for (IBorder wall : this.walls) {
-            IPoint intersection = WalkerHelper.calcIntersectionToWall(currentPoint, wall, this.config.getDirection());
+            IPoint intersection = WalkerHelper.calcIntersectionToWall(currentPoint, wall, this.direction);
 
             if (wall.isOnBorder(intersection) && !intersection.equals(currentPoint)) {
                 this.currentWall = wall;
@@ -61,23 +63,23 @@ public class Walker implements IWalker {
     }
 
     protected IPoint walkAside(IPoint currentPoint) {
-        return this.walkAside(currentPoint, this.config.getDistanceBetweenPaths());
+        return this.walkAside(currentPoint, this.distanceBetweenPaths);
     }
 
     private double calcDistanceToWalk(double distance) {
-        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.config.getDirection();
+        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.direction;
         return Math.abs(distance / Math.sin(angleBetweenBorders));
     }
     private double calcDistance(double distanceToWalk) {
-        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.config.getDirection();
+        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.direction;
         return Math.abs(distanceToWalk * Math.sin(angleBetweenBorders));
     }
 
     protected IPoint walkAside(IPoint currentPoint, double distance) {
         if (this.currentWall == null) return null;
 
-        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.config.getDirection(); // Theta
-        double normalizedDirectionToGoal = this.directionStartToGoal - this.config.getDirection(); //Beta
+        double angleBetweenBorders = this.currentWall.getAngleFirstHalf() - this.direction; // Theta
+        double normalizedDirectionToGoal = this.directionStartToGoal - this.direction; //Beta
 
         double distanceToWalk = this.calcDistanceToWalk(distance);
         double currentWallAngle = this.currentWall.getAngleFirstHalf();
@@ -125,34 +127,25 @@ public class Walker implements IWalker {
         return this.walk(initialPoint);
     }
 
-    public WalkerConfig getConfig() {
-        return config;
-    }
-
     protected IPoint calcStartPoint(IPoint currentPoint) {
         return this.polygon.getClosestVertices(currentPoint);
     }
 
     protected void calcGoal(IPoint startPoint) {
         this.start = startPoint;
-        IPoint goalClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() - Math.PI / 2);
-        IPoint goalAntiClockWise = this.polygon.getFarthestVertices(startPoint, this.config.getDirection() + Math.PI / 2);
+        IPoint goalClockWise = this.polygon.getFarthestVertices(startPoint, this.direction - Math.PI / 2);
+        IPoint goalAntiClockWise = this.polygon.getFarthestVertices(startPoint, this.direction + Math.PI / 2);
         this.goal =
-                Math.abs(GA.calcDistanceWithDirection(startPoint, goalClockWise, this.config.getDirection() + Math.PI / 2))
-                        > Math.abs(GA.calcDistanceWithDirection(startPoint, goalAntiClockWise, this.config.getDirection() + Math.PI / 2))
+                Math.abs(GA.calcDistanceWithDirection(startPoint, goalClockWise, this.direction + Math.PI / 2))
+                        > Math.abs(GA.calcDistanceWithDirection(startPoint, goalAntiClockWise, this.direction + Math.PI / 2))
                     ? goalClockWise : goalAntiClockWise;
-        this.directionStartToGoal = GA.calcAngle(startPoint, this.goal);
+        this.directionStartToGoal = AngleUtils.calcAngle(startPoint, this.goal);
     }
 
     public void setPolygon(IPolygon polygon) {
         this.polygon = polygon;
         this.populatePolygonBorders();
         this.setUpWalls();
-    }
-
-    @Override
-    public void setConfig(WalkerConfig config) {
-        this.config = config;
     }
 
     @Override
@@ -163,8 +156,8 @@ public class Walker implements IWalker {
         this.path = new Polyline();
 
         long numberOfIterations =
-                Math.round(Math.abs(GA.calcDistanceWithDirection(currentPoint, this.goal,this.config.getDirection() + Math.PI / 2)
-                / this.config.getDistanceBetweenPaths())) +1;
+                Math.round(Math.abs(GA.calcDistanceWithDirection(currentPoint, this.goal,this.direction + Math.PI / 2)
+                / this.distanceBetweenPaths)) +1;
 
         while(numberOfIterations-- != 0) {
             if (currentPoint == null ||
@@ -203,10 +196,37 @@ public class Walker implements IWalker {
     private void setUpWalls() {
         populatePolygonBorders();
 
-        this.walls = WalkerHelper.findWalls(this.polygonBorders, this.config.getDirection());
+        this.walls = WalkerHelper.findWalls(this.polygonBorders, this.direction);
     }
 
     private void populatePolygonBorders() {
         this.polygonBorders = WalkerHelper.getPolygonBorders(this.polygon);
+    }
+    
+    public static class WalkerBuilder {
+        public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.00009; // ~10 meters
+        private double distanceBetweenPaths = DEFAULT_DISTANCE_BETWEEN_PATHS;
+
+        private double direction = 0;
+
+        public WalkerBuilder() {}
+        
+        public WalkerBuilder atDirection(double direction) throws AngleOffLimitsException {
+            if (direction > Math.PI || direction < -Math.PI)
+                throw new AngleOffLimitsException();
+            this.direction = direction;
+            
+            return this;
+        }
+
+        public WalkerBuilder withDistanceBetweenPaths(double distanceBetweenPaths) {
+            this.distanceBetweenPaths = distanceBetweenPaths;
+
+            return this;
+        }
+        
+        public Walker build() {
+            return new Walker(this);
+        }
     }
 }

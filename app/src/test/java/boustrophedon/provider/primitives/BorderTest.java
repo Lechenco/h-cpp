@@ -2,6 +2,13 @@ package boustrophedon.provider.primitives;
 
 import static org.junit.Assert.*;
 
+import static boustrophedon.constants.AngleConstants.FORTY_FIVE_DEGREES;
+import static boustrophedon.constants.AngleConstants.HUNDRED_AND_EIGHTY_DEGREES;
+import static boustrophedon.constants.AngleConstants.HUNDRED_AND_TWENTY_DEGREES;
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+import static boustrophedon.constants.AngleConstants.ZERO_DEGREES;
+import static boustrophedon.constants.PrecisionConstants.DISTANCE_PRECISION;
+
 import com.github.javafaker.Faker;
 
 import org.junit.Test;
@@ -9,11 +16,10 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.utils.AngleUtils;
 import boustrophedon.utils.GA;
 
 public class BorderTest {
-    private static final double DOUBLE_DELTA = 0.00001;
-
     @Test
     public void testConstructorAndGets() {
         Faker faker = new Faker();
@@ -49,7 +55,7 @@ public class BorderTest {
             mockedStatic.when(() -> GA.calcDistance(p1, p2)).thenReturn(mockLength);
 
             Border border = new Border(p1, p2);
-            assertEquals(mockLength, border.getLength(), DOUBLE_DELTA);
+            assertEquals(mockLength, border.getLength(), DISTANCE_PRECISION);
         }
     }
 
@@ -66,10 +72,10 @@ public class BorderTest {
         );
         double mockLength = faker.random().nextDouble();
         try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
-            mockedStatic.when(() -> GA.calcAngle(p1, p2)).thenReturn(mockLength);
+            mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockLength);
 
             Border border = new Border(p1, p2);
-            assertEquals(mockLength, border.getAngle(), DOUBLE_DELTA);
+            assertEquals(mockLength, border.getAngle(), DISTANCE_PRECISION);
         }
     }
 
@@ -86,10 +92,10 @@ public class BorderTest {
         );
         double mockAngle = faker.random().nextDouble();
         try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
-            mockedStatic.when(() -> GA.calcAngle(p1, p2)).thenReturn(mockAngle);
+            mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockAngle);
 
             Border border = new Border(p1, p2);
-            assertEquals(mockAngle, border.getPositiveAngle(), DOUBLE_DELTA);
+            assertEquals(mockAngle, border.getPositiveAngle(), DISTANCE_PRECISION);
         }
     }
 
@@ -104,12 +110,12 @@ public class BorderTest {
                 faker.number().randomDouble(7, 0, 90),
                 faker.number().randomDouble(7, 0, 90)
         );
-        double mockAngle = -Math.PI / 4;
+        double mockAngle = -FORTY_FIVE_DEGREES;
         try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
-            mockedStatic.when(() -> GA.calcAngle(p1, p2)).thenReturn(mockAngle);
+            mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockAngle);
 
             Border border = new Border(p1, p2);
-            assertEquals(3 * Math.PI / 4, border.getPositiveAngle(), DOUBLE_DELTA);
+            assertEquals(HUNDRED_AND_TWENTY_DEGREES, border.getPositiveAngle(), DISTANCE_PRECISION);
         }
     }
 
@@ -124,12 +130,12 @@ public class BorderTest {
                 faker.number().randomDouble(7, 0, 90),
                 faker.number().randomDouble(7, 0, 90)
         );
-        double mockAngle = 3 * Math.PI / 2;
+        double mockAngle = 3 * NINETY_DEGREES;
         try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
-            mockedStatic.when(() -> GA.calcAngle(p1, p2)).thenReturn(mockAngle);
+            mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockAngle);
 
             Border border = new Border(p1, p2);
-            assertEquals( Math.PI / 2, border.getAngleFirstHalf(), DOUBLE_DELTA);
+            assertEquals( NINETY_DEGREES, border.getAngleFirstHalf(), DISTANCE_PRECISION);
         }
     }
 
@@ -144,12 +150,11 @@ public class BorderTest {
                 faker.number().randomDouble(7, 0, 90),
                 faker.number().randomDouble(7, 0, 90)
         );
-        double mockAngle = Math.PI;
         try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
-            mockedStatic.when(() -> GA.calcAngle(p1, p2)).thenReturn(mockAngle);
+            mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(HUNDRED_AND_EIGHTY_DEGREES);
 
             Border border = new Border(p1, p2);
-            assertEquals( 0, border.getAngleFirstHalf(), DOUBLE_DELTA);
+            assertEquals( ZERO_DEGREES, border.getAngleFirstHalf(), DISTANCE_PRECISION);
         }
     }
 
@@ -270,10 +275,10 @@ public class BorderTest {
         double mockAngle = faker.random().nextDouble();
         double mockAngle2 = faker.random().nextDouble();
         try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
-            mockedStatic.when(() -> GA.calcAngle(p1, p2)).thenReturn(mockAngle);
+            mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockAngle);
 
             Border border = new Border(p1, p2);
-            assertEquals(mockAngle2 - mockAngle, border.getAngleDiff(mockAngle2), DOUBLE_DELTA);
+            assertEquals(mockAngle2 - mockAngle, border.getAngleDiff(mockAngle2), DISTANCE_PRECISION);
         }
     }
 
@@ -299,7 +304,7 @@ public class BorderTest {
             mockedStatic.when(() -> GA.calcDistance(border, p3)).thenReturn(mockDistance);
 
 
-            assertEquals(mockDistance, border.getDistanceToPoint(p3), DOUBLE_DELTA);
+            assertEquals(mockDistance, border.getDistanceToPoint(p3), DISTANCE_PRECISION);
         }
     }
 
@@ -359,7 +364,7 @@ public class BorderTest {
     public void testIsOnBorderMethodBeforeBorder() {
         IPoint p1 = new Point(0, 0);
         IPoint p2 = new Point(5, 5);
-        IPoint p3 = new Point(-DOUBLE_DELTA, -DOUBLE_DELTA);
+        IPoint p3 = new Point(-DISTANCE_PRECISION, -DISTANCE_PRECISION);
 
         Border border = new Border(p1, p2);
 
@@ -370,7 +375,7 @@ public class BorderTest {
     public void testIsOnBorderMethodAfterBorder() {
         IPoint p1 = new Point(0, 0);
         IPoint p2 = new Point(5, 5);
-        IPoint p3 = new Point(5 + DOUBLE_DELTA, 5 + DOUBLE_DELTA);
+        IPoint p3 = new Point(5 + DISTANCE_PRECISION, 5 + DISTANCE_PRECISION);
 
         Border border = new Border(p1, p2);
 

@@ -13,7 +13,7 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
 import boustrophedon.domain.decomposer.enums.Events;
-import boustrophedon.utils.GA;
+import boustrophedon.utils.AngleUtils;
 
 public class CriticalPoint implements ICriticalPoint {
     private final IPoint vertices;
@@ -136,7 +136,7 @@ public class CriticalPoint implements ICriticalPoint {
 
             if (
                     border.isOnBorder(intersection) &&
-                    GA.checkAngles(angle, GA.calcAngle(this.vertices, intersection)) &&
+                    AngleUtils.checkAngles(angle, AngleUtils.calcAngle(this.vertices, intersection)) &&
                     !duplicated
             ) {
                 intersectionPoints.add(intersection);

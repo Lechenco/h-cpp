@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
-import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.provider.primitives.Border;
 import boustrophedon.provider.primitives.Point;
+import boustrophedon.provider.walkers.Walker;
+import boustrophedon.utils.AngleUtils;
 import boustrophedon.utils.GA;
 
 public class BorderHelper {
@@ -53,7 +54,7 @@ public class BorderHelper {
         double[] refBorderCoefficients = refBorder.getParallelLineCoefficients(currentPoint);
         double[] wallCoefficients = wall.getCoefficients();
 
-        intersectionX = Math.abs(wall.getAngleFirstHalf() - refBorder.getAngleFirstHalf()) < WalkerConfig.ANGLE_PRECISION ?
+        intersectionX = Math.abs(wall.getAngleFirstHalf() - refBorder.getAngleFirstHalf()) < Walker.ANGLE_PRECISION ?
                 currentPoint.getX() :
                 (refBorderCoefficients[1] - wallCoefficients[1]) /
                         (wallCoefficients[0] - refBorderCoefficients[0]);
@@ -65,10 +66,10 @@ public class BorderHelper {
     static public ArrayList<IBorder> findWalls(ArrayList<IBorder> borders, double angle) {
         ArrayList<IBorder> walls = new ArrayList<>();
 
-        double angleSanitized = GA.getFirstHalfAngle(angle);
+        double angleSanitized = AngleUtils.getFirstHalfAngle(angle);
 
         for (IBorder border : borders) {
-            if (Math.abs(angleSanitized - border.getAngleFirstHalf()) > WalkerConfig.ANGLE_PRECISION)
+            if (Math.abs(angleSanitized - border.getAngleFirstHalf()) > Walker.ANGLE_PRECISION)
                 walls.add(border);
         }
         return walls;
