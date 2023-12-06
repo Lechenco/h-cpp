@@ -71,7 +71,7 @@ public class BorderTest {
                 faker.number().randomDouble(7, 0, 90)
         );
         double mockLength = faker.random().nextDouble();
-        try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
+        try (MockedStatic<AngleUtils> mockedStatic = Mockito.mockStatic(AngleUtils.class)) {
             mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockLength);
 
             Border border = new Border(p1, p2);
@@ -91,7 +91,7 @@ public class BorderTest {
                 faker.number().randomDouble(7, 0, 90)
         );
         double mockAngle = faker.random().nextDouble();
-        try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
+        try (MockedStatic<AngleUtils> mockedStatic = Mockito.mockStatic(AngleUtils.class)) {
             mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockAngle);
 
             Border border = new Border(p1, p2);
@@ -111,7 +111,7 @@ public class BorderTest {
                 faker.number().randomDouble(7, 0, 90)
         );
         double mockAngle = -FORTY_FIVE_DEGREES;
-        try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
+        try (MockedStatic<AngleUtils> mockedStatic = Mockito.mockStatic(AngleUtils.class)) {
             mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockAngle);
 
             Border border = new Border(p1, p2);
@@ -131,7 +131,7 @@ public class BorderTest {
                 faker.number().randomDouble(7, 0, 90)
         );
         double mockAngle = 3 * NINETY_DEGREES;
-        try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
+        try (MockedStatic<AngleUtils> mockedStatic = Mockito.mockStatic(AngleUtils.class)) {
             mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockAngle);
 
             Border border = new Border(p1, p2);
@@ -150,7 +150,7 @@ public class BorderTest {
                 faker.number().randomDouble(7, 0, 90),
                 faker.number().randomDouble(7, 0, 90)
         );
-        try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
+        try (MockedStatic<AngleUtils> mockedStatic = Mockito.mockStatic(AngleUtils.class)) {
             mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(HUNDRED_AND_EIGHTY_DEGREES);
 
             Border border = new Border(p1, p2);
@@ -274,7 +274,7 @@ public class BorderTest {
         );
         double mockAngle = faker.random().nextDouble();
         double mockAngle2 = faker.random().nextDouble();
-        try (MockedStatic<GA> mockedStatic = Mockito.mockStatic(GA.class)) {
+        try (MockedStatic<AngleUtils> mockedStatic = Mockito.mockStatic(AngleUtils.class)) {
             mockedStatic.when(() -> AngleUtils.calcAngle(p1, p2)).thenReturn(mockAngle);
 
             Border border = new Border(p1, p2);
@@ -364,7 +364,7 @@ public class BorderTest {
     public void testIsOnBorderMethodBeforeBorder() {
         IPoint p1 = new Point(0, 0);
         IPoint p2 = new Point(5, 5);
-        IPoint p3 = new Point(-DISTANCE_PRECISION, -DISTANCE_PRECISION);
+        IPoint p3 = new Point(-0.00001, -0.00001);
 
         Border border = new Border(p1, p2);
 
@@ -375,7 +375,7 @@ public class BorderTest {
     public void testIsOnBorderMethodAfterBorder() {
         IPoint p1 = new Point(0, 0);
         IPoint p2 = new Point(5, 5);
-        IPoint p3 = new Point(5 + DISTANCE_PRECISION, 5 + DISTANCE_PRECISION);
+        IPoint p3 = new Point(5.00001, 5.00001);
 
         Border border = new Border(p1, p2);
 

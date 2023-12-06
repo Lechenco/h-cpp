@@ -1,5 +1,7 @@
 package boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint;
 
+import static boustrophedon.utils.AngleUtils.add90Degrees;
+
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
@@ -77,7 +79,7 @@ public class CriticalPoint implements ICriticalPoint {
     public void detectPointEvent(IPolygon polygon) {
         double normalAngle = Math.PI / 2; // TODO: calc angle dynamically
         ArrayList<IPoint> intersectionNormalPoints = this.calcIntersectionsInAngle(polygon, normalAngle);
-        ArrayList<IPoint> intersectionTangentPoints = this.calcIntersectionsInAngle(polygon, normalAngle + Math.PI / 2);
+        ArrayList<IPoint> intersectionTangentPoints = this.calcIntersectionsInAngle(polygon,  add90Degrees(normalAngle));
 
         int countOfIntersectionsTangent = intersectionTangentPoints.size();
         int countOfIntersectionsNormal = intersectionNormalPoints.size();

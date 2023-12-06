@@ -1,5 +1,7 @@
 package com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning;
 
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+
 import android.os.Handler;
 
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
@@ -14,7 +16,7 @@ import boustrophedon.provider.walkers.Walker;
 
 public class WalkerRunnable extends RunnableWithCallback<ICell, IPolyline> {
     public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.0006;
-    public static double DEFAULT_DIRECTION = Math.PI / 2;
+    public static double DEFAULT_DIRECTION = NINETY_DEGREES;
     private final IPoint startPoint;
 
     public WalkerRunnable(ICell input, Handler handler, RunnableCallback<IPolyline> callback) {

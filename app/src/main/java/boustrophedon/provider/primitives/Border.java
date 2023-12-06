@@ -1,5 +1,10 @@
 package boustrophedon.provider.primitives;
 
+import static boustrophedon.constants.AngleConstants.HUNDRED_AND_EIGHTY_DEGREES;
+import static boustrophedon.constants.AngleConstants.ZERO_DEGREES;
+import static boustrophedon.constants.PrecisionConstants.DISTANCE_PRECISION;
+import static boustrophedon.utils.AngleUtils.add180Degrees;
+
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
@@ -10,7 +15,6 @@ import boustrophedon.utils.AngleUtils;
 import boustrophedon.utils.GA;
 
 public class Border implements IBorder {
-    private final double PRECISION = 0.000001;
     private final IPoint firstVertice;
     private final IPoint secondVertice;
 
@@ -42,18 +46,18 @@ public class Border implements IBorder {
     @Override
     public double getPositiveAngle() {
         double angle = this.getAngle();
-        return angle < 0 ? angle + Math.PI : angle;
+        return angle < ZERO_DEGREES ? angle + HUNDRED_AND_EIGHTY_DEGREES : angle;
     }
     @Override
     public double getAngleFirstHalf() {
         double angle = this.getPositiveAngle();
-        return angle >= Math.PI ? angle - Math.PI : angle;
+        return angle >= HUNDRED_AND_EIGHTY_DEGREES ? angle - HUNDRED_AND_EIGHTY_DEGREES : angle;
     }
 
 
     @Override
     public boolean isParallelToY() {
-        return Math.abs(firstVertice.getX() - secondVertice.getX()) <= PRECISION;
+        return Math.abs(firstVertice.getX() - secondVertice.getX()) <= DISTANCE_PRECISION;
     }
 
     @Override
@@ -82,17 +86,17 @@ public class Border implements IBorder {
 
     @Override
     public boolean isOnBorder(IPoint point) {
-        if ( this.isParallelToY() || Math.abs(this.getDistanceToPoint(point)) < PRECISION) {
+        if ( this.isParallelToY() || Math.abs(this.getDistanceToPoint(point)) < DISTANCE_PRECISION) {
             return this.isPointInsideLimitations(point);
         }
         return false;
     }
 
     private boolean isPointInsideLimitations(@NonNull IPoint point) {
-        double maxX = Math.max(firstVertice.getX(), secondVertice.getX()) + PRECISION;
-        double minX = Math.min(firstVertice.getX(), secondVertice.getX()) - PRECISION;
-        double maxY = Math.max(firstVertice.getY(), secondVertice.getY()) + PRECISION;
-        double minY = Math.min(firstVertice.getY(), secondVertice.getY()) - PRECISION;
+        double maxX = Math.max(firstVertice.getX(), secondVertice.getX()) + DISTANCE_PRECISION;
+        double minX = Math.min(firstVertice.getX(), secondVertice.getX()) - DISTANCE_PRECISION;
+        double maxY = Math.max(firstVertice.getY(), secondVertice.getY()) + DISTANCE_PRECISION;
+        double minY = Math.min(firstVertice.getY(), secondVertice.getY()) - DISTANCE_PRECISION;
 
         return minX <= point.getX() && point.getX() <= maxX &&
                 minY <= point.getY() && point.getY() <= maxY;

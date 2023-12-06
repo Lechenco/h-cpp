@@ -7,6 +7,7 @@ public final class AngleConstants {
     public static final double FORTY_FIVE_DEGREES = Math.PI / 4;
 
     public static final double THIRTY_DEGREES = Math.PI / 6;
+    public static final double ONE_DEGREE = Math.PI / 180;
     public static final double ZERO_DEGREES = 0;
 
     private AngleConstants() {

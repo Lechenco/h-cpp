@@ -1,5 +1,10 @@
 package boustrophedon.provider.walkers;
 
+import static boustrophedon.constants.AngleConstants.HUNDRED_AND_EIGHTY_DEGREES;
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+import static boustrophedon.utils.AngleUtils.add180Degrees;
+import static boustrophedon.utils.AngleUtils.add90Degrees;
+
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -14,7 +19,6 @@ import boustrophedon.utils.AngleUtils;
 import boustrophedon.utils.GA;
 
 public class Walker implements IWalker {
-    public static double ANGLE_PRECISION = Math.PI / 180;
     private IPolyline path;
     protected IPolygon polygon;
     protected ArrayList<IBorder> polygonBorders;
@@ -89,7 +93,7 @@ public class Walker implements IWalker {
             return currentPoint.walk(distanceToWalk, currentWallAngle);
         }
 
-        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+        return currentPoint.walk(distanceToWalk, add180Degrees(currentWallAngle));
     }
 
     private boolean walkedOutOfWall(IPoint currentPoint) {
@@ -133,11 +137,13 @@ public class Walker implements IWalker {
 
     protected void calcGoal(IPoint startPoint) {
         this.start = startPoint;
-        IPoint goalClockWise = this.polygon.getFarthestVertices(startPoint, this.direction - Math.PI / 2);
-        IPoint goalAntiClockWise = this.polygon.getFarthestVertices(startPoint, this.direction + Math.PI / 2);
+        double anglePlus90 = add90Degrees(this.direction);
+        double angleMinus90 = this.direction - NINETY_DEGREES;
+        IPoint goalClockWise = this.polygon.getFarthestVertices(startPoint, angleMinus90);
+        IPoint goalAntiClockWise = this.polygon.getFarthestVertices(startPoint, anglePlus90);
         this.goal =
-                Math.abs(GA.calcDistanceWithDirection(startPoint, goalClockWise, this.direction + Math.PI / 2))
-                        > Math.abs(GA.calcDistanceWithDirection(startPoint, goalAntiClockWise, this.direction + Math.PI / 2))
+                Math.abs(GA.calcDistanceWithDirection(startPoint, goalClockWise, anglePlus90))
+                        > Math.abs(GA.calcDistanceWithDirection(startPoint, goalAntiClockWise, anglePlus90))
                     ? goalClockWise : goalAntiClockWise;
         this.directionStartToGoal = AngleUtils.calcAngle(startPoint, this.goal);
     }
@@ -156,7 +162,7 @@ public class Walker implements IWalker {
         this.path = new Polyline();
 
         long numberOfIterations =
-                Math.round(Math.abs(GA.calcDistanceWithDirection(currentPoint, this.goal,this.direction + Math.PI / 2)
+                Math.round(Math.abs(GA.calcDistanceWithDirection(currentPoint, this.goal, add90Degrees(this.direction))
                 / this.distanceBetweenPaths)) +1;
 
         while(numberOfIterations-- != 0) {
@@ -212,7 +218,7 @@ public class Walker implements IWalker {
         public WalkerBuilder() {}
         
         public WalkerBuilder atDirection(double direction) throws AngleOffLimitsException {
-            if (direction > Math.PI || direction < -Math.PI)
+            if (direction > HUNDRED_AND_EIGHTY_DEGREES || direction < -HUNDRED_AND_EIGHTY_DEGREES)
                 throw new AngleOffLimitsException();
             this.direction = direction;
             

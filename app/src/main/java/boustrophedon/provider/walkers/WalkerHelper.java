@@ -1,5 +1,7 @@
 package boustrophedon.provider.walkers;
 
+import static boustrophedon.utils.AngleUtils.add180Degrees;
+
 import java.util.ArrayList;
 
 import boustrophedon.domain.primitives.model.IBorder;
@@ -63,7 +65,7 @@ public class WalkerHelper {
         if (absDiffCosGoalAndWall < absDiffCosGoalAndWall180)
             return currentPoint.walk(distanceToWalk, currentWallAngle);
 
-        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+        return currentPoint.walk(distanceToWalk, add180Degrees(currentWallAngle));
     }
 
     static protected IPoint walkAsideWallAndGoalOrthogonal(
@@ -76,7 +78,7 @@ public class WalkerHelper {
         if (absDiffCosGoalAndWall > absDiffCosGoalAndWall180)
             return currentPoint.walk(distanceToWalk, currentWallAngle);
 
-        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+        return currentPoint.walk(distanceToWalk, add180Degrees(currentWallAngle));
     }
 
     static protected IPoint walkAsideWallOrGoalParallelToXAxis(
@@ -86,10 +88,10 @@ public class WalkerHelper {
             double sinStartToGoal
     ) {
         if (Math.abs(sinStartToGoal - Math.sin(currentWallAngle)) <
-                Math.abs(sinStartToGoal - Math.sin(currentWallAngle + Math.PI)))
+                Math.abs(sinStartToGoal - Math.sin(add180Degrees(currentWallAngle))))
             return currentPoint.walk(distanceToWalk, currentWallAngle);
 
-        return currentPoint.walk(distanceToWalk, currentWallAngle + Math.PI);
+        return currentPoint.walk(distanceToWalk, add180Degrees(currentWallAngle));
     }
 
     static protected  IPoint getClosestWallVertices(IPoint point, IBorder wall) {

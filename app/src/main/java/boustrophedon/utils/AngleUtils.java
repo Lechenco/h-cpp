@@ -52,6 +52,9 @@ public final class AngleUtils {
     public static double add180Degrees(double angle) {
         return angle + HUNDRED_AND_EIGHTY_DEGREES;
     }
+    public static double add90Degrees(double angle) {
+        return angle + NINETY_DEGREES;
+    }
 
     private AngleUtils() {
     }
