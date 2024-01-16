@@ -137,4 +137,44 @@ public class PolygonTest {
         Assert.assertEquals(points.get(0), triangleRectangle.getFarthestVertices(new Point(4, -1), HUNDRED_AND_EIGHTY_DEGREES));
         Assert.assertEquals(points.get(1), triangleRectangle.getFarthestVertices(new Point(0, 0), THIRTY_DEGREES));
     }
+    @Test
+    public void testIsAdjacentTo() {
+        IPolygon polygon1 = new Polygon(
+                new Point(0,0), new Point(1,0),
+                new Point(1,1)
+        );
+        IPolygon polygon2 = new Polygon(
+                new Point(0,0), new Point(0,1),
+                new Point(1,1)
+        );
+
+        assertTrue(polygon1.isAdjacentTo(polygon2));
+    }
+    @Test
+    public void testIsAdjacentTo2() {
+        IPolygon polygon1 = new Polygon(
+                new Point(0,0), new Point(-1,0),
+                new Point(-1,-1)
+        );
+        IPolygon polygon2 = new Polygon(
+                new Point(0,0), new Point(0,1),
+                new Point(1,1)
+        );
+
+        assertTrue(polygon1.isAdjacentTo(polygon2));
+    }
+
+    @Test
+    public void testIsAdjacentTo3() {
+        IPolygon polygon1 = new Polygon(
+                new Point(0,0.5), new Point(-1,0),
+                new Point(-1,-1)
+        );
+        IPolygon polygon2 = new Polygon(
+                new Point(0,0), new Point(0,1),
+                new Point(1,1)
+        );
+
+        assertFalse(polygon1.isAdjacentTo(polygon2));
+    }
 }
