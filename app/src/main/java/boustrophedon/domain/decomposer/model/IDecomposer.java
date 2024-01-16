@@ -3,10 +3,10 @@ package boustrophedon.domain.decomposer.model;
 import java.util.ArrayList;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
-import boustrophedon.provider.graph.AdjacencyMatrix;
-import boustrophedon.provider.graph.Node;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.INode;
 
 public interface IDecomposer<T> {
-    AdjacencyMatrix<Node<ICell>> decompose(T object) throws ExceedNumberOfAttempts;
+    IAdjacencyMatrix<INode<ICell>> decompose(T object) throws ExceedNumberOfAttempts;
     ArrayList<ICell> getCells();
 }

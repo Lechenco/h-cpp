@@ -8,6 +8,7 @@ public interface IAdjacencyMatrix<T> {
 
     void concat(IAdjacencyMatrix<T> matrix);
     int addNode(T node);
+    ArrayList<T> getNodes();
     Optional<T> getNode(int source, int destination);
     ArrayList<T> getAdjacency(int source);
     ArrayList<T> getAdjacency(T sourceNode);

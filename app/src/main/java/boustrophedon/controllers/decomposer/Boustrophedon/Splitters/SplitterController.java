@@ -6,6 +6,8 @@ import boustrophedon.controllers.graph.MatrixController;
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.ISplitter;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPointerHelper;
@@ -13,8 +15,6 @@ import boustrophedon.domain.decomposer.enums.Events;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.MiddleSplitter;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.NoneSplitter;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.OutSplitter;
-import boustrophedon.provider.graph.AdjacencyMatrix;
-import boustrophedon.provider.graph.Node;
 
 public class SplitterController {
     private final ArrayList<CriticalPoint> criticalPoints;
@@ -26,7 +26,7 @@ public class SplitterController {
         this.criticalPoints = criticalPoints;
     }
 
-    public AdjacencyMatrix<Node<ICell>> execute() throws ExceedNumberOfAttempts {
+    public IAdjacencyMatrix<INode<ICell>> execute() throws ExceedNumberOfAttempts {
         this.remainingPoints = this.criticalPoints;
         this.matrixController = new MatrixController();
 

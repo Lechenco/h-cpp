@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import boustrophedon.domain.decomposer.model.ICell;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.Node;
@@ -12,9 +14,9 @@ import boustrophedon.provider.graph.Node;
 public class MatrixController {
     private final Map<IPoint, Integer> splitMap;
 
-    private final AdjacencyMatrix<Node<ICell>> adjacencyMatrix;
+    private final IAdjacencyMatrix<INode<ICell>> adjacencyMatrix;
 
-    public MatrixController(Map<IPoint, Integer> splitMap, AdjacencyMatrix<Node<ICell>> adjacencyMatrix) {
+    public MatrixController(Map<IPoint, Integer> splitMap, IAdjacencyMatrix<INode<ICell>> adjacencyMatrix) {
         this.splitMap = splitMap;
         this.adjacencyMatrix = adjacencyMatrix;
     }
@@ -24,7 +26,7 @@ public class MatrixController {
         this.splitMap = new HashMap<>();
     }
 
-    public AdjacencyMatrix<Node<ICell>> getMatrixAdjacency() {
+    public IAdjacencyMatrix<INode<ICell>> getMatrixAdjacency() {
         return adjacencyMatrix;
     }
 

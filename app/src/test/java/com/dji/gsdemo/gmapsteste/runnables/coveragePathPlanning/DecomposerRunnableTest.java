@@ -14,19 +14,20 @@ import org.mockito.Mockito;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IArea;
 
 import boustrophedon.provider.decomposer.Boustrophedon.AreaDecomposer;
 import boustrophedon.provider.decomposer.Boustrophedon.PolygonDecomposer;
 import boustrophedon.provider.graph.AdjacencyMatrix;
-import boustrophedon.provider.graph.Node;
 import boustrophedon.provider.primitives.Area;
 
 public class DecomposerRunnableTest {
 
-    class Callback implements RunnableCallback<AdjacencyMatrix<Node<ICell>>> {
+    class Callback implements RunnableCallback<IAdjacencyMatrix<INode<ICell>>> {
         @Override
-        public void onComplete(AdjacencyMatrix<Node<ICell>> result) {
+        public void onComplete(IAdjacencyMatrix<INode<ICell>> result) {
 
         }
 
@@ -39,7 +40,7 @@ public class DecomposerRunnableTest {
     public void testConstructor() {
         IArea areaMock = Mockito.mock(Area.class);
         Handler handlerMock = Mockito.mock(Handler.class);
-        RunnableCallback<AdjacencyMatrix<Node<ICell>>> callback = new Callback();
+        RunnableCallback<IAdjacencyMatrix<INode<ICell>>> callback = new Callback();
         DecomposerRunnable runnable = new DecomposerRunnable(areaMock, handlerMock, callback);
 
         assertEquals(areaMock, runnable.getInput());
@@ -50,9 +51,9 @@ public class DecomposerRunnableTest {
     public void testRun() {
         IArea areaMock = Mockito.mock(Area.class);
         Handler handlerMock = Mockito.mock(Handler.class);
-        RunnableCallback<AdjacencyMatrix<Node<ICell>>> callback = Mockito.mock(Callback.class);
+        RunnableCallback<IAdjacencyMatrix<INode<ICell>>> callback = Mockito.mock(Callback.class);
 
-        AdjacencyMatrix<Node<ICell>> matrix = (AdjacencyMatrix<Node<ICell>>) Mockito.mock(AdjacencyMatrix.class);
+        IAdjacencyMatrix<INode<ICell>> matrix = (IAdjacencyMatrix<INode<ICell>>) Mockito.mock(AdjacencyMatrix.class);
         try(MockedConstruction<AreaDecomposer> decomposerMocked = Mockito.mockConstruction(AreaDecomposer.class,(mock, context)-> when(mock.decompose(Mockito.any())).thenReturn(matrix))){
             Mockito.when(handlerMock.post(Mockito.any())).then(invocation -> {
                 ((Runnable) invocation.getArgument(0)).run();
@@ -70,7 +71,7 @@ public class DecomposerRunnableTest {
     public void testRun_onError() {
         IArea areaMock = Mockito.mock(Area.class);
         Handler handlerMock = Mockito.mock(Handler.class);
-        RunnableCallback<AdjacencyMatrix<Node<ICell>>> callback = Mockito.mock(Callback.class);
+        RunnableCallback<IAdjacencyMatrix<INode<ICell>>> callback = Mockito.mock(Callback.class);
 
         try(MockedConstruction<PolygonDecomposer> decomposerMocked = Mockito.mockConstruction(PolygonDecomposer.class,(mock, context)-> when(mock.decompose(Mockito.any())).thenThrow(ExceedNumberOfAttempts.class))){
             Mockito.when(handlerMock.post(Mockito.any())).then(invocation -> {
