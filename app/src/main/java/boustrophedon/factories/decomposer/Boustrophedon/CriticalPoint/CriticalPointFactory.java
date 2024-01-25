@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
@@ -24,6 +25,19 @@ public class CriticalPointFactory {
 
         return  criticalPoints;
     }
+
+    public static ArrayList<ICriticalPoint> execute(IPolygon polygon, ArrayList<ICriticalPoint> criticalPoints ) {
+        ArrayList<CriticalPoint> _criticalPoints = createCriticalPointsFromPolygon(polygon);
+
+        ArrayList<CriticalPoint> intersections = getAllIntersections(criticalPoints.stream()
+                .map(p -> (CriticalPoint) p).collect(Collectors.toCollection(ArrayList::new)));
+
+        addIntersections(_criticalPoints, intersections);
+
+        return  _criticalPoints.stream()
+                .map(p -> (ICriticalPoint) p).collect(Collectors.toCollection(ArrayList::new));
+    }
+
     static private ArrayList<CriticalPoint> createCriticalPointsFromPolygon(IPolygon polygon) {
         ArrayList<CriticalPoint> criticalPoints = new ArrayList<>();
 

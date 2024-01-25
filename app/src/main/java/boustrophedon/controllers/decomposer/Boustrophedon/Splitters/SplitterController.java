@@ -56,6 +56,7 @@ public class SplitterController {
         switch (criticalPoint.getEvent()) {
             case MIDDLE:
             case IN:
+            case CLIP:
                 return new MiddleSplitter(this.remainingPoints);
             case OUT:
                 return new OutSplitter(this.remainingPoints);
