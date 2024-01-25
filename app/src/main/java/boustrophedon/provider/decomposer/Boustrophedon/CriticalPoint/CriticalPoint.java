@@ -26,14 +26,17 @@ public class CriticalPoint implements ICriticalPoint {
 
     private final ArrayList<CriticalPoint> intersectionsInNormal;
 
+    @Override
     public ArrayList<CriticalPoint> getIntersectionsInNormal() {
         return intersectionsInNormal;
     }
 
+    @Override
     public boolean isSplit() {
         return split;
     }
 
+    @Override
     public void setSplit(boolean split) {
         this.split = split;
     }
@@ -50,22 +53,27 @@ public class CriticalPoint implements ICriticalPoint {
         this.intersectionsInNormal = new ArrayList<>();
     }
 
+    @Override
     public void setEvent(Events event) {
         this.event = event;
     }
 
+    @Override
     public IPoint getVertices() {
         return vertices;
     }
 
+    @Override
     public Events getEvent() {
         return event;
     }
 
+    @Override
     public ArrayList<IBorder> getEdges() {
         return edges;
     }
 
+    @Override
     public ArrayList<IPoint> getEdgesPoints() {
         ArrayList<IPoint> points = new ArrayList<>();
 
@@ -76,6 +84,7 @@ public class CriticalPoint implements ICriticalPoint {
         return points;
     }
 
+    @Override
     public void detectPointEvent(IPolygon polygon) {
         double normalAngle = Math.PI / 2; // TODO: calc angle dynamically
         ArrayList<IPoint> intersectionNormalPoints = this.calcIntersectionsInAngle(polygon, normalAngle);
@@ -124,6 +133,7 @@ public class CriticalPoint implements ICriticalPoint {
         return pointX <= firstEdgePointX && pointX <= secondEdgePointX;
     }
 
+    @Override
     public IPoint getEdgeFarEnd(IBorder edge) {
         return edge.getFirstVertice().equals(this.vertices) ? edge.getSecondVertice() : edge.getFirstVertice();
     }

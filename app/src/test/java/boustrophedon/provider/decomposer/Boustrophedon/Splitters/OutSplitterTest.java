@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.primitives.Border;
@@ -37,7 +38,7 @@ public class OutSplitterTest {
     public void testPopulateCellsCallCreateCells() throws ExceedNumberOfAttempts {
         try (MockedStatic<CellHelper> mockedStatic = Mockito.mockStatic(CellHelper.class)) {
 
-            ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+            ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                     new CriticalPoint(polygon.getPoints().get(0), new ArrayList<>(Arrays.asList(
                             polygon.getBorders().get(0), polygon.getBorders().get(6)
                     ))),
@@ -80,7 +81,7 @@ public class OutSplitterTest {
 
     @Test
     public void testPopulateCells() throws ExceedNumberOfAttempts {
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(polygon.getPoints().get(0), new ArrayList<>(Arrays.asList(
                         polygon.getBorders().get(0), polygon.getBorders().get(6)
                 ))),
@@ -120,7 +121,7 @@ public class OutSplitterTest {
     @Test
     public void testPopulateCellsThrowsException() {
 
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(polygon.getPoints().get(0), new ArrayList<>(Arrays.asList(
                         polygon.getBorders().get(0), polygon.getBorders().get(2)
                 ))),

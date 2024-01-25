@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.primitives.Border;
@@ -16,7 +17,7 @@ public class SplitterTest {
     ArrayList<IBorder> borders = new ArrayList<>();
     @Test
     public void testGetCriticalPointsBeforeIndex() {
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(new Point(0, 0), borders),
                 new CriticalPoint(new Point(1, 1), borders),
                 new CriticalPoint(new Point(1, 0), borders),
@@ -27,7 +28,7 @@ public class SplitterTest {
 
         Splitter splitter = new Splitter(cps){
             @Override
-            void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint) {
+            void populateCells(ArrayList<ICriticalPoint> cellPoints, ICriticalPoint splitPoint) {
 
             }
         };
@@ -40,7 +41,7 @@ public class SplitterTest {
 
     @Test
     public void testGetRemainingPoints() {
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(new Point(0, 0), borders),
                 new CriticalPoint(new Point(1, 1), borders),
                 new CriticalPoint(new Point(1, 0), borders),
@@ -51,7 +52,7 @@ public class SplitterTest {
 
         Splitter splitter = new Splitter(cps){
             @Override
-            void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint) {
+            void populateCells(ArrayList<ICriticalPoint> cellPoints, ICriticalPoint splitPoint) {
 
             }
         };
@@ -64,11 +65,11 @@ public class SplitterTest {
 
     @Test
     public void testAddSplitEdge() {
-        CriticalPoint cp1 = new CriticalPoint(new Point(0, 0), new ArrayList<>(Arrays.asList(
+        ICriticalPoint cp1 = new CriticalPoint(new Point(0, 0), new ArrayList<>(Arrays.asList(
                 new Border(new Point(0, 0), new Point(2, 0)),
                 new Border(new Point(0, 0), new Point(2, 2))
         )));
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 cp1,
                 new CriticalPoint(new Point(1, 1), borders),
                 new CriticalPoint(new Point(2, 2), borders)
@@ -76,7 +77,7 @@ public class SplitterTest {
 
         Splitter splitter = new Splitter(cps){
             @Override
-            void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint) {
+            void populateCells(ArrayList<ICriticalPoint> cellPoints, ICriticalPoint splitPoint) {
 
             }
         };

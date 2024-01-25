@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import boustrophedon.domain.decomposer.model.ICell;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.Cell.Cell;
 import boustrophedon.provider.graph.AdjacencyMatrix;
@@ -23,7 +25,7 @@ import boustrophedon.provider.primitives.Polygon;
 public class MatrixControllerTest {
     @Test
     public void testAddCellsToMatrixEmpty() {
-        AdjacencyMatrix<Node<ICell>> adjacencyMatrix = Mockito.spy(new AdjacencyMatrix());
+        IAdjacencyMatrix<INode<ICell>> adjacencyMatrix = Mockito.spy(new AdjacencyMatrix());
         Map<IPoint, Integer> map = Mockito.spy(new HashMap());
 
         MatrixController controller = new MatrixController(map, adjacencyMatrix);
@@ -41,7 +43,7 @@ public class MatrixControllerTest {
     }
     @Test
     public void testAddCellsToMatrixNullPoint() {
-        AdjacencyMatrix<Node<ICell>> adjacencyMatrix = Mockito.spy(new AdjacencyMatrix());
+        IAdjacencyMatrix<INode<ICell>> adjacencyMatrix = Mockito.spy(new AdjacencyMatrix());
         Map<IPoint, Integer> map = Mockito.spy(new HashMap());
 
         MatrixController controller = new MatrixController(map, adjacencyMatrix);
@@ -59,7 +61,7 @@ public class MatrixControllerTest {
     }
     @Test
     public void testAddCellsToMatrixAddAdjacency() {
-        AdjacencyMatrix<Node<ICell>> adjacencyMatrix = Mockito.spy(new AdjacencyMatrix());
+        IAdjacencyMatrix<INode<ICell>> adjacencyMatrix = Mockito.spy(new AdjacencyMatrix());
         Map<IPoint, Integer> map = Mockito.spy(new HashMap());
 
         MatrixController controller = new MatrixController(map, adjacencyMatrix);

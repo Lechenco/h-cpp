@@ -9,5 +9,5 @@ public interface ISplitter {
     void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts;
     ArrayList<ICell> getCells();
 
-    ArrayList<CriticalPoint> getRemainingPoints();
+    ArrayList<ICriticalPoint> getRemainingPoints();
 }

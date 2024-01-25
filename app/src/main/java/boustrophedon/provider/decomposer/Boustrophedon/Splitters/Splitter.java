@@ -15,37 +15,37 @@ import boustrophedon.provider.primitives.Border;
 
 public abstract class Splitter implements ISplitter {
     protected ArrayList<ICell> cells;
-    protected final ArrayList<CriticalPoint> criticalPoints;
-    protected ArrayList<CriticalPoint> remainingPoints;
-    public Splitter(ArrayList<CriticalPoint> criticalPoints) {
+    protected final ArrayList<ICriticalPoint> criticalPoints;
+    protected ArrayList<ICriticalPoint> remainingPoints;
+    public Splitter(ArrayList<ICriticalPoint> criticalPoints) {
         this.criticalPoints = criticalPoints;
     }
     @Override
     public void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
         this.cells = new ArrayList<>();
 
-        this.adjustEdges((CriticalPoint) splitPoint);
-        ArrayList<CriticalPoint> cellPoints = calcCellPoints((CriticalPoint) splitPoint);
-        this.remainingPoints = this.calcRemainingPoints((CriticalPoint) splitPoint);
+        this.adjustEdges(splitPoint);
+        ArrayList<ICriticalPoint> cellPoints = calcCellPoints(splitPoint);
+        this.remainingPoints = this.calcRemainingPoints(splitPoint);
 
-        this.populateCells(cellPoints, (CriticalPoint) splitPoint);
+        this.populateCells(cellPoints, splitPoint);
     }
 
-    abstract void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint) throws ExceedNumberOfAttempts;
+    abstract void populateCells(ArrayList<ICriticalPoint> cellPoints, ICriticalPoint splitPoint) throws ExceedNumberOfAttempts;
 
-    protected ArrayList<CriticalPoint> calcCellPoints(CriticalPoint splitPoint) {
+    protected ArrayList<ICriticalPoint> calcCellPoints(ICriticalPoint splitPoint) {
         IPoint vertices = splitPoint.getVertices();
 
-        Predicate<CriticalPoint> beforeX = criticalPoint -> criticalPoint.getVertices().getX() <= vertices.getX();
+        Predicate<ICriticalPoint> beforeX = criticalPoint -> criticalPoint.getVertices().getX() <= vertices.getX();
         return  CriticalPointerHelper.filter(this.criticalPoints, beforeX);
     }
 
-    protected ArrayList<CriticalPoint> calcRemainingPoints(CriticalPoint splitPoint) {
+    protected ArrayList<ICriticalPoint> calcRemainingPoints(ICriticalPoint splitPoint) {
         IPoint vertices = splitPoint.getVertices();
-        Predicate<CriticalPoint> afterX = criticalPoint -> criticalPoint.getVertices().getX() >= vertices.getX();
+        Predicate<ICriticalPoint> afterX = criticalPoint -> criticalPoint.getVertices().getX() >= vertices.getX();
         return CriticalPointerHelper.filter(this.criticalPoints, afterX);
     }
-    protected void adjustEdges(CriticalPoint splitPoint) {
+    protected void adjustEdges(ICriticalPoint splitPoint) {
         this.criticalPoints.stream()
                 .filter(rp -> splitPoint.getIntersectionsInNormal().contains(rp))
                 .forEach(rp -> {
@@ -54,7 +54,7 @@ public abstract class Splitter implements ISplitter {
                 });
     }
 
-    protected void addSplitEdge(CriticalPoint rp, CriticalPoint splitPoint) {
+    protected void addSplitEdge(ICriticalPoint rp, ICriticalPoint splitPoint) {
         IBorder newEdge = new Border(rp.getVertices(), splitPoint.getVertices());
         rp.getEdges().add(newEdge);
         splitPoint.getEdges().add(newEdge);
@@ -66,7 +66,7 @@ public abstract class Splitter implements ISplitter {
     }
 
     @Override
-    public ArrayList<CriticalPoint> getRemainingPoints() {
+    public ArrayList<ICriticalPoint> getRemainingPoints() {
         return remainingPoints;
     }
 }

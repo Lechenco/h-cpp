@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
@@ -29,7 +30,7 @@ public class CriticalPointFactoryTest {
         );
         ArrayList<IPoint> points = polygon.getPoints();
         ArrayList<IBorder> borders = polygon.getBorders();
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(points.get(0), new ArrayList<>(Arrays.asList(borders.get(6), borders.get(0)))),
                 new CriticalPoint(points.get(1), new ArrayList<>(Arrays.asList(borders.get(0), borders.get(1)))),
                 new CriticalPoint(points.get(2), new ArrayList<>(Arrays.asList(borders.get(1), borders.get(2)))),
@@ -60,7 +61,7 @@ public class CriticalPointFactoryTest {
         );
         ArrayList<IPoint> points = polygon.getPoints();
         ArrayList<IBorder> borders = polygon.getBorders();
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(points.get(0), new ArrayList<>(Arrays.asList(borders.get(6), borders.get(0)))),
                 new CriticalPoint(new Point(2.5, 0)),
                 new CriticalPoint(points.get(1), new ArrayList<>(Arrays.asList(borders.get(0), borders.get(1)))),
@@ -93,7 +94,7 @@ public class CriticalPointFactoryTest {
                 new Point(0, 3)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         assertEquals(4, cps.size());
     }
@@ -109,7 +110,7 @@ public class CriticalPointFactoryTest {
                 new Point(0, 3)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         assertEquals(9, cps.size());
     }

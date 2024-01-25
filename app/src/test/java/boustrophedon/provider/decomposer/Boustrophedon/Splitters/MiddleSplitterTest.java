@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.primitives.Border;
@@ -30,7 +31,7 @@ public class MiddleSplitterTest {
     public void testPopulateCellsCallCreateCells() throws ExceedNumberOfAttempts {
         try (MockedStatic<CellHelper> mockedStatic = Mockito.mockStatic(CellHelper.class)) {
 
-            ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+            ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                     new CriticalPoint(triangleRectangle.getPoints().get(0), new ArrayList<>(Arrays.asList(
                             triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(2)
                     ))),
@@ -57,7 +58,7 @@ public class MiddleSplitterTest {
     @Test
     public void testPopulateCells() throws ExceedNumberOfAttempts {
 
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(triangleRectangle.getPoints().get(0), new ArrayList<>(Arrays.asList(
                         triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(2)
                 ))),
@@ -78,7 +79,7 @@ public class MiddleSplitterTest {
     @Test
     public void testPopulateCellsThrowsException() {
 
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(triangleRectangle.getPoints().get(0), new ArrayList<>(Arrays.asList(
                         triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(2)
                 ))),
@@ -93,7 +94,7 @@ public class MiddleSplitterTest {
     }
     @Test
     public void testPopulateCellsWithPointWithoutConnection() throws ExceedNumberOfAttempts {
-        ArrayList<CriticalPoint> cps = new ArrayList<>(Arrays.asList(
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
                 new CriticalPoint(triangleRectangle.getPoints().get(0), new ArrayList<>(Arrays.asList(
                         new Border(new Point(-1, 0), new Point(0, 0)),
                         triangleRectangle.getBorders().get(0), triangleRectangle.getBorders().get(2)
