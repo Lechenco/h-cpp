@@ -1,4 +1,4 @@
-package boustrophedon.provider.walkers;
+package boustrophedon.helpers.walkers;
 
 import static boustrophedon.utils.AngleUtils.add180Degrees;
 
@@ -12,15 +12,15 @@ import boustrophedon.provider.primitives.Border;
 import boustrophedon.utils.GA;
 
 public class WalkerHelper {
-    static protected IPoint calcIntersectionToWall(IPoint currentPoint, IBorder wall, double angle) {
+    static public IPoint calcIntersectionToWall(IPoint currentPoint, IBorder wall, double angle) {
         return BorderHelper.calcIntersectionToWall(currentPoint, wall, angle);
     }
 
-    static protected ArrayList<IBorder> findWalls(ArrayList<IBorder> borders, double angle) {
+    static public ArrayList<IBorder> findWalls(ArrayList<IBorder> borders, double angle) {
         return BorderHelper.findWalls(borders, angle);
     }
 
-    static protected ArrayList<IBorder> getPolygonBorders(IPolygon polygon) {
+    static public ArrayList<IBorder> getPolygonBorders(IPolygon polygon) {
         ArrayList<IBorder> polygonBorders = new ArrayList<>();
 
         for (int i = 0; i < polygon.getPoints().size(); i++) {
@@ -35,12 +35,12 @@ public class WalkerHelper {
         return polygonBorders;
     }
 
-    static protected boolean isPointInsidePolygon(IPoint point, IPolygon polygon) {
+    static public boolean isPointInsidePolygon(IPoint point, IPolygon polygon) {
         ArrayList<IBorder> polygonBorders = polygon.getBorders();
 
         return  isPointInsidePolygonBorders(point, polygonBorders);
     }
-    static protected boolean isPointInsidePolygonBorders(IPoint point, ArrayList<IBorder> polygonBorders) {
+    static public boolean isPointInsidePolygonBorders(IPoint point, ArrayList<IBorder> polygonBorders) {
         int countIntersection = 0;
 
         for(IBorder border : polygonBorders) {
@@ -55,7 +55,7 @@ public class WalkerHelper {
         return countIntersection == 1;
     }
 
-    static protected IPoint walkAside(
+    static public IPoint walkAside(
             IPoint currentPoint,
             double distanceToWalk,
             double currentWallAngle,
@@ -68,7 +68,7 @@ public class WalkerHelper {
         return currentPoint.walk(distanceToWalk, add180Degrees(currentWallAngle));
     }
 
-    static protected IPoint walkAsideWallAndGoalOrthogonal(
+    static public IPoint walkAsideWallAndGoalOrthogonal(
             IPoint currentPoint,
             double distanceToWalk,
             double currentWallAngle,
@@ -81,7 +81,7 @@ public class WalkerHelper {
         return currentPoint.walk(distanceToWalk, add180Degrees(currentWallAngle));
     }
 
-    static protected IPoint walkAsideWallOrGoalParallelToXAxis(
+    static public IPoint walkAsideWallOrGoalParallelToXAxis(
             IPoint currentPoint,
             double distanceToWalk,
             double currentWallAngle,
@@ -94,7 +94,7 @@ public class WalkerHelper {
         return currentPoint.walk(distanceToWalk, add180Degrees(currentWallAngle));
     }
 
-    static protected  IPoint getClosestWallVertices(IPoint point, IBorder wall) {
+    static public  IPoint getClosestWallVertices(IPoint point, IBorder wall) {
         return Math.abs(
                 GA.calcDistance(point, wall.getFirstVertice())
         ) < Math.abs(

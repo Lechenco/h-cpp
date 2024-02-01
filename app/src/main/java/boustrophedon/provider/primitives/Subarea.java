@@ -5,8 +5,7 @@ import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.ISubarea;
 
 public class Subarea implements ISubarea {
-
-    private final IPolygon polygon;
+    private IPolygon polygon;
 
     private SubareaTypes type = SubareaTypes.NORMAL;
 
@@ -32,5 +31,10 @@ public class Subarea implements ISubarea {
     @Override
     public IPolygon getPolygon() {
         return polygon;
+    }
+
+    @Override
+    public void setPolygon(IPolygon polygon) {
+        this.polygon = polygon;
     }
 }

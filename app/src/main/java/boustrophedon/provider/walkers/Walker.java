@@ -14,6 +14,7 @@ import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
+import boustrophedon.helpers.walkers.WalkerHelper;
 import boustrophedon.provider.primitives.Polyline;
 import boustrophedon.utils.AngleUtils;
 import boustrophedon.utils.GA;

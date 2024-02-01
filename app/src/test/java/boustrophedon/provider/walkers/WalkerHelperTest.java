@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.helpers.walkers.WalkerHelper;
 import boustrophedon.provider.primitives.Border;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;

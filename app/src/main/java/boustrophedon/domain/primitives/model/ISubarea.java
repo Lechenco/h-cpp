@@ -7,4 +7,5 @@ public interface ISubarea {
     void setSubareaType(SubareaTypes type);
 
     IPolygon getPolygon();
+    void setPolygon(IPolygon polygon);
 }

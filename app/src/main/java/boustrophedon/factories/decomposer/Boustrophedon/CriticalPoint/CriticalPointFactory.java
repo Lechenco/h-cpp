@@ -33,8 +33,7 @@ public class CriticalPointFactory {
 
         addIntersections(_criticalPoints, intersections);
 
-        return  _criticalPoints.stream()
-                .map(p -> (ICriticalPoint) p).collect(Collectors.toCollection(ArrayList::new));
+        return  _criticalPoints;
     }
 
     static private ArrayList<ICriticalPoint> createCriticalPointsFromPolygon(IPolygon polygon) {

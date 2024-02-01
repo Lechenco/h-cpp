@@ -93,7 +93,7 @@ public class CriticalPoint implements ICriticalPoint {
         int countOfIntersectionsTangent = intersectionTangentPoints.size();
         int countOfIntersectionsNormal = intersectionNormalPoints.size();
 
-        if (this.event == null) {
+        if (this.event == Events.UNKNOWN) {
             if (isAConvexPoint(countOfIntersectionsTangent, countOfIntersectionsNormal)) {
                 this.setEvent(Events.NONE);
                 return;
