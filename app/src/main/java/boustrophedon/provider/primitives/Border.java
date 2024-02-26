@@ -59,6 +59,10 @@ public class Border implements IBorder {
     public boolean isParallelToY() {
         return Math.abs(firstVertice.getX() - secondVertice.getX()) <= DISTANCE_PRECISION;
     }
+    @Override
+    public boolean isParallelToX() {
+        return Math.abs(firstVertice.getY() - secondVertice.getY()) <= DISTANCE_PRECISION;
+    }
 
     @Override
     public double[] getParallelLineCoefficients(IPoint point) {

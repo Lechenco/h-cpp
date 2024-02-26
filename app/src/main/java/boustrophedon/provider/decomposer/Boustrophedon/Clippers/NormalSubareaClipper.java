@@ -20,6 +20,7 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.ISubarea;
 import boustrophedon.factories.decomposer.Boustrophedon.CriticalPoint.CriticalPointFactory;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
+import boustrophedon.provider.primitives.Border;
 
 public class NormalSubareaClipper implements IClipper {
     ArrayList<ISubarea> res;
@@ -66,6 +67,9 @@ public class NormalSubareaClipper implements IClipper {
             cp.setEvent(Events.CLIP);
             cp.detectPointEvent(normalArea.getPolygon());
             clippingPoints.add(cp);
+            cp.getIntersectionsInNormal().forEach(i -> {
+                cp.getEdges().add(new Border(i.getVertices(), cp.getVertices()));
+            });
         }
 
         return clippingPoints;

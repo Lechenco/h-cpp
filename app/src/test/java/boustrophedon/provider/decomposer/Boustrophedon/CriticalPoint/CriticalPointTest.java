@@ -149,6 +149,23 @@ public class CriticalPointTest {
         criticalPoint1.detectPointEvent(polygon);
         assertEquals(Events.NONE, criticalPoint1.getEvent());
     }
+    @Test
+    public void testDetectIntersectionClipEvent() {
+        Polygon polygon = new Polygon(
+                new Point(0, 0),
+                new Point(3, 0),
+                new Point(3, 3),
+                new Point(0, 3)
+        );
+        CriticalPoint criticalPoint = new CriticalPoint(new Point(2, 2));
+        criticalPoint.setEvent(Events.CLIP);
+
+        criticalPoint.detectPointEvent(polygon);
+        assertEquals(Events.CLIP, criticalPoint.getEvent());
+        assertEquals(2, criticalPoint.getIntersectionsInNormal().size());
+        assertEquals(new Point(2, 0), criticalPoint.getIntersectionsInNormal().get(0).getVertices());
+        assertEquals(new Point(2, 3), criticalPoint.getIntersectionsInNormal().get(1).getVertices());
+    }
 
     @Test
     public void testCalcIntersectionsInAngle() {

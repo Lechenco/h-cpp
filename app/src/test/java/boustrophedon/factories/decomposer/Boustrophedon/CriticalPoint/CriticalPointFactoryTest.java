@@ -49,6 +49,29 @@ public class CriticalPointFactoryTest {
         assertEquals(intersection, cps.get(6));
     }
     @Test
+    public void testAddIntersectionWithDuplicates() {
+        IPolygon polygon = new Polygon(
+                new Point(0, 0),
+                new Point(0, 3),
+                new Point(3, 3),
+                new Point(3, 0 )
+        );
+        ArrayList<IPoint> points = polygon.getPoints();
+        ArrayList<IBorder> borders = polygon.getBorders();
+        ArrayList<ICriticalPoint> cps = new ArrayList<>(Arrays.asList(
+                new CriticalPoint(points.get(0), new ArrayList<>(Arrays.asList(borders.get(3), borders.get(0)))),
+                new CriticalPoint(points.get(1), new ArrayList<>(Arrays.asList(borders.get(0), borders.get(1)))),
+                new CriticalPoint(points.get(2), new ArrayList<>(Arrays.asList(borders.get(1), borders.get(2)))),
+                new CriticalPoint(points.get(3), new ArrayList<>(Arrays.asList(borders.get(2), borders.get(3))))
+        ));
+
+        CriticalPoint intersection1 = new CriticalPoint(new Point(2.5, 3));
+        CriticalPoint intersection2 = new CriticalPoint(new Point(2.50000001, 3));
+        CriticalPointFactory.addIntersections(cps, new ArrayList<>(Arrays.asList(intersection1, intersection2)));
+
+        assertEquals(5, cps.size());
+    }
+    @Test
     public void testUpdateBorders() {
         IPolygon polygon = new Polygon(
                 new Point(0, 0),
@@ -113,5 +136,24 @@ public class CriticalPointFactoryTest {
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         assertEquals(9, cps.size());
+    }
+    @Test
+    public void testExecuteCLIPEvent() {
+        IPolygon polygon = new Polygon(
+                new Point(0, 0),
+                new Point(0, 3),
+                new Point(3, 3),
+                new Point(3, 0 )
+        );
+
+        ICriticalPoint cp = new CriticalPoint(new Point(0, 2));
+        cp.detectPointEvent(polygon);
+
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon,
+                new ArrayList<>(Collections.singletonList(
+                        cp
+                )));
+
+        assertEquals(6, cps.size());
     }
 }

@@ -12,6 +12,7 @@ public interface IBorder {
     double getAngleFirstHalf();
 
     boolean isParallelToY();
+    boolean isParallelToX();
     double[] getParallelLineCoefficients(IPoint point);
     double getAngleDiff(double angle);
     double getDistanceToPoint(IPoint point);
