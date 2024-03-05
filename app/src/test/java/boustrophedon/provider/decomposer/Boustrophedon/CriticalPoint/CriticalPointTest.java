@@ -2,6 +2,8 @@ package boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint;
 
 import static org.junit.Assert.*;
 
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -147,6 +149,23 @@ public class CriticalPointTest {
         criticalPoint1.detectPointEvent(polygon);
         assertEquals(Events.NONE, criticalPoint1.getEvent());
     }
+    @Test
+    public void testDetectIntersectionClipEvent() {
+        Polygon polygon = new Polygon(
+                new Point(0, 0),
+                new Point(3, 0),
+                new Point(3, 3),
+                new Point(0, 3)
+        );
+        CriticalPoint criticalPoint = new CriticalPoint(new Point(2, 2));
+        criticalPoint.setEvent(Events.CLIP);
+
+        criticalPoint.detectPointEvent(polygon);
+        assertEquals(Events.CLIP, criticalPoint.getEvent());
+        assertEquals(2, criticalPoint.getIntersectionsInNormal().size());
+        assertEquals(new Point(2, 0), criticalPoint.getIntersectionsInNormal().get(0).getVertices());
+        assertEquals(new Point(2, 3), criticalPoint.getIntersectionsInNormal().get(1).getVertices());
+    }
 
     @Test
     public void testCalcIntersectionsInAngle() {
@@ -157,7 +176,7 @@ public class CriticalPointTest {
     }
     @Test
     public void testCalcIntersectionsInAngle90() {
-        ArrayList<IPoint> points = cp.calcIntersectionsInAngle(triangleRectangle, Math.PI /2);
+        ArrayList<IPoint> points = cp.calcIntersectionsInAngle(triangleRectangle, NINETY_DEGREES);
 
         assertEquals(0, points.size());
     }

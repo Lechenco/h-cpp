@@ -1,5 +1,7 @@
 package boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint;
 
+import static boustrophedon.utils.AngleUtils.add90Degrees;
+
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
@@ -13,7 +15,7 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
 import boustrophedon.domain.decomposer.enums.Events;
-import boustrophedon.utils.GA;
+import boustrophedon.utils.AngleUtils;
 
 public class CriticalPoint implements ICriticalPoint {
     private final IPoint vertices;
@@ -24,14 +26,17 @@ public class CriticalPoint implements ICriticalPoint {
 
     private final ArrayList<CriticalPoint> intersectionsInNormal;
 
+    @Override
     public ArrayList<CriticalPoint> getIntersectionsInNormal() {
         return intersectionsInNormal;
     }
 
+    @Override
     public boolean isSplit() {
         return split;
     }
 
+    @Override
     public void setSplit(boolean split) {
         this.split = split;
     }
@@ -48,22 +53,27 @@ public class CriticalPoint implements ICriticalPoint {
         this.intersectionsInNormal = new ArrayList<>();
     }
 
+    @Override
     public void setEvent(Events event) {
         this.event = event;
     }
 
+    @Override
     public IPoint getVertices() {
         return vertices;
     }
 
+    @Override
     public Events getEvent() {
         return event;
     }
 
+    @Override
     public ArrayList<IBorder> getEdges() {
         return edges;
     }
 
+    @Override
     public ArrayList<IPoint> getEdgesPoints() {
         ArrayList<IPoint> points = new ArrayList<>();
 
@@ -74,20 +84,24 @@ public class CriticalPoint implements ICriticalPoint {
         return points;
     }
 
+    @Override
     public void detectPointEvent(IPolygon polygon) {
         double normalAngle = Math.PI / 2; // TODO: calc angle dynamically
         ArrayList<IPoint> intersectionNormalPoints = this.calcIntersectionsInAngle(polygon, normalAngle);
-        ArrayList<IPoint> intersectionTangentPoints = this.calcIntersectionsInAngle(polygon, normalAngle + Math.PI / 2);
+        ArrayList<IPoint> intersectionTangentPoints = this.calcIntersectionsInAngle(polygon,  add90Degrees(normalAngle));
 
         int countOfIntersectionsTangent = intersectionTangentPoints.size();
         int countOfIntersectionsNormal = intersectionNormalPoints.size();
 
-        if (isAConvexPoint(countOfIntersectionsTangent, countOfIntersectionsNormal)) {
-            this.setEvent(Events.NONE);
-            return;
+        if (this.event == Events.UNKNOWN) {
+            if (isAConvexPoint(countOfIntersectionsTangent, countOfIntersectionsNormal)) {
+                this.setEvent(Events.NONE);
+                return;
+            }
+
+            this.validateEventWithIntersections(intersectionNormalPoints);
         }
 
-        this.validateEventWithIntersections(intersectionNormalPoints);
         this.populateIntersectionNormalPoints(intersectionNormalPoints, polygon);
     }
 
@@ -119,6 +133,7 @@ public class CriticalPoint implements ICriticalPoint {
         return pointX <= firstEdgePointX && pointX <= secondEdgePointX;
     }
 
+    @Override
     public IPoint getEdgeFarEnd(IBorder edge) {
         return edge.getFirstVertice().equals(this.vertices) ? edge.getSecondVertice() : edge.getFirstVertice();
     }
@@ -136,7 +151,7 @@ public class CriticalPoint implements ICriticalPoint {
 
             if (
                     border.isOnBorder(intersection) &&
-                    GA.checkAngles(angle, GA.calcAngle(this.vertices, intersection)) &&
+                    AngleUtils.checkAngles(angle, AngleUtils.calcAngle(this.vertices, intersection)) &&
                     !duplicated
             ) {
                 intersectionPoints.add(intersection);

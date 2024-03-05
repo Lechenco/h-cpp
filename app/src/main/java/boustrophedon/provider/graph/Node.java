@@ -1,8 +1,9 @@
 package boustrophedon.provider.graph;
 
 import boustrophedon.domain.graph.model.INode;
+import boustrophedon.domain.graph.model.INodeChildrenObject;
 
-public class Node<T> implements INode<T> {
+public class Node<T extends INodeChildrenObject> implements INode<T> {
     private T object;
     private int index;
 
@@ -28,5 +29,10 @@ public class Node<T> implements INode<T> {
     @Override
     public void setObject(T object) {
         this.object = object;
+    }
+
+    @Override
+    public boolean isAdjacent(INode<T> node) {
+        return this.object.isAdjacent(node.getObject());
     }
 }

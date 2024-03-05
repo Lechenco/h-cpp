@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import boustrophedon.domain.decomposer.model.ICell;
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.primitives.Polygon;
 import boustrophedon.utils.GA;
 
 public class CellHelper {
-    public static ICell createCell(ArrayList<CriticalPoint> criticalPoints) {
+    public static ICell createCell(ArrayList<ICriticalPoint> criticalPoints) {
         ArrayList<IPoint> polygonPoints = criticalPoints
                 .stream()
-                .map(CriticalPoint::getVertices)
+                .map(ICriticalPoint::getVertices)
                 .collect(Collectors.toCollection(ArrayList::new));
 
         return new Cell(new Polygon(polygonPoints));

@@ -16,19 +16,20 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import boustrophedon.domain.decomposer.model.ICell;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.graph.model.IObjectiveFunction;
 import boustrophedon.domain.graph.model.IObjectiveMatrix;
+import boustrophedon.domain.primitives.model.IArea;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
-import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.graph.CenterOfMassFunction;
-import boustrophedon.provider.graph.Node;
 
 
 public class CoveragePathPlanningController {
-    private AdjacencyMatrix<Node<ICell>> adjacencyMatrix;
+    private IAdjacencyMatrix<INode<ICell>> adjacencyMatrix;
     private IObjectiveMatrix<IPolygon> objectiveMatrix;
 
     private Collection<Integer> cellsOrder;
@@ -40,14 +41,14 @@ public class CoveragePathPlanningController {
         this.handler = handler;
     }
 
-    public Thread decompose(IPolygon polygon, RunnableCallback<ArrayList<ICell>> callback) {
-        DecomposerRunnable decomposerRunnable = new DecomposerRunnable(polygon, handler, new RunnableCallback<AdjacencyMatrix<Node<ICell>>>() {
+    public Thread decompose(IArea area, RunnableCallback<ArrayList<ICell>> callback) {
+        DecomposerRunnable decomposerRunnable = new DecomposerRunnable(area, handler, new RunnableCallback<IAdjacencyMatrix<INode<ICell>>>() {
             @Override
-            public void onComplete(AdjacencyMatrix<Node<ICell>> result) {
+            public void onComplete(IAdjacencyMatrix<INode<ICell>> result) {
                 adjacencyMatrix = result;
                 ArrayList<ICell> cells = result.getNodes()
                         .stream()
-                        .map(Node::getObject)
+                        .map(INode::getObject)
                                 .collect(Collectors.toCollection(ArrayList::new));
                 callback.onComplete(cells);
             }
@@ -110,7 +111,8 @@ public class CoveragePathPlanningController {
     }
 
     public Thread calcBestCellOrder(RunnableCallback<Collection<Integer>> callback) {
-        ArrayList<ICell> cells = this.adjacencyMatrix.getNodes().stream().map(Node::getObject).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<ICell> cells = this.adjacencyMatrix.getNodes().stream()
+                .map(INode::getObject).collect(Collectors.toCollection(ArrayList::new));
         ICell starterCell = CellHelper.getClosestCellToPoint(cells, this.startPoint);
         return calcBestCellOrder(cells.indexOf(starterCell), callback);
     }
@@ -135,7 +137,7 @@ public class CoveragePathPlanningController {
 
     public Thread generateFinalPath(RunnableCallback<IPolyline> callback) {
         ArrayList<ICell> cells = this.adjacencyMatrix.getNodes().stream()
-                .map(Node::getObject).collect(Collectors.toCollection(ArrayList::new));
+                .map(INode::getObject).collect(Collectors.toCollection(ArrayList::new));
         WalkAllRunnable walkAllRunnable = new WalkAllRunnable(
                 new ImmutableTriple<>(cells, this.cellsOrder, this.startPoint),
                 this.handler,
@@ -158,8 +160,8 @@ public class CoveragePathPlanningController {
         return thread;
     }
 
-    public IPolyline generateFinalPathSync(IPolygon polygon) throws InterruptedException {
-        this.decompose(polygon, new RunnableCallback<ArrayList<ICell>>() {
+    public IPolyline generateFinalPathSync(IArea area) throws InterruptedException {
+        this.decompose(area, new RunnableCallback<ArrayList<ICell>>() {
             @Override
             public void onComplete(ArrayList<ICell> result) {
 

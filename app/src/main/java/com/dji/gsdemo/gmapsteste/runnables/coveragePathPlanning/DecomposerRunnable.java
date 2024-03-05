@@ -8,26 +8,27 @@ import com.dji.gsdemo.gmapsteste.runnables.RunnableWithCallback;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
-import boustrophedon.domain.primitives.model.IPolygon;
-import boustrophedon.provider.decomposer.Boustrophedon.Decomposer;
-import boustrophedon.provider.graph.AdjacencyMatrix;
-import boustrophedon.provider.graph.Node;
+import boustrophedon.domain.decomposer.model.IDecomposer;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.INode;
+import boustrophedon.domain.primitives.model.IArea;
+import boustrophedon.provider.decomposer.Boustrophedon.AreaDecomposer;
 
-public class DecomposerRunnable extends RunnableWithCallback<IPolygon, AdjacencyMatrix<Node<ICell>>> {
+public class DecomposerRunnable extends RunnableWithCallback<IArea, IAdjacencyMatrix<INode<ICell>>> {
 
-    public DecomposerRunnable(IPolygon input, Handler handler, RunnableCallback<AdjacencyMatrix<Node<ICell>>> callback) {
+    public DecomposerRunnable(IArea input, Handler handler, RunnableCallback<IAdjacencyMatrix<INode<ICell>>> callback) {
         super(input, handler, callback);
     }
 
-    private AdjacencyMatrix<Node<ICell>> decompose(IPolygon polygon) throws ExceedNumberOfAttempts {
-        Decomposer decomposer = new Decomposer();
-        return decomposer.decompose(polygon);
+    private IAdjacencyMatrix<INode<ICell>> decompose(IArea area) throws ExceedNumberOfAttempts {
+        IDecomposer<IArea> decomposer = new AreaDecomposer();
+        return decomposer.decompose(area);
     }
 
     @Override
     public void run() {
         try {
-            AdjacencyMatrix<Node<ICell>> adjacencyMatrix = decompose(this.getInput());
+            IAdjacencyMatrix<INode<ICell>> adjacencyMatrix = decompose(this.getInput());
 
             this.getHandler().post(() -> this.getCallback().onComplete(adjacencyMatrix));
         } catch (ExceedNumberOfAttempts e) {

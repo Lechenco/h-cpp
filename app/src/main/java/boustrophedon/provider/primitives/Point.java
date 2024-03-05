@@ -1,5 +1,7 @@
 package boustrophedon.provider.primitives;
 
+import static boustrophedon.constants.PrecisionConstants.DISTANCE_PRECISION;
+
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
@@ -10,7 +12,6 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.utils.GA;
 
 public class Point implements IPoint {
-    private static final double PRECISION = 0.000001;
     double x;
     double y;
 
@@ -64,7 +65,7 @@ public class Point implements IPoint {
 
         Point p = (Point) other;
 
-        return Math.abs(p.getX() - this.getX()) < PRECISION
-                && Math.abs(p.getY() - this.getY()) < PRECISION;
+        return Math.abs(p.getX() - this.getX()) < DISTANCE_PRECISION
+                && Math.abs(p.getY() - this.getY()) < DISTANCE_PRECISION;
     }
 }

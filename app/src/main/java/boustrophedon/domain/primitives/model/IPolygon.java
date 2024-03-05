@@ -13,5 +13,6 @@ public interface IPolygon {
     IPoint getClosestVertices(IPoint point);
     IPoint getFarthestVertices(IPoint point);
     IPoint getFarthestVertices(IPoint point, double direction);
+    boolean isAdjacentTo(IPolygon polygon);
     ArrayList<IBorder> getBorders();
 }

@@ -12,7 +12,7 @@ import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoi
 
 public class NoneSplitter extends OutSplitter {
 
-    public NoneSplitter(ArrayList<CriticalPoint> criticalPoints) {
+    public NoneSplitter(ArrayList<ICriticalPoint> criticalPoints) {
         super(criticalPoints);
     }
 
@@ -20,7 +20,7 @@ public class NoneSplitter extends OutSplitter {
     public void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
         this.cells = new ArrayList<>();
 
-        Optional<CriticalPoint> inPointOptional = this
+        Optional<ICriticalPoint> inPointOptional = this
                 .criticalPoints.stream().filter(cp -> cp.getEvent() == Events.IN)
                 .findFirst();
         if (inPointOptional.isPresent()) {
@@ -32,7 +32,7 @@ public class NoneSplitter extends OutSplitter {
     }
 
     @Override
-    public ArrayList<CriticalPoint> getRemainingPoints() {
+    public ArrayList<ICriticalPoint> getRemainingPoints() {
         return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning;
 
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+
 import android.os.Handler;
 
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
@@ -8,22 +10,19 @@ import com.dji.gsdemo.gmapsteste.runnables.RunnableWithCallback;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.domain.walkers.error.AngleOffLimitsException;
-import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.provider.primitives.Polyline;
 import boustrophedon.provider.walkers.Walker;
 
 public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell>, Collection<Integer>, IPoint>, IPolyline> {
     public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.0006;
-    public static double DEFAULT_DIRECTION = Math.PI / 2;
+    public static double DEFAULT_DIRECTION = NINETY_DEGREES;
     public WalkAllRunnable(
             Triple<ArrayList<ICell>, Collection<Integer>, IPoint> input, Handler handler,
                            RunnableCallback<IPolyline> callback)
@@ -32,10 +31,9 @@ public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell
     }
 
     private IPolyline walk(IPolygon polygon, IPoint initialPoint) throws AngleOffLimitsException {
-        Walker walker = new Walker(
-                new WalkerConfig(DEFAULT_DISTANCE_BETWEEN_PATHS, DEFAULT_DIRECTION)
-        );
-        return walker.generatePath(
+        Walker walker = new Walker.WalkerBuilder().withDistanceBetweenPaths(DEFAULT_DISTANCE_BETWEEN_PATHS).atDirection(DEFAULT_DIRECTION).build();
+
+        return walker.walk(
                 polygon,
                 initialPoint != null ? initialPoint : polygon.getPoints().get(0)
         );

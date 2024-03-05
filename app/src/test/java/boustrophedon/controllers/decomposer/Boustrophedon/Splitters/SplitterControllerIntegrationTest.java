@@ -8,6 +8,9 @@ import java.util.ArrayList;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
+import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.factories.decomposer.Boustrophedon.CriticalPoint.CriticalPointFactory;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
@@ -26,10 +29,10 @@ public class SplitterControllerIntegrationTest {
                 new Point(1.5, 4.5)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         SplitterController splitterController = new SplitterController(cps);
-        AdjacencyMatrix<Node<ICell>> matrix = splitterController.execute();
+        IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
 
         assertEquals(1, matrix.getNodes().size());
     }
@@ -42,10 +45,10 @@ public class SplitterControllerIntegrationTest {
                 new Point(0, 1)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         SplitterController splitterController = new SplitterController(cps);
-        AdjacencyMatrix<Node<ICell>> matrix = splitterController.execute();
+        IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
 
         assertEquals(1, matrix.getNodes().size());
     }
@@ -61,10 +64,10 @@ public class SplitterControllerIntegrationTest {
                 new Point(0, 1)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         SplitterController splitterController = new SplitterController(cps);
-        AdjacencyMatrix<Node<ICell>> matrix = splitterController.execute();
+        IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
 
         assertEquals(2, matrix.getNodes().size());
     }
@@ -80,11 +83,11 @@ public class SplitterControllerIntegrationTest {
                 new Point(0, 3)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         SplitterController splitterController = new SplitterController(cps);
 
-        AdjacencyMatrix<Node<ICell>> matrix = splitterController.execute();
+        IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
         assertEquals(3, matrix.getNodes().size());
     }
     @Test
@@ -102,11 +105,11 @@ public class SplitterControllerIntegrationTest {
                 new Point(0, 3)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         SplitterController splitterController = new SplitterController(cps);
 
-        AdjacencyMatrix<Node<ICell>> matrix = splitterController.execute();
+        IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
         assertEquals(4, matrix.getNodes().size());
     }
     @Test
@@ -121,11 +124,11 @@ public class SplitterControllerIntegrationTest {
                 new Point(0, 1)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
         SplitterController splitterController = new SplitterController(cps);
 
-        AdjacencyMatrix<Node<ICell>> matrix = splitterController.execute();
+        IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
         assertEquals(3, matrix.getNodes().size());
     }
 
@@ -144,10 +147,10 @@ public class SplitterControllerIntegrationTest {
                 new Point(0, 1)
         );
 
-        ArrayList<CriticalPoint> cps = CriticalPointFactory.execute(polygon);
+        ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
         SplitterController splitterController = new SplitterController(cps);
 
-        AdjacencyMatrix<Node<ICell>> matrix = splitterController.execute();
+        IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
         assertEquals(4, matrix.getNodes().size());
     }
 }

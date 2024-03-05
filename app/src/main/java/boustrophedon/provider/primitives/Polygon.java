@@ -91,6 +91,18 @@ public class Polygon implements IPolygon {
     }
 
     @Override
+    public boolean isAdjacentTo(IPolygon polygon) {
+
+        for (IPoint point : this.points) {
+            for (IPoint p : polygon.getPoints()) {
+                if (point.equals(p)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public int getNumberOfPoints() {
         return numberOfPoints;
     }

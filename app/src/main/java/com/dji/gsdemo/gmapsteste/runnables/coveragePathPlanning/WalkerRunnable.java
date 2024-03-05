@@ -1,5 +1,7 @@
 package com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning;
 
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+
 import android.os.Handler;
 
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
@@ -10,10 +12,11 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.domain.walkers.error.AngleOffLimitsException;
-import boustrophedon.domain.walkers.model.WalkerConfig;
 import boustrophedon.provider.walkers.Walker;
 
 public class WalkerRunnable extends RunnableWithCallback<ICell, IPolyline> {
+    public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.0006;
+    public static double DEFAULT_DIRECTION = NINETY_DEGREES;
     private final IPoint startPoint;
 
     public WalkerRunnable(ICell input, Handler handler, RunnableCallback<IPolyline> callback) {
@@ -21,16 +24,9 @@ public class WalkerRunnable extends RunnableWithCallback<ICell, IPolyline> {
         this.startPoint = input.getPolygon().getPoints().get(0);
     }
 
-    public WalkerRunnable(ICell input, IPoint startPoint, Handler handler, RunnableCallback<IPolyline> callback) {
-        super(input, handler, callback);
-        this.startPoint = startPoint;
-    }
-
     public IPolyline walk(IPolygon polygon) throws AngleOffLimitsException {
-        Walker walker = new Walker(
-            new WalkerConfig(0.0006, Math.PI / 2)
-        );
-        return walker.generatePath(
+        Walker walker = new Walker.WalkerBuilder().withDistanceBetweenPaths(DEFAULT_DISTANCE_BETWEEN_PATHS).atDirection(DEFAULT_DIRECTION).build();
+        return walker.walk(
             polygon,
             this.startPoint
         );

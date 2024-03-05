@@ -4,19 +4,20 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 
 public class MiddleSplitter extends Splitter {
     static int NUMBER_OF_ATTEMPTS = 5;
-    private final Stack<CriticalPoint> walked = new Stack<>();
-    private final Stack<CriticalPoint> deadEnd = new Stack<>();
-    public MiddleSplitter(ArrayList<CriticalPoint> criticalPoints) {
+    private final Stack<ICriticalPoint> walked = new Stack<>();
+    private final Stack<ICriticalPoint> deadEnd = new Stack<>();
+    public MiddleSplitter(ArrayList<ICriticalPoint> criticalPoints) {
         super(criticalPoints);
     }
 
     @Override
-    void populateCells(ArrayList<CriticalPoint> cellPoints, CriticalPoint splitPoint) throws ExceedNumberOfAttempts {
+    void populateCells(ArrayList<ICriticalPoint> cellPoints, ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
         walked.clear();
         deadEnd.clear();
         walked.push(splitPoint);
@@ -40,8 +41,8 @@ public class MiddleSplitter extends Splitter {
         this.cells.add(CellHelper.createCell(new ArrayList<>(walked)));
     }
 
-    private void walk(ArrayList<CriticalPoint> cellPoints) {
-        for (CriticalPoint cp : cellPoints) {
+    private void walk(ArrayList<ICriticalPoint> cellPoints) {
+        for (ICriticalPoint cp : cellPoints) {
             if (
                     !walked.contains(cp) &&
                     !deadEnd.contains(cp) &&
@@ -51,7 +52,7 @@ public class MiddleSplitter extends Splitter {
             }
         }
     }
-    private boolean connectsWithEdges(CriticalPoint cp) {
+    private boolean connectsWithEdges(ICriticalPoint cp) {
         return cp.getEdgesPoints().contains(walked.peek().getVertices());
     }
 }

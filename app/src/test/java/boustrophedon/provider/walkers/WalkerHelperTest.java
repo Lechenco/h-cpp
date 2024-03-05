@@ -2,6 +2,11 @@ package boustrophedon.provider.walkers;
 
 import static org.junit.Assert.*;
 
+import static boustrophedon.constants.AngleConstants.FORTY_FIVE_DEGREES;
+import static boustrophedon.constants.AngleConstants.HUNDRED_AND_EIGHTY_DEGREES;
+import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
+import static boustrophedon.constants.PrecisionConstants.DISTANCE_PRECISION;
+
 import com.github.javafaker.Faker;
 
 import org.junit.Before;
@@ -11,14 +16,12 @@ import java.util.ArrayList;
 
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPolygon;
+import boustrophedon.helpers.walkers.WalkerHelper;
 import boustrophedon.provider.primitives.Border;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 
 public class WalkerHelperTest {
-    private static final double DOUBLE_DELTA = 0.00001;
-    double NINETY_DEGREES = Math.PI / 2;
-    double FORTY_FIVE_DEGREES = Math.PI / 4;
     Faker faker;
     Polygon triangleRectangle;
 
@@ -56,7 +59,7 @@ public class WalkerHelperTest {
     public void testFindWalls90() {
         ArrayList<IBorder> borders = WalkerHelper.getPolygonBorders(triangleRectangle);
 
-        ArrayList<IBorder> walls = WalkerHelper.findWalls(borders, Math.PI / 2);
+        ArrayList<IBorder> walls = WalkerHelper.findWalls(borders, NINETY_DEGREES);
 
         assertEquals(2, walls.size());
         assertEquals(borders.get(0), walls.get(0));
@@ -67,7 +70,7 @@ public class WalkerHelperTest {
     public void testFindWalls180() {
         ArrayList<IBorder> borders = WalkerHelper.getPolygonBorders(triangleRectangle);
 
-        ArrayList<IBorder> walls = WalkerHelper.findWalls(borders, Math.PI);
+        ArrayList<IBorder> walls = WalkerHelper.findWalls(borders, HUNDRED_AND_EIGHTY_DEGREES);
 
         assertEquals(2, walls.size());
         assertEquals(borders.get(0), walls.get(0));
@@ -97,25 +100,25 @@ public class WalkerHelperTest {
     public void testCalcIntersectionToWallAngle45() {
         IBorder wall = new Border(new Point(0, 5), new Point(5, 5));
 
-        assertEquals(5, WalkerHelper.calcIntersectionToWall(new Point(0, 0), wall, FORTY_FIVE_DEGREES).getX(),DOUBLE_DELTA );
-        assertEquals(3, WalkerHelper.calcIntersectionToWall(new Point(1, 3), wall, FORTY_FIVE_DEGREES).getX(), DOUBLE_DELTA);
-        assertEquals(1, WalkerHelper.calcIntersectionToWall(new Point(3, 7), wall, FORTY_FIVE_DEGREES).getX(), DOUBLE_DELTA);
+        assertEquals(5, WalkerHelper.calcIntersectionToWall(new Point(0, 0), wall, FORTY_FIVE_DEGREES).getX(), DISTANCE_PRECISION);
+        assertEquals(3, WalkerHelper.calcIntersectionToWall(new Point(1, 3), wall, FORTY_FIVE_DEGREES).getX(), DISTANCE_PRECISION);
+        assertEquals(1, WalkerHelper.calcIntersectionToWall(new Point(3, 7), wall, FORTY_FIVE_DEGREES).getX(), DISTANCE_PRECISION);
     }
     @Test
     public void testCalcIntersectionToWallAngle90() {
         IBorder wall = new Border(new Point(0, 5), new Point(5, 5));
 
-        assertEquals(0, WalkerHelper.calcIntersectionToWall(new Point(0, 0), wall, NINETY_DEGREES).getX(),DOUBLE_DELTA );
-        assertEquals(1, WalkerHelper.calcIntersectionToWall(new Point(1, 3), wall, NINETY_DEGREES).getX(), DOUBLE_DELTA);
-        assertEquals(3, WalkerHelper.calcIntersectionToWall(new Point(3, 7), wall, NINETY_DEGREES).getX(), DOUBLE_DELTA);
+        assertEquals(0, WalkerHelper.calcIntersectionToWall(new Point(0, 0), wall, NINETY_DEGREES).getX(),DISTANCE_PRECISION );
+        assertEquals(1, WalkerHelper.calcIntersectionToWall(new Point(1, 3), wall, NINETY_DEGREES).getX(), DISTANCE_PRECISION);
+        assertEquals(3, WalkerHelper.calcIntersectionToWall(new Point(3, 7), wall, NINETY_DEGREES).getX(), DISTANCE_PRECISION);
     }
     @Test
     public void testCalcIntersectionToWallWithWall90() {
         IBorder wall = new Border(new Point(5, 5), new Point(5, 0));
 
-        assertEquals(5, WalkerHelper.calcIntersectionToWall(new Point(0, 0), wall, FORTY_FIVE_DEGREES).getY(),DOUBLE_DELTA );
-        assertEquals(7, WalkerHelper.calcIntersectionToWall(new Point(1, 3), wall, FORTY_FIVE_DEGREES).getY(), DOUBLE_DELTA);
-        assertEquals(1, WalkerHelper.calcIntersectionToWall(new Point(7, 3), wall, FORTY_FIVE_DEGREES).getY(), DOUBLE_DELTA);
+        assertEquals(5, WalkerHelper.calcIntersectionToWall(new Point(0, 0), wall, FORTY_FIVE_DEGREES).getY(),DISTANCE_PRECISION );
+        assertEquals(7, WalkerHelper.calcIntersectionToWall(new Point(1, 3), wall, FORTY_FIVE_DEGREES).getY(), DISTANCE_PRECISION);
+        assertEquals(1, WalkerHelper.calcIntersectionToWall(new Point(7, 3), wall, FORTY_FIVE_DEGREES).getY(), DISTANCE_PRECISION);
     }
     @Test
     public void testIsPointInsidePolygon() {

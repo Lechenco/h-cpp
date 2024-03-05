@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
@@ -13,19 +14,31 @@ import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoi
 import boustrophedon.provider.primitives.Border;
 
 public class CriticalPointFactory {
-    public static ArrayList<CriticalPoint> execute(IPolygon polygon) {
-        ArrayList<CriticalPoint> criticalPoints = createCriticalPointsFromPolygon(polygon);
+    public static ArrayList<ICriticalPoint> execute(IPolygon polygon) {
+        ArrayList<ICriticalPoint> criticalPoints = createCriticalPointsFromPolygon(polygon);
 
         criticalPoints.forEach(cp -> cp.detectPointEvent(polygon));
 
-        ArrayList<CriticalPoint> intersections = getAllIntersections(criticalPoints);
+        ArrayList<ICriticalPoint> intersections = getAllIntersections(criticalPoints);
 
         addIntersections(criticalPoints, intersections);
 
         return  criticalPoints;
     }
-    static private ArrayList<CriticalPoint> createCriticalPointsFromPolygon(IPolygon polygon) {
-        ArrayList<CriticalPoint> criticalPoints = new ArrayList<>();
+
+    public static ArrayList<ICriticalPoint> execute(IPolygon polygon, ArrayList<ICriticalPoint> criticalPoints ) {
+        ArrayList<ICriticalPoint> _criticalPoints = createCriticalPointsFromPolygon(polygon);
+        _criticalPoints.forEach(cp -> cp.detectPointEvent(polygon));
+
+        ArrayList<ICriticalPoint> intersections = getAllIntersections(criticalPoints);
+        addIntersections(_criticalPoints, criticalPoints);
+        addIntersections(_criticalPoints, intersections);
+
+        return  _criticalPoints;
+    }
+
+    static private ArrayList<ICriticalPoint> createCriticalPointsFromPolygon(IPolygon polygon) {
+        ArrayList<ICriticalPoint> criticalPoints = new ArrayList<>();
 
         for (IPoint point : polygon.getPoints()) {
             List<IBorder> pointBorders = polygon.getBorders()
@@ -37,19 +50,21 @@ public class CriticalPointFactory {
         return criticalPoints;
     }
 
-    static private ArrayList<CriticalPoint> getAllIntersections(ArrayList<CriticalPoint> criticalPoints) {
+    static private ArrayList<ICriticalPoint> getAllIntersections(ArrayList<ICriticalPoint> criticalPoints) {
         return criticalPoints
                 .stream()
-                .map(CriticalPoint::getIntersectionsInNormal)
+                .map(ICriticalPoint::getIntersectionsInNormal)
                 .flatMap(ArrayList::stream)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    static protected void addIntersections(ArrayList<CriticalPoint> criticalPoints, ArrayList<CriticalPoint> intersections) {
-        for (CriticalPoint intersection: intersections) {
+    static protected void addIntersections(ArrayList<ICriticalPoint> criticalPoints, ArrayList<ICriticalPoint> intersections) {
+        for (ICriticalPoint intersection: intersections) {
+            if (alreadyOnCriticalPoints(intersection, criticalPoints)) continue;
             for (int i = 0; i < criticalPoints.size(); i++) {
-                CriticalPoint current = criticalPoints.get(i);
-                if (current.getEdges().size() > 0 &&
+                ICriticalPoint current = criticalPoints.get(i);
+                if (
+                        current.getEdges().size() > 0 &&
                         current.getEdges().get(0).isOnBorder(intersection.getVertices())
                 ) {
                     criticalPoints.add(i, intersection);
@@ -60,13 +75,17 @@ public class CriticalPointFactory {
         }
     }
 
-    static protected void updateBorders(ArrayList<CriticalPoint> criticalPoints, int index) {
+    static private boolean alreadyOnCriticalPoints(ICriticalPoint intersection, ArrayList<ICriticalPoint> criticalPoints) {
+        return criticalPoints.stream().anyMatch(cp -> cp.getVertices().equals(intersection.getVertices()));
+    }
+
+    static protected void updateBorders(ArrayList<ICriticalPoint> criticalPoints, int index) {
         int indexBefore = index != 0 ? index -1 : criticalPoints.size() -1;
         int indexAfter = index != criticalPoints.size() -1 ? index +1 : 0;
 
-        CriticalPoint criticalPoint = criticalPoints.get(index);
-        CriticalPoint criticalPointBefore = criticalPoints.get(indexBefore);
-        CriticalPoint criticalPointAfter = criticalPoints.get(indexAfter);
+        ICriticalPoint criticalPoint = criticalPoints.get(index);
+        ICriticalPoint criticalPointBefore = criticalPoints.get(indexBefore);
+        ICriticalPoint criticalPointAfter = criticalPoints.get(indexAfter);
 
         IBorder borderBefore = new Border(criticalPointBefore.getVertices(), criticalPoint.getVertices());
         IBorder borderAfter = new Border(criticalPointAfter.getVertices(), criticalPoint.getVertices());

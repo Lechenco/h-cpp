@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import boustrophedon.domain.decomposer.enums.Events;
+import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.decomposer.model.ISplitter;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
@@ -21,7 +22,7 @@ import boustrophedon.provider.decomposer.Boustrophedon.Splitters.OutSplitter;
 import boustrophedon.provider.primitives.Point;
 
 public class SplitterControllerTest {
-    ArrayList<CriticalPoint> cps;
+    ArrayList<ICriticalPoint> cps;
     ArrayList<IBorder> borders = new ArrayList<>();
 
     @Before
@@ -115,7 +116,7 @@ public class SplitterControllerTest {
         SplitterController controller = new SplitterController(cps);
         this.cps.get(0).setEvent(Events.OUT);
         this.cps.get(5).setEvent(Events.IN);
-        ArrayList<CriticalPoint> sortedCP = CriticalPointerHelper.sort(this.cps);
+        ArrayList<ICriticalPoint> sortedCP = CriticalPointerHelper.sort(this.cps);
 
         assertEquals(this.cps.get(0), controller.findNextEvent(sortedCP));
         assertEquals(this.cps.get(5), controller.findNextEvent(sortedCP));
@@ -124,7 +125,7 @@ public class SplitterControllerTest {
     @Test
     public void testFindNextEventWithoutEvent() {
         SplitterController controller = new SplitterController(cps);
-        ArrayList<CriticalPoint> sortedCP = CriticalPointerHelper.sort(this.cps);
+        ArrayList<ICriticalPoint> sortedCP = CriticalPointerHelper.sort(this.cps);
 
         assertNull(controller.findNextEvent(sortedCP));
     }
