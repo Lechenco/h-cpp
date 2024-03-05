@@ -31,7 +31,6 @@ public class CriticalPointFactory {
         _criticalPoints.forEach(cp -> cp.detectPointEvent(polygon));
 
         ArrayList<ICriticalPoint> intersections = getAllIntersections(criticalPoints);
-
         addIntersections(_criticalPoints, criticalPoints);
         addIntersections(_criticalPoints, intersections);
 

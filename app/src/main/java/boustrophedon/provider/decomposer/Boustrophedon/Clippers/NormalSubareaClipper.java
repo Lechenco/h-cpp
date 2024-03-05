@@ -17,6 +17,7 @@ import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.graph.model.IAdjacencyMatrix;
 import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IPoint;
+import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.ISubarea;
 import boustrophedon.factories.decomposer.Boustrophedon.CriticalPoint.CriticalPointFactory;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
@@ -51,13 +52,16 @@ public class NormalSubareaClipper implements IClipper {
         WeilerAthertonClippingAlgorithm weilerAthertonClippingAlgorithm = new WeilerAthertonClippingAlgorithm();
         for (ISubarea subArea : res) {
             for (ISubarea clippingArea : extraAreas) {
-                subArea.setPolygon(weilerAthertonClippingAlgorithm.execute(
+                IPolygon clippedDifference = weilerAthertonClippingAlgorithm.execute(
                         clippingArea.getPolygon(),
                         subArea.getPolygon(),
-                        WeilerAthertonClippingAlgorithm.WeilerAthertonModes.DIFFERENCE)
-                );
+                        WeilerAthertonClippingAlgorithm.WeilerAthertonModes.DIFFERENCE);
+                if (clippedDifference != null)
+                    subArea.setPolygon(clippedDifference);
+
             }
         }
+        res.addAll(extraAreas);
     }
 
     private ArrayList<ICriticalPoint> generateClippingPoints(ISubarea normalArea, ISubarea clippingArea) {
@@ -99,7 +103,7 @@ public class NormalSubareaClipper implements IClipper {
         for(ICriticalPoint cp : clippingPoints) {
             if (intersectionSet.stream().noneMatch(inter -> {
                 ArrayList<IPoint> points = cp.getEdgesPoints();
-                return points.stream().anyMatch(p -> p.equals(inter));
+                return points.stream().anyMatch(p -> p.equals(inter) || p.getX() == inter.getX()); // TODO: add angle to validation
             })) {
                 intersectionSet.addAll(cp.getEdgesPoints());
                 newClippingPoints.add(cp);

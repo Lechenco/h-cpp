@@ -59,7 +59,10 @@ public class NormalSubareaClipperTest {
         clipper.clip(subareas);
         ArrayList<ISubarea> result = clipper.getResult();
 
-        assertEquals(1, result.size());
+        assertEquals(2, result.size());
         assertEquals(4, result.get(0).getPolygon().getNumberOfPoints());
+        assertEquals(SubareaTypes.NORMAL, result.get(0).getSubareaType());
+        assertEquals(4, result.get(1).getPolygon().getNumberOfPoints());
+        assertEquals(SubareaTypes.SPECIAL, result.get(1).getSubareaType());
     }
 }

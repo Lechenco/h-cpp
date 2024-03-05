@@ -70,7 +70,7 @@ public class WeilerAthertonClippingAlgorithm {
         }
 
         for (IBorder borderA : A.getBorders()) {
-            if (pointsA.size() > 0 && pointsA.get(pointsA.size() -1).point != borderA.getFirstVertice())
+            if (pointsA.size() == 0 || pointsA.get(pointsA.size() -1).point != borderA.getFirstVertice())
                 pointsA.add(new Intersection(borderA.getFirstVertice(), IntersectionStatus.NONE));
 
             for (IBorder borderB : B.getBorders()) {
