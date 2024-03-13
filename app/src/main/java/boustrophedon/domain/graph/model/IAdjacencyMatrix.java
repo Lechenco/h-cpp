@@ -6,7 +6,6 @@ import java.util.Optional;
 public interface IAdjacencyMatrix<T> {
     void addAdjacency(int source, int destination);
 
-    void concat(IAdjacencyMatrix<T> matrix);
     int addNode(T node);
     ArrayList<T> getNodes();
     Optional<T> getNode(int source, int destination);

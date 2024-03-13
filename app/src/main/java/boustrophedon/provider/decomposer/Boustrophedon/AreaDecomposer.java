@@ -41,7 +41,7 @@ public class AreaDecomposer implements IDecomposer<IArea> {
 
         for (ISubarea subarea : area.getSubareas()) {
             IAdjacencyMatrix<INode<ICell>> matrix = this.decompose(subarea);
-            this.adjacencyMatrix.concat(matrix);
+            this.concatToAdjacencyMatrix(matrix);
         }
 
         return this.adjacencyMatrix;
@@ -52,5 +52,18 @@ public class AreaDecomposer implements IDecomposer<IArea> {
         return polygonDecomposer.decompose(subarea.getPolygon());
     }
 
+    private void concatToAdjacencyMatrix(IAdjacencyMatrix<INode<ICell>> matrix) {
+        for (INode<ICell> node : matrix.getNodes()) {
+            int source = this.adjacencyMatrix.addNode(node);
+
+            for (int destination = 0; destination < source; destination++) {
+                ICell destinationCell = this.adjacencyMatrix.getNodes().get(destination).getObject();
+
+                if (node.getObject().isAdjacent(destinationCell)) {
+                    this.adjacencyMatrix.addAdjacency(source, destination);
+                }
+            }
+        }
+    }
 
 }
