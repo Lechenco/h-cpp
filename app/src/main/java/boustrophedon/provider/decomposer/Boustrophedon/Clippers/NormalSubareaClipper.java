@@ -40,15 +40,13 @@ public class NormalSubareaClipper implements IClipper {
         if (normalArea == null) return;
 
         ArrayList<ISubarea> extraAreas = this.getExtraNormalAreas(subareas);
+        res = this.splitNormalAreaOnClippingPoints(normalArea, extraAreas);
+        this.clipNormalAreaWithClippingAlgorithm(extraAreas);
 
-        ArrayList<ICriticalPoint> clippingPoints = new ArrayList<>();
-        for (ISubarea subarea : extraAreas) {
-            clippingPoints.addAll(generateClippingPoints(normalArea, subarea));
-        }
-        clippingPoints = this.removeDuplicatedClippingPoints(clippingPoints);
+        res.addAll(extraAreas);
+    }
 
-        res = splitNormalArea(normalArea, clippingPoints);
-
+    private void clipNormalAreaWithClippingAlgorithm(ArrayList<ISubarea> extraAreas) {
         WeilerAthertonClippingAlgorithm weilerAthertonClippingAlgorithm = new WeilerAthertonClippingAlgorithm();
         for (ISubarea subArea : res) {
             for (ISubarea clippingArea : extraAreas) {
@@ -56,12 +54,26 @@ public class NormalSubareaClipper implements IClipper {
                         clippingArea.getPolygon(),
                         subArea.getPolygon(),
                         WeilerAthertonClippingAlgorithm.WeilerAthertonModes.DIFFERENCE);
-                if (clippedDifference != null)
+                if (clippedDifference != null && !clippingArea.getPolygon().containsAll(clippedDifference.getPoints()))
                     subArea.setPolygon(clippedDifference);
+                else if (clippedDifference == null && clippingArea.getPolygon().containsAll(subArea.getPolygon().getPoints()))
+                    res.remove(subArea);
 
             }
         }
-        res.addAll(extraAreas);
+    }
+    private boolean polygonContainsPolygon(IPolygon p1, IPolygon p2) {
+        return p1.containsAll(p2.getPoints());
+    }
+
+    private ArrayList<ISubarea> splitNormalAreaOnClippingPoints(ISubarea normalArea, ArrayList<ISubarea> extraAreas) {
+        ArrayList<ICriticalPoint> clippingPoints = new ArrayList<>();
+        for (ISubarea subarea : extraAreas) {
+            clippingPoints.addAll(generateClippingPoints(normalArea, subarea));
+        }
+        clippingPoints = this.removeDuplicatedClippingPoints(clippingPoints);
+
+        return splitNormalArea(normalArea, clippingPoints);
     }
 
     private ArrayList<ICriticalPoint> generateClippingPoints(ISubarea normalArea, ISubarea clippingArea) {

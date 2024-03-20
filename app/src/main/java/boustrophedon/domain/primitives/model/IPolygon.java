@@ -3,6 +3,7 @@ package boustrophedon.domain.primitives.model;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public interface IPolygon {
     int getNumberOfPoints();
@@ -15,4 +16,7 @@ public interface IPolygon {
     IPoint getFarthestVertices(IPoint point, double direction);
     boolean isAdjacentTo(IPolygon polygon);
     ArrayList<IBorder> getBorders();
+    boolean contains(IPoint point);
+
+    boolean containsAll(Collection<IPoint> points);
 }

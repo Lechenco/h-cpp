@@ -12,6 +12,7 @@ public class MapController {
 
     public MapController(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         // googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
     }
 
