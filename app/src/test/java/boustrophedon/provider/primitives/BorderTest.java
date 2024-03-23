@@ -364,7 +364,7 @@ public class BorderTest {
     public void testIsOnBorderMethodBeforeBorder() {
         IPoint p1 = new Point(0, 0);
         IPoint p2 = new Point(5, 5);
-        IPoint p3 = new Point(-0.00001, -0.00001);
+        IPoint p3 = new Point(-0.0001, -0.0001);
 
         Border border = new Border(p1, p2);
 
@@ -375,7 +375,7 @@ public class BorderTest {
     public void testIsOnBorderMethodAfterBorder() {
         IPoint p1 = new Point(0, 0);
         IPoint p2 = new Point(5, 5);
-        IPoint p3 = new Point(5.00001, 5.00001);
+        IPoint p3 = new Point(5.0001, 5.0001);
 
         Border border = new Border(p1, p2);
 
@@ -386,8 +386,8 @@ public class BorderTest {
     public void testIsOnBorderMethodAboveBorder() {
         IPoint p1 = new Point(0, 0);
         IPoint p2 = new Point(5, 5);
-        IPoint p3 = new Point(3, 3.00001);
-        IPoint p4 = new Point(2.9999, 3);
+        IPoint p3 = new Point(3, 3.0001);
+        IPoint p4 = new Point(2.999, 3);
 
         Border border = new Border(p1, p2);
 

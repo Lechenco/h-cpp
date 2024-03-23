@@ -106,6 +106,35 @@ public class WeilerAthertonClippingAlgorithmTest {
         assertTrue(result.getPoints().stream().anyMatch( p -> p.equals(new Point(0.5, 1))));
     }
     @Test
+    public void testClipOnEdge2() {
+        clippedPolygon = new Polygon(
+                new Point(0, 0),
+                new Point(0, 1),
+                new Point(1, 1),
+                new Point(1, 0)
+        );
+        clippingPolygon = new Polygon(
+                new Point(0, 0),
+                new Point(0, 0.5),
+                new Point(1, 0.5),
+                new Point(1, 0)
+        );
+
+        WeilerAthertonClippingAlgorithm algorithm = new WeilerAthertonClippingAlgorithm();
+
+        IPolygon result = algorithm.execute(clippingPolygon, clippedPolygon);
+
+        assertEquals(1, algorithm.getDirectionA());
+        assertEquals(1, algorithm.getDirectionB());
+        assertEquals(WeilerAthertonClippingAlgorithm.IntersectionStatus.ENTERING, algorithm.getStartStatus());
+
+        assertEquals(4, result.getNumberOfPoints());
+        assertTrue(result.getPoints().stream().anyMatch( p -> p.equals(new Point(0, 0))));
+        assertTrue(result.getPoints().stream().anyMatch( p -> p.equals(new Point(0, 0.5))));
+        assertTrue(result.getPoints().stream().anyMatch( p -> p.equals(new Point(1, 0.5))));
+        assertTrue(result.getPoints().stream().anyMatch( p -> p.equals(new Point(1, 0))));
+    }
+    @Test
     public void testClipTriangle() {
         clippedPolygon = new Polygon(
                 new Point(0, 0),

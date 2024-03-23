@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import boustrophedon.domain.decomposer.enums.SubareaTypes;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
@@ -23,6 +24,7 @@ import boustrophedon.provider.walkers.Walker;
 
 public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell>, Collection<Integer>, IPoint>, IPolyline> {
     public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.0006;
+    public static double DEFAULT_DISTANCE_BETWEEN_PATHS_SPECIAL = 0.0003;
     public static double DEFAULT_DIRECTION = NINETY_DEGREES;
     public WalkAllRunnable(
             Triple<ArrayList<ICell>, Collection<Integer>, IPoint> input, Handler handler,
@@ -31,8 +33,10 @@ public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell
         super(input, handler, callback);
     }
 
-    private IPolyline walk(IPolygon polygon, IPoint initialPoint) throws AngleOffLimitsException {
-        Walker walker = new Walker.WalkerBuilder().withDistanceBetweenPaths(DEFAULT_DISTANCE_BETWEEN_PATHS).atDirection(DEFAULT_DIRECTION).build();
+    private IPolyline walk(IPolygon polygon, IPoint initialPoint, SubareaTypes subareaType) throws AngleOffLimitsException {
+        Walker walker = new Walker.WalkerBuilder()
+                .withDistanceBetweenPaths(subareaType == SubareaTypes.SPECIAL ? DEFAULT_DISTANCE_BETWEEN_PATHS_SPECIAL : DEFAULT_DISTANCE_BETWEEN_PATHS)
+                .atDirection(DEFAULT_DIRECTION).build();
 
         return walker.walk(
                 polygon,
@@ -46,7 +50,7 @@ public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell
         for (int index: cellsOrder) {
             ICell cell = cells.get(index);
 
-            IPolyline polyline = this.walk(cell.getPolygon(), path.getNumberOfPoints() > 0 ? path.getLastPoint() : null);
+            IPolyline polyline = this.walk(cell.getPolygon(), path.getNumberOfPoints() > 0 ? path.getLastPoint() : null, cell.getSubarea().getSubareaType());
 
             path.add(polyline.getPoints());
         }
