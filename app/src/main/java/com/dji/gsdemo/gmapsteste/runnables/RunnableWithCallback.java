@@ -9,6 +9,7 @@ public abstract class RunnableWithCallback<T, K> implements Runnable{
     private final T input;
     private final Handler handler;
     private final RunnableCallback<K> callback;
+    private boolean completed;
 
     public RunnableWithCallback(T input, Handler handler, RunnableCallback<K> callback) {
         this.input = input;
@@ -26,5 +27,13 @@ public abstract class RunnableWithCallback<T, K> implements Runnable{
 
     public RunnableCallback<K> getCallback() {
         return callback;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void complete() {
+        this.completed = true;
     }
 }

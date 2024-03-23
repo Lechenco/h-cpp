@@ -1,6 +1,8 @@
 package com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning;
 
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
 import com.dji.gsdemo.gmapsteste.runnables.RunnableWithCallback;
@@ -28,9 +30,15 @@ public class DecomposerRunnable extends RunnableWithCallback<IArea, IAdjacencyMa
     @Override
     public void run() {
         try {
+            Log.i("Boustrophedon", "Starting Decomposer " + this.getInput());
             IAdjacencyMatrix<INode<ICell>> adjacencyMatrix = decompose(this.getInput());
 
-            this.getHandler().post(() -> this.getCallback().onComplete(adjacencyMatrix));
+            this.getHandler().post(() -> {
+                this.getCallback().onComplete(adjacencyMatrix);
+                this.complete();
+            });
+            this.getHandler().sendMessage(new Message());
+            Log.i("Boustrophedon", "Completed Decomposer " + adjacencyMatrix.getNodes());
         } catch (ExceedNumberOfAttempts e) {
             this.getHandler().post(() -> this.getCallback().onError(e));
         }

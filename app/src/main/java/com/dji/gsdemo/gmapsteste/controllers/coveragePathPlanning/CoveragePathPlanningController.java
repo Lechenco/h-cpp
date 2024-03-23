@@ -1,7 +1,9 @@
 package com.dji.gsdemo.gmapsteste.controllers.coveragePathPlanning;
 
 import android.os.Handler;
+import android.util.Log;
 
+import com.dji.gsdemo.gmapsteste.R;
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.CalcBestCellOrderRunnable;
 import com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning.CalcObjectiveMatrixRunnable;
@@ -41,8 +43,9 @@ public class CoveragePathPlanningController {
         this.handler = handler;
     }
 
-    public Thread decompose(IArea area, RunnableCallback<ArrayList<ICell>> callback) {
-        DecomposerRunnable decomposerRunnable = new DecomposerRunnable(area, handler, new RunnableCallback<IAdjacencyMatrix<INode<ICell>>>() {
+    public RunnableCallback<ArrayList<ICell>> onDecomposeCallback;
+    public DecomposerRunnable decompose(IArea area) {
+        return new DecomposerRunnable(area, handler, new RunnableCallback<IAdjacencyMatrix<INode<ICell>>>() {
             @Override
             public void onComplete(IAdjacencyMatrix<INode<ICell>> result) {
                 adjacencyMatrix = result;
@@ -50,161 +53,133 @@ public class CoveragePathPlanningController {
                         .stream()
                         .map(INode::getObject)
                                 .collect(Collectors.toCollection(ArrayList::new));
-                callback.onComplete(cells);
+
+                if (onDecomposeCallback != null)
+                    onDecomposeCallback.onComplete(cells);
             }
 
             @Override
             public void onError(Exception e) {
-                callback.onError(e);
+                if (onDecomposeCallback != null)
+                    onDecomposeCallback.onError(e);
             }
         });
-
-        Thread thread = new Thread(decomposerRunnable);
-        thread.start();
-        return thread;
     }
 
-    public Thread walk(ICell cell, RunnableCallback<IPolyline> callback) {
-        WalkerRunnable walkerRunnable = new WalkerRunnable(cell, this.handler, new RunnableCallback<IPolyline>() {
+    public RunnableCallback<IPolyline> onWalkCallback;
+    public WalkerRunnable walk(ICell cell) {
+        return new WalkerRunnable(cell, this.handler, new RunnableCallback<IPolyline>() {
             @Override
             public void onComplete(IPolyline result) {
-                callback.onComplete(result);
+
+                if (onWalkCallback != null) onWalkCallback.onComplete(result);
             }
 
             @Override
             public void onError(Exception e) {
-                callback.onError(e);
+                if (onWalkCallback != null) onWalkCallback.onError(e);
             }
         });
-
-        Thread thread = new Thread(walkerRunnable);
-        thread.start();
-        return thread;
     }
 
-    public Thread calcObjective(RunnableCallback<IObjectiveMatrix<IPolygon>> callback) {
+    RunnableCallback<IObjectiveMatrix<IPolygon>> onCalcObjectiveCallback;
+    public CalcObjectiveMatrixRunnable calcObjective() {
         ArrayList<IPolygon> polygons = this.adjacencyMatrix
                 .getNodes().stream().map(node -> node.getObject().getPolygon())
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        return calcObjective(polygons, callback);
+        return calcObjective(polygons);
     }
 
-    public Thread calcObjective(ArrayList<IPolygon> polygons, RunnableCallback<IObjectiveMatrix<IPolygon>> callback) {
+    public CalcObjectiveMatrixRunnable calcObjective(ArrayList<IPolygon> polygons) {
         IObjectiveFunction<IPolygon> function = new CenterOfMassFunction();
-        CalcObjectiveMatrixRunnable matrixRunnable = new CalcObjectiveMatrixRunnable(polygons, function, handler, new RunnableCallback<IObjectiveMatrix<IPolygon>>() {
+        return new CalcObjectiveMatrixRunnable(polygons, function, handler, new RunnableCallback<IObjectiveMatrix<IPolygon>>() {
             @Override
             public void onComplete(IObjectiveMatrix<IPolygon> result) {
                 objectiveMatrix = result;
-                callback.onComplete(result);
+                if (onCalcObjectiveCallback != null)
+                    onCalcObjectiveCallback.onComplete(result);
             }
 
             @Override
             public void onError(Exception e) {
-                callback.onError(e);
+                if (onCalcObjectiveCallback != null) onCalcObjectiveCallback.onError(e);
             }
         });
-
-        Thread thread = new Thread(matrixRunnable);
-        thread.start();
-        return thread;
     }
 
-    public Thread calcBestCellOrder(RunnableCallback<Collection<Integer>> callback) {
+    RunnableCallback<Collection<Integer>> onCalcBestCellOrderCallback;
+    public CalcBestCellOrderRunnable calcBestCellOrder() {
         ArrayList<ICell> cells = this.adjacencyMatrix.getNodes().stream()
                 .map(INode::getObject).collect(Collectors.toCollection(ArrayList::new));
         ICell starterCell = CellHelper.getClosestCellToPoint(cells, this.startPoint);
-        return calcBestCellOrder(cells.indexOf(starterCell), callback);
+        return calcBestCellOrder(cells.indexOf(starterCell) );
     }
-    public Thread calcBestCellOrder(int starterCell, RunnableCallback<Collection<Integer>> callback) {
-        CalcBestCellOrderRunnable calcBestCellOrderRunnable = new CalcBestCellOrderRunnable(this.objectiveMatrix, starterCell, handler, new RunnableCallback<Collection<Integer>>() {
+    public CalcBestCellOrderRunnable calcBestCellOrder(int starterCell) {
+        return  new CalcBestCellOrderRunnable(this.objectiveMatrix, starterCell, handler, new RunnableCallback<Collection<Integer>>() {
             @Override
             public void onComplete(Collection<Integer> result) {
                 cellsOrder = result;
-                callback.onComplete(result);
+                if (onCalcBestCellOrderCallback != null)
+                    onCalcBestCellOrderCallback.onComplete(result);
             }
 
             @Override
             public void onError(Exception e) {
-                callback.onError(e);
+                if (onCalcBestCellOrderCallback != null)
+                    onCalcBestCellOrderCallback.onError(e);
             }
         });
-
-        Thread thread = new Thread(calcBestCellOrderRunnable);
-        thread.start();
-        return thread;
     }
 
-    public Thread generateFinalPath(RunnableCallback<IPolyline> callback) {
+    RunnableCallback<IPolyline> onGenerateFinalPathCallback;
+    public WalkAllRunnable generateFinalPath() {
         ArrayList<ICell> cells = this.adjacencyMatrix.getNodes().stream()
                 .map(INode::getObject).collect(Collectors.toCollection(ArrayList::new));
-        WalkAllRunnable walkAllRunnable = new WalkAllRunnable(
+        return new WalkAllRunnable(
                 new ImmutableTriple<>(cells, this.cellsOrder, this.startPoint),
                 this.handler,
                 new RunnableCallback<IPolyline>() {
                     @Override
                     public void onComplete(IPolyline result) {
                         finalPath = result;
-                        callback.onComplete(result);
+                        if (onGenerateFinalPathCallback != null)
+                            onGenerateFinalPathCallback.onComplete(result);
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        callback.onError(e);
+                        if (onGenerateFinalPathCallback != null)
+                            onGenerateFinalPathCallback.onError(e);
                     }
                 }
         );
-
-        Thread thread = new Thread(walkAllRunnable);
-        thread.start();
-        return thread;
     }
 
     public IPolyline generateFinalPathSync(IArea area) throws InterruptedException {
-        this.decompose(area, new RunnableCallback<ArrayList<ICell>>() {
-            @Override
-            public void onComplete(ArrayList<ICell> result) {
+        DecomposerRunnable decomposerRunnable = this.decompose(area);
+        decomposerRunnable.run();
+        while (true) {
+            if (decomposerRunnable.isCompleted()) break;
+        }
 
-            }
+        CalcObjectiveMatrixRunnable calcObjectiveMatrixRunnable = this.calcObjective();
+        calcObjectiveMatrixRunnable.run();
+        while (true) {
+            if (calcObjectiveMatrixRunnable.isCompleted()) break;
+        }
 
-            @Override
-            public void onError(Exception e) {
+        CalcBestCellOrderRunnable calcBestCellOrderRunnable = this.calcBestCellOrder();
+        calcBestCellOrderRunnable.run();
+        while (true) {
+            if (calcBestCellOrderRunnable.isCompleted()) break;
+        }
 
-            }
-        }).join(0);
-        this.calcObjective(new RunnableCallback<IObjectiveMatrix<IPolygon>>() {
-            @Override
-            public void onComplete(IObjectiveMatrix<IPolygon> result) {
-
-            }
-
-            @Override
-            public void onError(Exception e) {
-
-            }
-        }).join(0);
-        this.calcBestCellOrder(new RunnableCallback<Collection<Integer>>() {
-            @Override
-            public void onComplete(Collection<Integer> result) {
-
-            }
-
-            @Override
-            public void onError(Exception e) {
-
-            }
-        }).join(0);
-        this.generateFinalPath(new RunnableCallback<IPolyline>() {
-            @Override
-            public void onComplete(IPolyline result) {
-
-            }
-
-            @Override
-            public void onError(Exception e) {
-
-            }
-        }).join(0);
+        WalkAllRunnable walkAllRunnable = this.generateFinalPath();
+        walkAllRunnable.run();
+        while (true) {
+            if (walkAllRunnable.isCompleted()) break;
+        }
 
         return  this.finalPath;
     }

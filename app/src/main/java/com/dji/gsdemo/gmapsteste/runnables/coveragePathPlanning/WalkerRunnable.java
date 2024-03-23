@@ -3,6 +3,7 @@ package com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning;
 import static boustrophedon.constants.AngleConstants.NINETY_DEGREES;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
 import com.dji.gsdemo.gmapsteste.runnables.RunnableWithCallback;
@@ -38,10 +39,15 @@ public class WalkerRunnable extends RunnableWithCallback<ICell, IPolyline> {
 
     @Override
     public void run() {
+        Log.i("Boustrophedon", "Starting Walker");
         try {
             IPolyline polyline= this.walk(this.getInput());
 
-            this.getHandler().post(() -> this.getCallback().onComplete(polyline));
+            this.getHandler().post(() -> {
+                this.getCallback().onComplete(polyline);
+                this.complete();
+            });
+            Log.i("Boustrophedon", "Completed Walker");
         } catch (AngleOffLimitsException e) {
             this.getHandler().post(() -> this.getCallback().onError(e));
         }
