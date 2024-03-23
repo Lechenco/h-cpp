@@ -6,6 +6,7 @@ import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
+import boustrophedon.provider.primitives.Subarea;
 
 public class DecomposerIntegrationTest {
     IPolygon polygon = new Polygon(
@@ -19,8 +20,8 @@ public class DecomposerIntegrationTest {
     );
     @Test
     public void testDecompose() throws ExceedNumberOfAttempts {
-        PolygonDecomposer decomposer = new PolygonDecomposer();
+        SubAreaDecomposer decomposer = new SubAreaDecomposer();
 
-        decomposer.decompose(polygon);
+        decomposer.decompose(new Subarea(polygon));
     }
 }

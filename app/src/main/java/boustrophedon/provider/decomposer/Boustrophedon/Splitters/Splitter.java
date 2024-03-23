@@ -3,13 +3,13 @@ package boustrophedon.provider.decomposer.Boustrophedon.Splitters;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
+import boustrophedon.domain.decomposer.enums.SubareaTypes;
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.decomposer.model.ISplitter;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
-import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPointerHelper;
 import boustrophedon.provider.primitives.Border;
 
@@ -21,7 +21,7 @@ public abstract class Splitter implements ISplitter {
         this.criticalPoints = criticalPoints;
     }
     @Override
-    public void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
+    public void split(ICriticalPoint splitPoint, SubareaTypes subareaType) throws ExceedNumberOfAttempts {
         this.cells = new ArrayList<>();
 
         this.adjustEdges(splitPoint);
@@ -29,6 +29,8 @@ public abstract class Splitter implements ISplitter {
         this.remainingPoints = this.calcRemainingPoints(splitPoint);
 
         this.populateCells(cellPoints, splitPoint);
+
+        this.cells.forEach(cell -> cell.getSubarea().setSubareaType(subareaType));
     }
 
     abstract void populateCells(ArrayList<ICriticalPoint> cellPoints, ICriticalPoint splitPoint) throws ExceedNumberOfAttempts;

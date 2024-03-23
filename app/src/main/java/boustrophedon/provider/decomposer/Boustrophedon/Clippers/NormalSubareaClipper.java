@@ -62,9 +62,6 @@ public class NormalSubareaClipper implements IClipper {
             }
         }
     }
-    private boolean polygonContainsPolygon(IPolygon p1, IPolygon p2) {
-        return p1.containsAll(p2.getPoints());
-    }
 
     private ArrayList<ISubarea> splitNormalAreaOnClippingPoints(ISubarea normalArea, ArrayList<ISubarea> extraAreas) {
         ArrayList<ICriticalPoint> clippingPoints = new ArrayList<>();
@@ -83,9 +80,7 @@ public class NormalSubareaClipper implements IClipper {
             cp.setEvent(Events.CLIP);
             cp.detectPointEvent(normalArea.getPolygon());
             clippingPoints.add(cp);
-            cp.getIntersectionsInNormal().forEach(i -> {
-                cp.getEdges().add(new Border(i.getVertices(), cp.getVertices()));
-            });
+            cp.getIntersectionsInNormal().forEach(i -> cp.getEdges().add(new Border(i.getVertices(), cp.getVertices())));
         }
 
         return clippingPoints;
@@ -95,7 +90,7 @@ public class NormalSubareaClipper implements IClipper {
     private ArrayList<ISubarea> splitNormalArea(ISubarea normalArea, ArrayList<ICriticalPoint> clippingPoints) {
         ArrayList<ISubarea> newNormalSubareas;
         ArrayList<ICriticalPoint> normalPolygonWithIntersections = CriticalPointFactory.execute(normalArea.getPolygon(), clippingPoints);
-        SplitterController splitterController = new SplitterController(normalPolygonWithIntersections);
+        SplitterController splitterController = new SplitterController(normalPolygonWithIntersections, normalArea.getSubareaType());
         try {
             IAdjacencyMatrix<INode<ICell>> adjacencyMatrix = splitterController.execute();
             newNormalSubareas = adjacencyMatrix.getNodes()

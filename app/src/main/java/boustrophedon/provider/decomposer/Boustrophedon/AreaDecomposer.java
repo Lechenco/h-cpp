@@ -41,8 +41,8 @@ public class AreaDecomposer implements IDecomposer<IArea> {
     }
 
     private IAdjacencyMatrix<INode<ICell>> decompose(ISubarea subarea) throws ExceedNumberOfAttempts {
-        PolygonDecomposer polygonDecomposer = new PolygonDecomposer();
-        return polygonDecomposer.decompose(subarea.getPolygon());
+        SubAreaDecomposer polygonDecomposer = new SubAreaDecomposer();
+        return polygonDecomposer.decompose(subarea);
     }
 
     private void concatToAdjacencyMatrix(IAdjacencyMatrix<INode<ICell>> matrix) {
