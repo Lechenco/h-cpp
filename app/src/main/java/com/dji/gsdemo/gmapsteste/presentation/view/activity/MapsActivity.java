@@ -16,12 +16,10 @@ import com.dji.gsdemo.gmapsteste.controllers.coveragePathPlanning.CoveragePathPl
 import com.dji.gsdemo.gmapsteste.controllers.map.MapController;
 import com.dji.gsdemo.gmapsteste.databinding.ActivityMapsBinding;
 import com.dji.gsdemo.gmapsteste.utils.samples.JSONReader;
-import com.dji.gsdemo.gmapsteste.utils.samples.Sample;
+import com.dji.gsdemo.gmapsteste.utils.samples.SampleFile;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.maps.android.SphericalUtil;
@@ -29,14 +27,11 @@ import com.google.maps.android.SphericalUtil;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IArea;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolyline;
-import boustrophedon.provider.primitives.Area;
-import boustrophedon.provider.primitives.Point;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private MapController mapController;
@@ -65,14 +60,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapController = new MapController(googleMap);
         coveragePathPlanningController = new CoveragePathPlanningController(handler);
 
-        IArea area = this.loadSample("sample1-1");
+        SampleFile sample = this.loadSample("sample1-1");
+        IArea area = sample.generateArea();
+        IPoint startedPoint = sample.generateStartPosition();
 
-        IPoint startedPoint = new Point(-23.35373, -51.24482);
         mapController.goToLocation(startedPoint.getX(), startedPoint.getY());
         mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry())
                 .fillColor(Color.argb(30, 230, 238, 156))
                 .strokeWidth(5F)
         );
+
         work(area, startedPoint);
     }
 
@@ -104,10 +101,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             PolygonAdapter
                                     .toPolygonOptions(result.get(i).getPolygon())
                                     .fillColor(colors.get(i)));
-                    for (LatLng p : result.get(i).getPolygon().toLatLngArray())
-                        mapController.addPoint(
-                            new MarkerOptions().position(p)
-                        );
                 }
             }
             @Override
@@ -154,20 +147,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         coveragePathPlanningController.walk(cells.get(i));
     }
 
-    private IArea loadSample(String sampleName) {
+    private SampleFile loadSample(String sampleName) {
         String jsonFileString = JSONReader.getJsonFromAssets(getApplicationContext(), "examples/" + sampleName + ".json");
         Log.i("data", jsonFileString);
 
         Gson gson = new Gson();
-        Type sampleType = new TypeToken<List<Sample>>() { }.getType();
+        Type sampleType = new TypeToken<SampleFile>() { }.getType();
 
-        List<Sample> samples = gson.fromJson(jsonFileString, sampleType);
-
-        IArea area = new Area();
-        for (Sample s : samples) {
-            area.add(s.generateSubArea());
-        }
-
-        return area;
+        return gson.fromJson(jsonFileString, sampleType);
     }
 }

@@ -1,7 +1,5 @@
 package com.dji.gsdemo.gmapsteste.utils.samples;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +12,7 @@ import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 import boustrophedon.provider.primitives.Subarea;
 
-public class Sample {
+public class SampleSubArea {
     public static class DataItem {
         public double latitude;
         public double longitude;
@@ -25,22 +23,6 @@ public class Sample {
     }
     String type;
     List<DataItem> data;
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<DataItem> getData() {
-        return data;
-    }
-
-    public void setData(List<DataItem> data) {
-        this.data = data;
-    }
 
     public ISubarea generateSubArea() {
         ArrayList<IPoint> points = this.data.stream().map(DataItem::toPoint).collect(Collectors.toCollection(ArrayList::new));

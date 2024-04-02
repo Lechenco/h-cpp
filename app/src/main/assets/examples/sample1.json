@@ -1,13 +1,33 @@
-[
-  {
+{
+  "startPosition": {
+    "latitude": -23.35465,
+    "longitude": -51.24353
+  },
+  "subareas": [
+    {
       "data": [
-        {"latitude": -23.35629, "longitude": -51.24368},
-        {"latitude": -23.3552, "longitude": -51.2429},
-        {"latitude": -23.35511, "longitude":  -51.24148},
-        {"latitude": -23.36157, "longitude": -51.24146},
-        {"latitude": -23.36223, "longitude": -51.24367}
+        {
+          "latitude": -23.35629,
+          "longitude": -51.24368
+        },
+        {
+          "latitude": -23.3552,
+          "longitude": -51.2429
+        },
+        {
+          "latitude": -23.35511,
+          "longitude": -51.24148
+        },
+        {
+          "latitude": -23.36157,
+          "longitude": -51.24146
+        },
+        {
+          "latitude": -23.36223,
+          "longitude": -51.24367
+        }
       ],
       "type": "normal"
-
-  }
-]
+    }
+  ]
+}
