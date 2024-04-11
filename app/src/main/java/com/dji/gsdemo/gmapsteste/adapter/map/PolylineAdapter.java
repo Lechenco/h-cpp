@@ -10,6 +10,6 @@ public class PolylineAdapter {
     public static PolylineOptions toPolylineOptions(IPolyline polyline) {
         return new PolylineOptions().add(
                 polyline.toLatLngArray()
-        ).color(Color.RED);
+        ).color(Color.argb(200, 36, 140, 178)).width(5F);
     }
 }

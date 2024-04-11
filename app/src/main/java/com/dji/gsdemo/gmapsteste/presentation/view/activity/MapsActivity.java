@@ -60,15 +60,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapController = new MapController(googleMap);
         coveragePathPlanningController = new CoveragePathPlanningController(handler);
 
-        SampleFile sample = this.loadSample("sample1-1");
+        SampleFile sample = this.loadSample("sample1");
         IArea area = sample.generateArea();
         IPoint startedPoint = sample.generateStartPosition();
 
         mapController.goToLocation(startedPoint.getX(), startedPoint.getY());
-        mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry())
-                .fillColor(Color.argb(30, 230, 238, 156))
-                .strokeWidth(5F)
-        );
+        mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry()));
 
         work(area, startedPoint);
     }
@@ -82,7 +79,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 handler.post(() -> mapController.addPolyline(
                     PolylineAdapter
                         .toPolylineOptions(finalPath)
-                        .color(Color.argb(200, 54, 173, 56))
                     )
                 );
 
@@ -99,15 +95,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int i = 0; i < result.size(); i++) {
                     mapController.addPolygon(
                             PolygonAdapter
-                                    .toPolygonOptions(result.get(i).getPolygon())
-                                    .fillColor(colors.get(i)));
+                                    .toPolygonOptions(result.get(i).getPolygon(), result.get(i).getSubarea().getSubareaType()));
                 }
             }
             @Override
             public void onError(Exception e) {
-                mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry())
-                        .fillColor(Color.argb(33, 0, 200, 0))
-                );
+                mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry()));
             }
         };
 
@@ -132,7 +125,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 handler.post(() -> mapController.addPolyline(
                                 PolylineAdapter
                                         .toPolylineOptions(result)
-                                        .color(Color.argb(200, 54, 173, 56))
                         )
                 );
 

@@ -23,8 +23,8 @@ import boustrophedon.provider.primitives.Polyline;
 import boustrophedon.provider.walkers.Walker;
 
 public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell>, Collection<Integer>, IPoint>, IPolyline> {
-    public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.0006;
-    public static double DEFAULT_DISTANCE_BETWEEN_PATHS_SPECIAL = 0.0003;
+    public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.000105472;
+    public static double DEFAULT_DISTANCE_BETWEEN_PATHS_SPECIAL = 0.000052736;// 0.000026368;
     public static double DEFAULT_DIRECTION = NINETY_DEGREES;
     public WalkAllRunnable(
             Triple<ArrayList<ICell>, Collection<Integer>, IPoint> input, Handler handler,
