@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import boustrophedon.domain.graph.model.IAdjacencyMatrix;
+import boustrophedon.domain.primitives.model.IPoint;
 
 public class AdjacencyMatrix<T> implements IAdjacencyMatrix<T> {
     private int [][] adjacencyMatrix;
@@ -26,11 +27,6 @@ public class AdjacencyMatrix<T> implements IAdjacencyMatrix<T> {
     public void addAdjacency(int source, int destination) {
         this.adjacencyMatrix[source][destination] = 1;
         this.adjacencyMatrix[destination][source] = 1;
-    }
-
-    @Override
-    public void concat(IAdjacencyMatrix<T> matrix) {
-
     }
 
     @Override

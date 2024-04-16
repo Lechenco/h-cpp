@@ -19,7 +19,7 @@ import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IArea;
 
 import boustrophedon.provider.decomposer.Boustrophedon.AreaDecomposer;
-import boustrophedon.provider.decomposer.Boustrophedon.PolygonDecomposer;
+import boustrophedon.provider.decomposer.Boustrophedon.SubAreaDecomposer;
 import boustrophedon.provider.graph.AdjacencyMatrix;
 import boustrophedon.provider.primitives.Area;
 
@@ -73,7 +73,7 @@ public class DecomposerRunnableTest {
         Handler handlerMock = Mockito.mock(Handler.class);
         RunnableCallback<IAdjacencyMatrix<INode<ICell>>> callback = Mockito.mock(Callback.class);
 
-        try(MockedConstruction<PolygonDecomposer> decomposerMocked = Mockito.mockConstruction(PolygonDecomposer.class,(mock, context)-> when(mock.decompose(Mockito.any())).thenThrow(ExceedNumberOfAttempts.class))){
+        try(MockedConstruction<SubAreaDecomposer> decomposerMocked = Mockito.mockConstruction(SubAreaDecomposer.class,(mock, context)-> when(mock.decompose(Mockito.any())).thenThrow(ExceedNumberOfAttempts.class))){
             Mockito.when(handlerMock.post(Mockito.any())).then(invocation -> {
                 ((Runnable) invocation.getArgument(0)).run();
                 return null;

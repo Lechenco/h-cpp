@@ -3,6 +3,8 @@ package boustrophedon.controllers.decomposer.Boustrophedon.Splitters;
 import java.util.ArrayList;
 
 import boustrophedon.controllers.graph.MatrixController;
+import boustrophedon.domain.decomposer.enums.Events;
+import boustrophedon.domain.decomposer.enums.SubareaTypes;
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
@@ -10,9 +12,7 @@ import boustrophedon.domain.decomposer.model.ISplitter;
 import boustrophedon.domain.graph.model.IAdjacencyMatrix;
 import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IPoint;
-import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPointerHelper;
-import boustrophedon.domain.decomposer.enums.Events;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.MiddleSplitter;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.NoneSplitter;
 import boustrophedon.provider.decomposer.Boustrophedon.Splitters.OutSplitter;
@@ -20,11 +20,12 @@ import boustrophedon.provider.decomposer.Boustrophedon.Splitters.OutSplitter;
 public class SplitterController {
     private final ArrayList<ICriticalPoint> criticalPoints;
     private ArrayList<ICriticalPoint> remainingPoints;
-
     private MatrixController matrixController;
+    private final SubareaTypes subareaType;
 
-    public SplitterController(ArrayList<ICriticalPoint> criticalPoints) {
+    public SplitterController(ArrayList<ICriticalPoint> criticalPoints, SubareaTypes subareaType) {
         this.criticalPoints = criticalPoints;
+        this.subareaType = subareaType;
     }
 
     public IAdjacencyMatrix<INode<ICell>> execute() throws ExceedNumberOfAttempts {
@@ -44,7 +45,7 @@ public class SplitterController {
 
         ISplitter splitter = createSplitter(nextCP);
 
-        splitter.split(nextCP);
+        splitter.split(nextCP, subareaType);
         IPoint vertices = nextCP != null ? nextCP.getVertices() : null;
         this.matrixController.addCellsToMatrix(splitter.getCells(), vertices);
         return splitter.getRemainingPoints();

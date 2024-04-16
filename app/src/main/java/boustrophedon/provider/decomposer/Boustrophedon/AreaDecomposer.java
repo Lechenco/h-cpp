@@ -1,24 +1,17 @@
 package boustrophedon.provider.decomposer.Boustrophedon;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.stream.Collectors;
 
-import boustrophedon.domain.decomposer.enums.Events;
-import boustrophedon.domain.decomposer.enums.SubareaTypes;
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.IClipper;
-import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.decomposer.model.IDecomposer;
 import boustrophedon.domain.graph.model.IAdjacencyMatrix;
 import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IArea;
-import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.ISubarea;
 import boustrophedon.provider.decomposer.Boustrophedon.Clippers.NormalSubareaClipper;
-import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 import boustrophedon.provider.graph.AdjacencyMatrix;
 
 public class AreaDecomposer implements IDecomposer<IArea> {
@@ -39,18 +32,31 @@ public class AreaDecomposer implements IDecomposer<IArea> {
         IClipper clipper = new NormalSubareaClipper();
         clipper.clip(area.getSubareas());
 
-        for (ISubarea subarea : area.getSubareas()) {
+        for (ISubarea subarea : clipper.getResult()) {
             IAdjacencyMatrix<INode<ICell>> matrix = this.decompose(subarea);
-            this.adjacencyMatrix.concat(matrix);
+            this.concatToAdjacencyMatrix(matrix);
         }
 
         return this.adjacencyMatrix;
     }
 
     private IAdjacencyMatrix<INode<ICell>> decompose(ISubarea subarea) throws ExceedNumberOfAttempts {
-        PolygonDecomposer polygonDecomposer = new PolygonDecomposer();
-        return polygonDecomposer.decompose(subarea.getPolygon());
+        SubAreaDecomposer polygonDecomposer = new SubAreaDecomposer();
+        return polygonDecomposer.decompose(subarea);
     }
 
+    private void concatToAdjacencyMatrix(IAdjacencyMatrix<INode<ICell>> matrix) {
+        for (INode<ICell> node : matrix.getNodes()) {
+            int source = this.adjacencyMatrix.addNode(node);
+
+            for (int destination = 0; destination < source; destination++) {
+                ICell destinationCell = this.adjacencyMatrix.getNodes().get(destination).getObject();
+
+                if (node.getObject().isAdjacent(destinationCell)) {
+                    this.adjacencyMatrix.addAdjacency(source, destination);
+                }
+            }
+        }
+    }
 
 }

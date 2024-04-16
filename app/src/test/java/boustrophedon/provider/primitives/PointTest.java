@@ -226,7 +226,7 @@ public class PointTest {
         double y = faker.number().randomNumber();
 
         IPoint point1 = new Point(x, y);
-        IPoint point2 = new Point(x, y + 0.00001);
+        IPoint point2 = new Point(x, y + 0.0001);
 
         Assert.assertNotEquals(point1, point2);
     }

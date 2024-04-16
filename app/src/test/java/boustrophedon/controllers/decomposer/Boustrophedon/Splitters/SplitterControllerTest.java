@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import boustrophedon.domain.decomposer.enums.Events;
+import boustrophedon.domain.decomposer.enums.SubareaTypes;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.decomposer.model.ISplitter;
 import boustrophedon.domain.primitives.model.IBorder;
@@ -44,7 +45,7 @@ public class SplitterControllerTest {
         MockedConstruction<OutSplitter> outSplitter = Mockito.mockConstruction(OutSplitter.class);
         MockedConstruction<MiddleSplitter> middleSplitter = Mockito.mockConstruction(MiddleSplitter.class);
 
-        SplitterController controller = new SplitterController(cps);
+        SplitterController controller = new SplitterController(cps, SubareaTypes.NORMAL);
         ISplitter res = controller.createSplitter(null);
 
         assertTrue(res instanceof NoneSplitter);
@@ -62,7 +63,7 @@ public class SplitterControllerTest {
         MockedConstruction<OutSplitter> outSplitter = Mockito.mockConstruction(OutSplitter.class);
         MockedConstruction<MiddleSplitter> middleSplitter = Mockito.mockConstruction(MiddleSplitter.class);
 
-        SplitterController controller = new SplitterController(cps);
+        SplitterController controller = new SplitterController(cps, SubareaTypes.NORMAL);
         this.cps.get(0).setEvent(Events.MIDDLE);
         ISplitter res = controller.createSplitter(this.cps.get(0));
 
@@ -80,7 +81,7 @@ public class SplitterControllerTest {
         MockedConstruction<OutSplitter> outSplitter = Mockito.mockConstruction(OutSplitter.class);
         MockedConstruction<MiddleSplitter> middleSplitter = Mockito.mockConstruction(MiddleSplitter.class);
 
-        SplitterController controller = new SplitterController(cps);
+        SplitterController controller = new SplitterController(cps, SubareaTypes.NORMAL);
         this.cps.get(0).setEvent(Events.IN);
         ISplitter res = controller.createSplitter(this.cps.get(0));
 
@@ -98,7 +99,7 @@ public class SplitterControllerTest {
         MockedConstruction<OutSplitter> outSplitter = Mockito.mockConstruction(OutSplitter.class);
         MockedConstruction<MiddleSplitter> middleSplitter = Mockito.mockConstruction(MiddleSplitter.class);
 
-        SplitterController controller = new SplitterController(cps);
+        SplitterController controller = new SplitterController(cps, SubareaTypes.NORMAL);
         this.cps.get(0).setEvent(Events.OUT);
         ISplitter res = controller.createSplitter(this.cps.get(0));
 
@@ -113,7 +114,7 @@ public class SplitterControllerTest {
 
     @Test
     public void testFindNextEvent() {
-        SplitterController controller = new SplitterController(cps);
+        SplitterController controller = new SplitterController(cps, SubareaTypes.NORMAL);
         this.cps.get(0).setEvent(Events.OUT);
         this.cps.get(5).setEvent(Events.IN);
         ArrayList<ICriticalPoint> sortedCP = CriticalPointerHelper.sort(this.cps);
@@ -124,7 +125,7 @@ public class SplitterControllerTest {
     }
     @Test
     public void testFindNextEventWithoutEvent() {
-        SplitterController controller = new SplitterController(cps);
+        SplitterController controller = new SplitterController(cps, SubareaTypes.NORMAL);
         ArrayList<ICriticalPoint> sortedCP = CriticalPointerHelper.sort(this.cps);
 
         assertNull(controller.findNextEvent(sortedCP));

@@ -1,6 +1,7 @@
 package com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
 import com.dji.gsdemo.gmapsteste.runnables.RunnableWithCallback;
@@ -33,10 +34,15 @@ public class CalcObjectiveMatrixRunnable extends RunnableWithCallback<ArrayList<
 
     @Override
     public void run() {
+        Log.i("Boustrophedon", "Starting Calc Objective Matrix " + this.getInput());
         try {
             IObjectiveMatrix<IPolygon> matrix = calcObjective(this.getInput());
 
-            this.getHandler().post(() -> this.getCallback().onComplete(matrix));
+            this.getHandler().post(() -> {
+                this.getCallback().onComplete(matrix);
+                this.complete();
+            });
+            Log.i("Boustrophedon", "Completed Calc Objective Matrix " + matrix);
         } catch (Exception e) {
             this.getHandler().post(() -> this.getCallback().onError(e));
         }

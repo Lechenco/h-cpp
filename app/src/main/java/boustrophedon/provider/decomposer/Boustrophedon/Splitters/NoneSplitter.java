@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import boustrophedon.domain.decomposer.enums.Events;
+import boustrophedon.domain.decomposer.enums.SubareaTypes;
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.provider.decomposer.Boustrophedon.Cell.CellHelper;
-import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
 
 public class NoneSplitter extends OutSplitter {
 
@@ -17,7 +17,7 @@ public class NoneSplitter extends OutSplitter {
     }
 
     @Override
-    public void split(ICriticalPoint splitPoint) throws ExceedNumberOfAttempts {
+    public void split(ICriticalPoint splitPoint, SubareaTypes subareaType) throws ExceedNumberOfAttempts {
         this.cells = new ArrayList<>();
 
         Optional<ICriticalPoint> inPointOptional = this
@@ -29,6 +29,7 @@ public class NoneSplitter extends OutSplitter {
             ICell cell = CellHelper.createCell(this.criticalPoints);
             this.cells.add(cell);
         }
+        this.cells.forEach(cell -> cell.getSubarea().setSubareaType(subareaType));
     }
 
     @Override

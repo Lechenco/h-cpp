@@ -3,6 +3,7 @@ package com.dji.gsdemo.gmapsteste.controllers.map;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -12,6 +13,7 @@ public class MapController {
 
     public MapController(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         // googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
     }
 
@@ -27,5 +29,9 @@ public class MapController {
 
     public void addPolyline(PolylineOptions options) {
         googleMap.addPolyline(options);
+    }
+
+    public void addPoint(MarkerOptions options) {
+        googleMap.addMarker(options);
     }
 }

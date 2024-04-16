@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import boustrophedon.domain.decomposer.enums.Events;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
@@ -147,6 +148,7 @@ public class CriticalPointFactoryTest {
         );
 
         ICriticalPoint cp = new CriticalPoint(new Point(0, 2));
+        cp.setEvent(Events.CLIP);
         cp.detectPointEvent(polygon);
 
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon,
@@ -154,6 +156,6 @@ public class CriticalPointFactoryTest {
                         cp
                 )));
 
-        assertEquals(6, cps.size());
+        assertEquals(5, cps.size());
     }
 }

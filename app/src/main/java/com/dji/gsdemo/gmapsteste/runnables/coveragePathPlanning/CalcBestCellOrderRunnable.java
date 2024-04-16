@@ -1,6 +1,7 @@
 package com.dji.gsdemo.gmapsteste.runnables.coveragePathPlanning;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
 import com.dji.gsdemo.gmapsteste.runnables.RunnableWithCallback;
@@ -23,6 +24,7 @@ public class CalcBestCellOrderRunnable extends RunnableWithCallback<IObjectiveMa
 
     @Override
     public void run() {
+        Log.i("Boustrophedon", "Starting CalcBesCellOrder " + this.getInput().getNodes());
         Collection<Integer> indexes = new ArrayList<>();
         indexes.add(startIndex);
 
@@ -33,8 +35,13 @@ public class CalcBestCellOrderRunnable extends RunnableWithCallback<IObjectiveMa
                 indexes.add(currentIndex);
             } catch (ElementNotFoundedException e) {
                 this.getHandler().post(() -> this.getCallback().onError(e));
+                return;
             }
         }
-        this.getHandler().post(() -> this.getCallback().onComplete(indexes));
+        this.getHandler().post(() -> {
+            this.getCallback().onComplete(indexes);
+            this.complete();
+        });
+        Log.i("Boustrophedon", "Completed CalcBesCellOrder " + indexes);
     }
 }

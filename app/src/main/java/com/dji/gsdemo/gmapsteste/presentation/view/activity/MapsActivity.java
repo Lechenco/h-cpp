@@ -1,11 +1,12 @@
 package com.dji.gsdemo.gmapsteste.presentation.view.activity;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.dji.gsdemo.gmapsteste.R;
 import com.dji.gsdemo.gmapsteste.adapter.map.PolygonAdapter;
@@ -13,12 +14,17 @@ import com.dji.gsdemo.gmapsteste.adapter.map.PolylineAdapter;
 import com.dji.gsdemo.gmapsteste.app.RunnableCallback;
 import com.dji.gsdemo.gmapsteste.controllers.coveragePathPlanning.CoveragePathPlanningController;
 import com.dji.gsdemo.gmapsteste.controllers.map.MapController;
-import com.dji.gsdemo.gmapsteste.utils.generators.AreaGenerator;
+import com.dji.gsdemo.gmapsteste.databinding.ActivityMapsBinding;
+import com.dji.gsdemo.gmapsteste.utils.samples.JSONReader;
+import com.dji.gsdemo.gmapsteste.utils.samples.SampleFile;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.dji.gsdemo.gmapsteste.databinding.ActivityMapsBinding;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.maps.android.SphericalUtil;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,13 +32,12 @@ import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.primitives.model.IArea;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolyline;
-import boustrophedon.provider.primitives.Point;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    public static final double AREA_SIZE = 0.005;
     private MapController mapController;
     private CoveragePathPlanningController coveragePathPlanningController;
     private ActivityMapsBinding binding;
+    String logTag = "Boustrophedon";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-
     Handler handler = new Handler();
 
     @Override
@@ -56,13 +60,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapController = new MapController(googleMap);
         coveragePathPlanningController = new CoveragePathPlanningController(handler);
 
-        double latitude = Double.parseDouble(getString(R.string.CORNELIO_LATITUDE));
-        double longitude = Double.parseDouble(getString(R.string.CORNELIO_LONGITUDE));
+        SampleFile sample = this.loadSample("sample1");
+        IArea area = sample.generateArea();
+        IPoint startedPoint = sample.generateStartPosition();
 
-        mapController.goToLocation(latitude, longitude);
+        mapController.goToLocation(startedPoint.getX(), startedPoint.getY());
+        mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry()));
 
-        IArea area = AreaGenerator.generateMiddleOut(latitude, longitude, AREA_SIZE);
-        IPoint startedPoint = new Point(latitude, longitude - AREA_SIZE / 5);
         work(area, startedPoint);
     }
 
@@ -70,11 +74,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void work(IArea area, IPoint startedPoint) {
         Runnable runnable = () -> {
             try {
-                IPolyline path = coveragePathPlanningController.generateFinalPathSync(area);
+                IPolyline finalPath = coveragePathPlanningController.generateFinalPathSync(area);
+                getLength(finalPath);
                 handler.post(() -> mapController.addPolyline(
                     PolylineAdapter
-                        .toPolylineOptions(path)
-                        .color(Color.argb(200, 54, 173, 56))
+                        .toPolylineOptions(finalPath)
                     )
                 );
 
@@ -83,7 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
         this.coveragePathPlanningController.setStartPoint(startedPoint);
-        this.coveragePathPlanningController.decompose(area, new RunnableCallback<ArrayList<ICell>>() {
+        this.coveragePathPlanningController.onDecomposeCallback = new RunnableCallback<ArrayList<ICell>>() {
             final ArrayList<Integer> colors = new ArrayList<>(Arrays.asList(Color.BLUE, Color.RED, Color.MAGENTA, Color.YELLOW));
             @Override
             public void onComplete(ArrayList<ICell> result) {
@@ -91,29 +95,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int i = 0; i < result.size(); i++) {
                     mapController.addPolygon(
                             PolygonAdapter
-                                    .toPolygonOptions(result.get(i).getPolygon())
-                                    .fillColor(colors.get(i)));
+                                    .toPolygonOptions(result.get(i).getPolygon(), result.get(i).getSubarea().getSubareaType()));
                 }
-
-                new Thread(runnable).start();
             }
             @Override
             public void onError(Exception e) {
-                mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry())
-                        .fillColor(Color.argb(33, 0, 200, 0))
-                );
+                mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry()));
             }
-        });
+        };
+
+        new Thread(runnable).start();
+    }
+
+    private void getLength(IPolyline path) {
+        if (path == null) {
+            Log.e(logTag, "Path not found");
+            return;
+        }
+
+        double distance = SphericalUtil.computeLength(Arrays.asList(path.toLatLngArray()));
+        Log.i(logTag, "Path Length: " + distance + " meters");
+
     }
 
     public void walkCell(int i, int finish) {
-        coveragePathPlanningController.walk(cells.get(i), new RunnableCallback<IPolyline>() {
+        coveragePathPlanningController.onWalkCallback = new RunnableCallback<IPolyline>() {
             @Override
             public void onComplete(IPolyline result) {
                 handler.post(() -> mapController.addPolyline(
                                 PolylineAdapter
                                         .toPolylineOptions(result)
-                                        .color(Color.argb(200, 54, 173, 56))
                         )
                 );
 
@@ -124,7 +135,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onError(Exception e) {
 
             }
-        });
+        };
+        coveragePathPlanningController.walk(cells.get(i));
     }
 
+    private SampleFile loadSample(String sampleName) {
+        String jsonFileString = JSONReader.getJsonFromAssets(getApplicationContext(), "examples/" + sampleName + ".json");
+        Log.i("data", jsonFileString);
+
+        Gson gson = new Gson();
+        Type sampleType = new TypeToken<SampleFile>() { }.getType();
+
+        return gson.fromJson(jsonFileString, sampleType);
+    }
 }

@@ -1,9 +1,14 @@
 package boustrophedon.provider.primitives;
 
+import static boustrophedon.constants.PrecisionConstants.DISTANCE_PRECISION;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
 
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
@@ -139,5 +144,53 @@ public class Polygon implements IPolygon {
 
     public ArrayList<IBorder> getBorders() {
         return this.borders;
+    }
+
+    private double[] getXLimits() {
+        double min = this.points.stream().map(IPoint::getX).min(
+                Comparator.comparing(aDouble -> aDouble)
+        ).orElseThrow(NoSuchElementException::new);
+        double max = this.points.stream().map(IPoint::getX).max(
+                Comparator.comparing(aDouble -> aDouble)
+        ).orElseThrow(NoSuchElementException::new);;
+
+        return new double[]{min, max};
+    }
+    private double[] getYLimits() {
+        double min = this.points.stream().map(IPoint::getY).min(
+                Comparator.comparing(aDouble -> aDouble)
+        ).orElseThrow(NoSuchElementException::new);
+        double max = this.points.stream().map(IPoint::getY).max(
+                Comparator.comparing(aDouble -> aDouble)
+        ).orElseThrow(NoSuchElementException::new);;
+
+        return new double[]{min, max};
+    }
+
+    private boolean contains(IPoint point, double[] xLimits, double[] yLimits) {
+        return xLimits[0] - DISTANCE_PRECISION < point.getX() &&
+                point.getX() < xLimits[1] + DISTANCE_PRECISION &&
+                yLimits[0] - DISTANCE_PRECISION < point.getY() &&
+                point.getY() < yLimits[1] + DISTANCE_PRECISION;
+    }
+
+    @Override
+    public boolean contains(IPoint point) {
+        double[] xLimits = getXLimits();
+        double[] yLimits = getYLimits();
+
+        return contains(point, xLimits, yLimits);
+    }
+
+    @Override
+    public boolean containsAll(Collection<IPoint> points) {
+        double[] xLimits = getXLimits();
+        double[] yLimits = getYLimits();
+
+        return points.stream()
+                .map(point -> contains(point, xLimits, yLimits))
+                .reduce(true,
+                (a, b) -> a && b
+        );
     }
 }

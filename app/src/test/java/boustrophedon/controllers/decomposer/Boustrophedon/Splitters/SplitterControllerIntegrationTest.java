@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import boustrophedon.domain.decomposer.enums.SubareaTypes;
 import boustrophedon.domain.decomposer.error.ExceedNumberOfAttempts;
 import boustrophedon.domain.decomposer.model.ICell;
 import boustrophedon.domain.decomposer.model.ICriticalPoint;
@@ -13,9 +14,6 @@ import boustrophedon.domain.graph.model.IAdjacencyMatrix;
 import boustrophedon.domain.graph.model.INode;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.factories.decomposer.Boustrophedon.CriticalPoint.CriticalPointFactory;
-import boustrophedon.provider.decomposer.Boustrophedon.CriticalPoint.CriticalPoint;
-import boustrophedon.provider.graph.AdjacencyMatrix;
-import boustrophedon.provider.graph.Node;
 import boustrophedon.provider.primitives.Point;
 import boustrophedon.provider.primitives.Polygon;
 
@@ -31,7 +29,7 @@ public class SplitterControllerIntegrationTest {
 
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
-        SplitterController splitterController = new SplitterController(cps);
+        SplitterController splitterController = new SplitterController(cps, SubareaTypes.NORMAL);
         IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
 
         assertEquals(1, matrix.getNodes().size());
@@ -47,7 +45,7 @@ public class SplitterControllerIntegrationTest {
 
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
-        SplitterController splitterController = new SplitterController(cps);
+        SplitterController splitterController = new SplitterController(cps, SubareaTypes.NORMAL);
         IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
 
         assertEquals(1, matrix.getNodes().size());
@@ -66,7 +64,7 @@ public class SplitterControllerIntegrationTest {
 
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
-        SplitterController splitterController = new SplitterController(cps);
+        SplitterController splitterController = new SplitterController(cps, SubareaTypes.NORMAL);
         IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
 
         assertEquals(2, matrix.getNodes().size());
@@ -85,7 +83,7 @@ public class SplitterControllerIntegrationTest {
 
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
-        SplitterController splitterController = new SplitterController(cps);
+        SplitterController splitterController = new SplitterController(cps, SubareaTypes.NORMAL);
 
         IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
         assertEquals(3, matrix.getNodes().size());
@@ -107,7 +105,7 @@ public class SplitterControllerIntegrationTest {
 
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
-        SplitterController splitterController = new SplitterController(cps);
+        SplitterController splitterController = new SplitterController(cps, SubareaTypes.NORMAL);
 
         IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
         assertEquals(4, matrix.getNodes().size());
@@ -126,7 +124,7 @@ public class SplitterControllerIntegrationTest {
 
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
 
-        SplitterController splitterController = new SplitterController(cps);
+        SplitterController splitterController = new SplitterController(cps, SubareaTypes.NORMAL);
 
         IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
         assertEquals(3, matrix.getNodes().size());
@@ -148,7 +146,7 @@ public class SplitterControllerIntegrationTest {
         );
 
         ArrayList<ICriticalPoint> cps = CriticalPointFactory.execute(polygon);
-        SplitterController splitterController = new SplitterController(cps);
+        SplitterController splitterController = new SplitterController(cps, SubareaTypes.NORMAL);
 
         IAdjacencyMatrix<INode<ICell>> matrix = splitterController.execute();
         assertEquals(4, matrix.getNodes().size());

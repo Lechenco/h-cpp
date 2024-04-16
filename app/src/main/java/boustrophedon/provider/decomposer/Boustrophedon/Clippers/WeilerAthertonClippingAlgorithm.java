@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +69,7 @@ public class WeilerAthertonClippingAlgorithm {
         }
 
         for (IBorder borderA : A.getBorders()) {
-            if (pointsA.size() == 0 || pointsA.get(pointsA.size() -1).point != borderA.getFirstVertice())
+            if (pointsA.isEmpty() || pointsA.get(pointsA.size() -1).point != borderA.getFirstVertice())
                 pointsA.add(new Intersection(borderA.getFirstVertice(), IntersectionStatus.NONE));
 
             for (IBorder borderB : B.getBorders()) {
