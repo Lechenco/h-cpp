@@ -19,8 +19,10 @@ import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.domain.primitives.model.IPolyline;
 import boustrophedon.domain.walkers.error.AngleOffLimitsException;
+import boustrophedon.helpers.walkers.WalkerHelper;
 import boustrophedon.provider.primitives.Polyline;
 import boustrophedon.provider.walkers.Walker;
+import boustrophedon.utils.AngleUtils;
 
 public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell>, Collection<Integer>, IPoint>, IPolyline> {
     public static double DEFAULT_DISTANCE_BETWEEN_PATHS = 0.000105472;
@@ -49,8 +51,10 @@ public class WalkAllRunnable extends RunnableWithCallback<Triple<ArrayList<ICell
 
         for (int index: cellsOrder) {
             ICell cell = cells.get(index);
-
-            IPolyline polyline = this.walk(cell.getPolygon(), path.getNumberOfPoints() > 0 ? path.getLastPoint() : null, cell.getSubarea().getSubareaType());
+            IPoint startPoint = path.getNumberOfPoints() > 0
+                    ? WalkerHelper.getClosestMaximizedAnglePoint(cell.getPolygon(), path.getLastPoint(), AngleUtils.add90Degrees(DEFAULT_DIRECTION))
+                    : null;
+            IPolyline polyline = this.walk(cell.getPolygon(), startPoint, cell.getSubarea().getSubareaType());
 
             path.add(polyline.getPoints());
         }
