@@ -22,6 +22,7 @@ To execute the demo application you can use the `Android-Studio` software or you
 android development. The project has a few file examples founded at [./app/src/main/assets/examples](./app/src/main/assets/examples).
 
 ### Examples
+![image](https://github.com/Lechenco/Mestrado-Alogrithm/assets/26353985/b322f864-5bc2-437b-84fa-114062e03d2d)
 
 ## Usage
 
