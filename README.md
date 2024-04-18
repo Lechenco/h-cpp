@@ -23,6 +23,8 @@ android development. The project has a few file examples founded at [./app/src/m
 
 ### Examples
 ![image](https://github.com/Lechenco/Mestrado-Alogrithm/assets/26353985/b322f864-5bc2-437b-84fa-114062e03d2d)
+![image](https://github.com/Lechenco/Mestrado-Alogrithm/assets/26353985/10580f0d-3b12-4fd1-9d7a-a260a9674036)
+
 
 ## Usage
 
