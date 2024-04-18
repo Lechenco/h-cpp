@@ -3,12 +3,15 @@ package boustrophedon.helpers.walkers;
 import static boustrophedon.utils.AngleUtils.add180Degrees;
 
 import java.util.ArrayList;
+import java.util.OptionalDouble;
+import java.util.stream.Collectors;
 
 import boustrophedon.domain.primitives.model.IBorder;
 import boustrophedon.domain.primitives.model.IPoint;
 import boustrophedon.domain.primitives.model.IPolygon;
 import boustrophedon.helpers.primitives.BorderHelper;
 import boustrophedon.provider.primitives.Border;
+import boustrophedon.utils.AngleUtils;
 import boustrophedon.utils.GA;
 
 public class WalkerHelper {
@@ -100,5 +103,28 @@ public class WalkerHelper {
         ) < Math.abs(
                 GA.calcDistance(point, wall.getSecondVertice())
         ) ? wall.getFirstVertice() : wall.getSecondVertice();
+    }
+
+    static public IPoint getClosestMaximizedAnglePoint(IPolygon polygon, IPoint currentPoint, double angle) {
+        ArrayList<Double> angleRelativePoints = polygon.getPoints()
+                .stream().map(p -> AngleUtils.calcXRotation(p, angle))
+                .collect(Collectors.toCollection(ArrayList::new));
+        OptionalDouble max = angleRelativePoints.stream().mapToDouble(Double::doubleValue).max();
+        OptionalDouble min = angleRelativePoints.stream().mapToDouble(Double::doubleValue).min();
+
+        if (!max.isPresent() || !min.isPresent())
+            return polygon.getPoints().get(0);
+
+        int indexMax = angleRelativePoints.indexOf(max.getAsDouble());
+        int indexMin = angleRelativePoints.indexOf(min.getAsDouble());
+
+        double distanceToMax = GA.calcDistance(
+                currentPoint, polygon.getPoints().get(indexMax)
+        );
+        double distanceToMin = GA.calcDistance(
+                currentPoint, polygon.getPoints().get(indexMin)
+        );
+
+        return  polygon.getPoints().get( distanceToMax < distanceToMin ? indexMax : indexMin);
     }
 }

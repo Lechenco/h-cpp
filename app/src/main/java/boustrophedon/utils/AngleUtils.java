@@ -56,6 +56,14 @@ public final class AngleUtils {
         return angle + NINETY_DEGREES;
     }
 
+    public static double calcXRotation(IPoint point, double angle) {
+        return AngleUtils.calcXRotation(point.getX(), point.getY(), angle);
+    }
+
+    public static double calcXRotation(double x, double y, double angle) {
+        return x * Math.cos(angle) + y * Math.sin(angle);
+    }
+
     private AngleUtils() {
     }
 }
