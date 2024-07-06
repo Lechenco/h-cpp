@@ -1,0 +1,38 @@
+{
+  "startPosition": {
+    "longitude": -51.2506814, "latitude":-23.3670462
+  },
+  "subareas": [
+    {
+      "data": [
+        {"longitude": -51.2506814, "latitude":-23.3670462},
+        {"longitude": -51.2505098, "latitude": -23.3700107},
+        {"longitude": -51.2496837, "latitude": -23.3703653},
+        {"longitude": -51.2491258, "latitude": -23.3701092},
+        {"longitude": -51.2477203, "latitude": -23.3686516},
+        {"longitude": -51.24698, "latitude": -23.3661204},
+        {"longitude": -51.24801, "latitude": -23.3657856}
+      ],
+      "type": "normal"
+    },
+    {
+      "data": [
+        {"longitude": -51.2490162, "latitude":-23.3682353},
+        {"longitude": -51.2488124, "latitude": -23.3688312},
+        {"longitude": -51.2477203, "latitude": -23.3686516},
+        {"longitude": -51.2474981, "latitude": -23.3679399},
+        {"longitude": -51.2486783, "latitude": -23.3679399}
+      ],
+      "type": "special"
+    },
+    {
+      "data": [
+        {"longitude": -51.2497619, "latitude":-23.3678512},
+        {"longitude": -51.2497941, "latitude": -23.3666152},
+        {"longitude": -51.2506814, "latitude": -23.3670462},
+        {"longitude": -51.2506256, "latitude": -23.3678512}
+      ],
+      "type": "special"
+    }
+  ]
+}

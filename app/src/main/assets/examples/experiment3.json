@@ -1,0 +1,27 @@
+{
+  "startPosition": {
+    "longitude":-51.2472523, "latitude": -23.3682179
+  },
+  "subareas": [
+    {
+      "data": [
+        {"longitude":-51.2472523, "latitude": -23.3682179},
+        {"longitude": -51.2477888, "latitude": -23.3691142},
+        {"longitude": -51.2478853, "latitude": -23.3696164},
+        {"longitude": -51.2483467, "latitude": -23.3696952},
+        {"longitude": -51.2487758, "latitude": -23.3701384},
+        {"longitude": -51.249559, "latitude": -23.3705422},
+        {"longitude": -51.2495054, "latitude": -23.3709854},
+        {"longitude": -51.2488509, "latitude": -23.3710937},
+        {"longitude": -51.2488509, "latitude": -23.3713301},
+        {"longitude": -51.2494732, "latitude": -23.3716945},
+        {"longitude": -51.249441, "latitude": -23.3722953},
+        {"longitude": -51.2489368, "latitude": -23.373093},
+        {"longitude": -51.2480892, "latitude": -23.373418},
+        {"longitude": -51.2478531, "latitude": -23.3721081},
+        {"longitude": -51.2472631, "latitude": -23.3718422}
+      ],
+      "type": "normal"
+    }
+  ]
+}

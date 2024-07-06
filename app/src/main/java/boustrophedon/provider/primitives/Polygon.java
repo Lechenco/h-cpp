@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 
@@ -122,6 +123,10 @@ public class Polygon implements IPolygon {
         if (points == null)
             throw new NullPointerException("No points founded");
 
+        if (!isClockwise(points)) {
+            Collections.reverse(points);
+        }
+
         this.points = points;
         this.numberOfPoints = this.points.size();
         this.borders = populateBorders();
@@ -192,5 +197,17 @@ public class Polygon implements IPolygon {
                 .reduce(true,
                 (a, b) -> a && b
         );
+    }
+
+    private boolean isClockwise(Collection<IPoint> points) {
+        ArrayList<IPoint> array = new ArrayList<>(points);
+        double total = array.get(array.size() -1).getX() * array.get(0).getY() -
+                array.get(0).getX() * array.get(array.size() -1).getY();
+        for (int i = 0; i < array.size() -1; i++){
+            total += array.get(i).getX() * array.get(i + 1).getY() -
+                    array.get(i + 1).getX() * array.get(i).getY();
+        }
+
+        return total <= 0;
     }
 }

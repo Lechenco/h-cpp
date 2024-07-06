@@ -1,0 +1,16 @@
+{
+  "startPosition": {
+    "longitude": -51.2606832, "latitude": -23.3329714
+  },
+  "subareas": [
+    {
+      "data": [
+        {"latitude": -23.3329714, "longitude": -51.2606832},
+        {"latitude": -23.3334837, "longitude": -51.2586876},
+        {"latitude": -23.330144, "longitude": -51.2561878},
+        {"latitude": -23.3284988, "longitude": -51.2571534}
+      ],
+      "type": "normal"
+    }
+  ]
+}

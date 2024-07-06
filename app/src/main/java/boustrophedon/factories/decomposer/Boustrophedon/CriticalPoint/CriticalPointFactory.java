@@ -31,8 +31,8 @@ public class CriticalPointFactory {
         _criticalPoints.forEach(cp -> cp.detectPointEvent(polygon));
 
         ArrayList<ICriticalPoint> intersections = getAllIntersections(criticalPoints);
-        addIntersections(_criticalPoints, criticalPoints);
         addIntersections(_criticalPoints, intersections);
+        addIntersections(_criticalPoints, criticalPoints);
 
         return  _criticalPoints;
     }
@@ -60,7 +60,11 @@ public class CriticalPointFactory {
 
     static protected void addIntersections(ArrayList<ICriticalPoint> criticalPoints, ArrayList<ICriticalPoint> intersections) {
         for (ICriticalPoint intersection: intersections) {
-            if (alreadyOnCriticalPoints(intersection, criticalPoints)) continue;
+            if (alreadyOnCriticalPoints(intersection, criticalPoints)) {
+                criticalPoints.replaceAll(cp -> cp.getVertices().equals(intersection.getVertices()) ? intersection : cp);
+                updateBorders(criticalPoints, criticalPoints.indexOf(intersection));
+                continue;
+            }
             for (int i = 0; i < criticalPoints.size(); i++) {
                 ICriticalPoint current = criticalPoints.get(i);
                 if (

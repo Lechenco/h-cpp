@@ -69,20 +69,29 @@ public class WeilerAthertonClippingAlgorithm {
         }
 
         for (IBorder borderA : A.getBorders()) {
-            if (pointsA.isEmpty() || pointsA.get(pointsA.size() -1).point != borderA.getFirstVertice())
+            if (
+                    pointsA.isEmpty() ||
+                    pointsA.stream().noneMatch(p -> p.point.equals(borderA.getFirstVertice()))
+            )
                 pointsA.add(new Intersection(borderA.getFirstVertice(), IntersectionStatus.NONE));
 
+            int firstVerticesBorderPosition = pointsA.size() -1;
             for (IBorder borderB : B.getBorders()) {
                 IPoint firstVertices = borderB.getFirstVertice();
 
                 IPoint intersect = this.calcIntersection(firstVertices, borderB, borderA);
                 if (
-                        intersect != null && !onPolygon(intersect, B) &&
-                        borderA.isOnBorder(intersect) && borderB.isOnBorder(intersect)
+                        intersect != null &&
+                        borderA.isOnBorder(intersect) && borderB.isOnBorder(intersect) &&
+                        mayBorderEnterOrLeave(intersect, borderB, A)
+
                 ) {
                     Intersection intersection = new Intersection(intersect, IntersectionStatus.INTERSECTION);
-                    pointsA.add(intersection);
-
+                    if (pointsA.stream().anyMatch(p -> p.point.equals(intersect))) {
+                        pointsA.replaceAll(i -> i.point.equals(intersect) ? intersection : i);
+                    } else {
+                        appendOnPointsA(intersection, pointsA, firstVerticesBorderPosition);
+                    }
                     Objects.requireNonNull(intersectionsInBMap.get(borderB)).add(intersection);
                 }
             }
@@ -94,15 +103,47 @@ public class WeilerAthertonClippingAlgorithm {
 
         return res;
     }
-    private boolean onPolygon(IPoint point, IPolygon polygon) {
-        return polygon.getPoints().stream().anyMatch(p -> p.equals(point));
+
+    private void appendOnPointsA(Intersection intersection, ArrayList<Intersection> pointsA, int afterPosition) {
+        IPoint ref = pointsA.get(afterPosition).point;
+        double distanceToRef = ref.calcDistance(intersection.point);
+
+        for (int i = pointsA.size() -1; i >= afterPosition; i--) {
+            if (i == afterPosition) pointsA.add(intersection);
+            else if(ref.calcDistance(pointsA.get(i).point) >= distanceToRef) {
+                pointsA.add(i, intersection);
+                return;
+            }
+        }
+    }
+
+    private static final double DELTA_STEP_VALUE = 0.00002;
+    private boolean mayBorderEnterOrLeave(IPoint point, IBorder border, IPolygon polygon) {
+        double borderAngle = border.getAngle();
+        IPoint deltaStep1 = point.walk(DELTA_STEP_VALUE, borderAngle);
+        IPoint deltaStep2 = point.walk(-DELTA_STEP_VALUE, borderAngle);
+
+        boolean isBorderVertices = border.getFirstVertice().equals(point) || border.getSecondVertice().equals(point);
+
+        if (isBorderVertices)
+            return (border.isOnBorder(deltaStep1) && !WalkerHelper.isPointInsidePolygon(deltaStep1, polygon)) ^
+                    (border.isOnBorder(deltaStep2) && !WalkerHelper.isPointInsidePolygon(deltaStep2, polygon));
+
+        return border.isOnBorder(deltaStep1) && border.isOnBorder(deltaStep2) &&
+                (WalkerHelper.isPointInsidePolygon(deltaStep1, polygon) ^
+               WalkerHelper.isPointInsidePolygon(deltaStep2, polygon));
     }
 
     private ArrayList<Intersection> mountPointsInB(IPolygon B, Map<IBorder, ArrayList<Intersection>> intersectionsInBMap) {
         ArrayList<Intersection> pointsB = new ArrayList<>();
 
         for (IBorder borderB : B.getBorders()) {
-            pointsB.add(new Intersection(borderB.getFirstVertice(), IntersectionStatus.NONE));
+            if (pointsB.stream().noneMatch(i -> i.point.equals(borderB.getFirstVertice())) &&
+                Objects.requireNonNull(
+                        intersectionsInBMap.get(borderB)).stream().noneMatch(i -> i.point.equals(borderB.getFirstVertice())
+                )
+            )
+                pointsB.add(new Intersection(borderB.getFirstVertice(), IntersectionStatus.NONE));
             pointsB.addAll(Objects.requireNonNull(intersectionsInBMap.get(borderB)));
         }
         return pointsB;
@@ -119,6 +160,7 @@ public class WeilerAthertonClippingAlgorithm {
 
         do {
             current = getNextIntersection(current, pointsB, directionB, resultPoints);
+            if (current == start) break;
             current = getNextIntersection(current, pointsA, directionA, resultPoints);
         } while(current != start);
         return new Polygon(resultPoints);

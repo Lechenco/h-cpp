@@ -20,7 +20,7 @@ public class MapController {
     public void goToLocation(double latitude, double longitude) {
         LatLng cornelio = new LatLng(latitude, longitude);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(cornelio));
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(17));
     }
 
     public void addPolygon(PolygonOptions options) {

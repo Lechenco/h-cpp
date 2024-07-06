@@ -22,10 +22,12 @@ public class SplitterController {
     private ArrayList<ICriticalPoint> remainingPoints;
     private MatrixController matrixController;
     private final SubareaTypes subareaType;
+    private final boolean clipMode;
 
     public SplitterController(ArrayList<ICriticalPoint> criticalPoints, SubareaTypes subareaType) {
         this.criticalPoints = criticalPoints;
         this.subareaType = subareaType;
+        clipMode = criticalPoints.stream().anyMatch(cp -> cp.getEvent() == Events.CLIP);
     }
 
     public IAdjacencyMatrix<INode<ICell>> execute() throws ExceedNumberOfAttempts {
@@ -74,6 +76,8 @@ public class SplitterController {
 
             cp.setSplit(true);
 
+            if (clipMode && cp.getEvent() != Events.CLIP)
+                continue;
             if (cp.getEvent() != Events.NONE && cp.getEvent() != Events.UNKNOWN)
                 return cp;
         }

@@ -83,7 +83,22 @@ public class NormalSubareaClipper implements IClipper {
             cp.getIntersectionsInNormal().forEach(i -> cp.getEdges().add(new Border(i.getVertices(), cp.getVertices())));
         }
 
-        return clippingPoints;
+        ArrayList<ICriticalPoint> clippingPointsRes = new ArrayList<>();
+        for (ICriticalPoint cp : clippingPoints) {
+            if (cp.getIntersectionsInNormal().isEmpty()) continue;
+            if (cp.getIntersectionsInNormal().size() == 1) {
+                clippingPointsRes.add(cp);
+                continue;
+            }
+
+            ICriticalPoint cpClip = cp.getIntersectionsInNormal().get(0);
+            cpClip.setEvent(Events.CLIP);
+            cpClip.detectPointEvent(normalArea.getPolygon());
+            clippingPointsRes.add(cpClip);
+            cpClip.getIntersectionsInNormal().forEach(i -> cpClip.getEdges().add(new Border(i.getVertices(), cpClip.getVertices())));
+        }
+
+        return clippingPointsRes;
     }
 
 
