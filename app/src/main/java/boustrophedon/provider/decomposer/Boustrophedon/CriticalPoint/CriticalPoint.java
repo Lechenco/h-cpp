@@ -113,7 +113,7 @@ public class CriticalPoint implements ICriticalPoint {
         if (intersectionNormalPoints.size() == 1) {
             this.setEvent(Events.MIDDLE);
         } else {
-            this.setEvent( this.isInEvent() ? Events.IN : Events.OUT);
+            this.setEvent(this.calcEventWithXAxis());
         }
     }
 
@@ -123,14 +123,16 @@ public class CriticalPoint implements ICriticalPoint {
                 (countOfIntersectionsNormal > 1 && countOfIntersectionsNormal % 2 == 1);
     }
 
-    protected boolean isInEvent() {
-        if (this.getEdges().size() < 2) return false;
+    protected Events calcEventWithXAxis() {
+        if (this.getEdges().size() < 2) return Events.NONE;
         IPoint point = this.getVertices();
         double pointX = point.getX();
         double firstEdgePointX = getEdgeFarEnd(this.getEdges().get(0)).getX();
         double secondEdgePointX  = getEdgeFarEnd(this.getEdges().get(1)).getX();
 
-        return pointX <= firstEdgePointX && pointX <= secondEdgePointX;
+        if (pointX == firstEdgePointX && pointX == secondEdgePointX) return Events.NONE;
+        if (pointX < firstEdgePointX && pointX < secondEdgePointX) return Events.IN;
+        return Events.OUT;
     }
 
     @Override

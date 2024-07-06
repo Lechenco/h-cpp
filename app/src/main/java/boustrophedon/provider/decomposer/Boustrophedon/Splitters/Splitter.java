@@ -28,6 +28,11 @@ public abstract class Splitter implements ISplitter {
         ArrayList<ICriticalPoint> cellPoints = calcCellPoints(splitPoint);
         this.remainingPoints = this.calcRemainingPoints(splitPoint);
 
+        if (this.remainingPoints.size() < 3) {
+            cellPoints.addAll(this.remainingPoints);
+            this.remainingPoints.clear();
+        }
+
         this.populateCells(cellPoints, splitPoint);
 
         this.cells.forEach(cell -> cell.getSubarea().setSubareaType(subareaType));

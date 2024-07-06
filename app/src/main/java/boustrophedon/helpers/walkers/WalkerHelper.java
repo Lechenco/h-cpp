@@ -105,6 +105,26 @@ public class WalkerHelper {
         ) ? wall.getFirstVertice() : wall.getSecondVertice();
     }
 
+    static public IBorder getClosestWallExcept(IPoint point, ArrayList<IBorder> walls, double angle, IBorder except){
+        double minDistance = Double.MIN_VALUE;
+        int closestWallIndex = -1;
+        for(IBorder w : walls){
+            if (w == except) continue;
+
+            double aux = Math.min(
+                    GA.calcDistanceWithDirection(point, w.getFirstVertice(), angle),
+                    GA.calcDistanceWithDirection(point, w.getSecondVertice(), angle)
+            );
+
+            if (aux < minDistance){
+                minDistance = aux;
+                closestWallIndex = walls.indexOf(w);
+            }
+        }
+
+        return closestWallIndex != -1 ? walls.get(closestWallIndex) : null;
+    }
+
     static public IPoint getClosestMaximizedAnglePoint(IPolygon polygon, IPoint currentPoint, double angle) {
         ArrayList<Double> angleRelativePoints = polygon.getPoints()
                 .stream().map(p -> AngleUtils.calcXRotation(p, angle))

@@ -48,7 +48,9 @@ public class NormalSubareaClipper implements IClipper {
 
     private void clipNormalAreaWithClippingAlgorithm(ArrayList<ISubarea> extraAreas) {
         WeilerAthertonClippingAlgorithm weilerAthertonClippingAlgorithm = new WeilerAthertonClippingAlgorithm();
+        ArrayList<ISubarea> newRes = new ArrayList<>();
         for (ISubarea subArea : res) {
+            newRes.add(subArea);
             for (ISubarea clippingArea : extraAreas) {
                 IPolygon clippedDifference = weilerAthertonClippingAlgorithm.execute(
                         clippingArea.getPolygon(),
@@ -57,10 +59,11 @@ public class NormalSubareaClipper implements IClipper {
                 if (clippedDifference != null && !clippingArea.getPolygon().containsAll(clippedDifference.getPoints()))
                     subArea.setPolygon(clippedDifference);
                 else if (clippedDifference == null && clippingArea.getPolygon().containsAll(subArea.getPolygon().getPoints()))
-                    res.remove(subArea);
+                    newRes.remove(subArea);
 
             }
         }
+        res = newRes;
     }
 
     private ArrayList<ISubarea> splitNormalAreaOnClippingPoints(ISubarea normalArea, ArrayList<ISubarea> extraAreas) {

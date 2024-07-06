@@ -60,13 +60,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapController = new MapController(googleMap);
         coveragePathPlanningController = new CoveragePathPlanningController(handler);
 
-        SampleFile sample = this.loadSample("sample1");
+        SampleFile sample = this.loadSample("experiment3-1");
         IArea area = sample.generateArea();
         IPoint startedPoint = sample.generateStartPosition();
 
         mapController.goToLocation(startedPoint.getX(), startedPoint.getY());
-        mapController.addPolygon(PolygonAdapter.toPolygonOptions(area.getGeometry()));
-
+//        for (ISubarea sub : area.getSubareas()) {
+//            mapController.addPolygon(
+//                    PolygonAdapter
+//                            .toPolygonOptions(sub.getPolygon(), sub.getSubareaType()));
+//        }
         work(area, startedPoint);
     }
 

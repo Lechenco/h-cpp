@@ -107,14 +107,20 @@ public class Walker implements IWalker {
         if (walkedOutOfWall(nextPoint)) {
             IPoint closestWallPoint = WalkerHelper.getClosestWallVertices(nextPoint, this.currentWall);
 
-            Optional<IBorder> nextWall = this.walls.stream()
-                    .filter(w -> w.isOnBorder(closestWallPoint) && w != this.currentWall).findFirst();
-            if (nextWall.isPresent()) {
+            IBorder nextWall = this.walls.stream()
+                    .filter(w -> w.isOnBorder(closestWallPoint) && w != this.currentWall).findFirst().orElse(null);
+
+            if (nextWall == null) {
+                nextWall = WalkerHelper.getClosestWallExcept(nextPoint, this.walls, this.direction, this.currentWall);
+                nextPoint = WalkerHelper.getClosestWallVertices(nextPoint, this.currentWall);
+            }
+
+            if (nextWall != null) {
                 double distanceOutOfWall = closestWallPoint.calcDistance(nextPoint);
 
                 double remainDistance = this.calcDistance(distanceOutOfWall);
 
-                this.currentWall = nextWall.get();
+                this.currentWall = nextWall;
                 nextPoint = walkAside(closestWallPoint, remainDistance);
             }
         }
